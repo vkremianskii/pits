@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:14.3
+    environment:
+      POSTGRES_DB: pits
+      POSTGRES_USER: pits
+      POSTGRES_PASSWORD: pits
+    ports:
+      - "5432:5432"
+  adminer:
+    image: adminer:4.8.1
+    ports:
+      - "8090:8080"

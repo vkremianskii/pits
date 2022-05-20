@@ -1,0 +1,46 @@
+buildscript {
+    dependencies {
+        classpath "com.google.protobuf:protobuf-gradle-plugin:${protobufPluginVersion}"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version "${protobufPluginVersion}"
+}
+
+version '1.0-SNAPSHOT'
+
+dependencies {
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
+    implementation "javax.annotation:javax.annotation-api:${javaxAnnotationVersion}"
+
+    compileOnly "org.apache.tomcat:tomcat-annotations-api:${tomcatAnnotationsVersion}"
+
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
