@@ -13,15 +13,15 @@ public class Location {
         this.type = requireNonNull(type);
     }
 
-    public int getId() {
+    public int id() {
         return id;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public LocationType getType() {
+    public LocationType type() {
         return type;
     }
 }

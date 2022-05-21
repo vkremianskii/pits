@@ -58,19 +58,19 @@ class EquipmentRepositoryTests {
         var truck4 = sut.getEquipmentById(4).block();
         assertThat(truck1).hasValueSatisfying(t ->
         {
-            assertThat(t.getState()).isEqualTo(TruckState.EMPTY);
+            assertThat(t.state()).isEqualTo(TruckState.EMPTY);
         });
         assertThat(truck2).hasValueSatisfying(t ->
         {
-            assertThat(t.getState()).isEqualTo(TruckState.LOAD);
+            assertThat(t.state()).isEqualTo(TruckState.LOAD);
         });
         assertThat(truck3).hasValueSatisfying(t ->
         {
-            assertThat(t.getState()).isEqualTo(TruckState.HAUL);
+            assertThat(t.state()).isEqualTo(TruckState.HAUL);
         });
         assertThat(truck4).hasValueSatisfying(t ->
         {
-            assertThat(t.getState()).isEqualTo(TruckState.UNLOAD);
+            assertThat(t.state()).isEqualTo(TruckState.UNLOAD);
         });
     }
 
@@ -85,10 +85,10 @@ class EquipmentRepositoryTests {
         // then
         var equipment = sut.getEquipmentById(1).block();
         assertThat(equipment).hasValueSatisfying(t -> {
-            assertThat(t.getPosition()).isNotNull();
-            assertThat(t.getPosition().getLatitude()).isCloseTo(41.1494512, offset(1e-8));
-            assertThat(t.getPosition().getLongitude()).isCloseTo(-8.6107884, offset(1e-8));
-            assertThat(t.getPosition().getElevation()).isEqualTo(86);
+            assertThat(t.position()).isNotNull();
+            assertThat(t.position().latitude()).isCloseTo(41.1494512, offset(1e-8));
+            assertThat(t.position().longitude()).isCloseTo(-8.6107884, offset(1e-8));
+            assertThat(t.position().elevation()).isEqualTo(86);
         });
     }
 }

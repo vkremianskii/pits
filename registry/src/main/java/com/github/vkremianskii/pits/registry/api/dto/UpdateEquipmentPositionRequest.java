@@ -13,19 +13,19 @@ public class UpdateEquipmentPositionRequest {
         this.elevation = elevation;
     }
 
-    public int getEquipmentId() {
+    public int equipmentId() {
         return equipmentId;
     }
 
-    public double getLatitude() {
+    public double latitude() {
         return latitude;
     }
 
-    public double getLongitude() {
+    public double longitude() {
         return longitude;
     }
 
-    public int getElevation() {
+    public int elevation() {
         return elevation;
     }
 }

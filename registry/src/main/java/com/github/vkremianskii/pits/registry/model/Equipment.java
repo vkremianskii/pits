@@ -23,25 +23,25 @@ public class Equipment {
         this.position = position;
     }
 
-    public int getId() {
+    public int id() {
         return id;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public EquipmentType getType() {
+    public EquipmentType type() {
         return type;
     }
 
     @Nullable
-    public EquipmentState getState() {
+    public EquipmentState state() {
         return state;
     }
 
     @Nullable
-    public Position getPosition() {
+    public Position position() {
         return position;
     }
 }

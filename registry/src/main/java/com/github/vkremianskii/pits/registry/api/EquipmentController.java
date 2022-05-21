@@ -30,6 +30,6 @@ public class EquipmentController {
                                               @RequestBody UpdateEquipmentPositionRequest request) {
         return equipmentRepository.updateEquipmentPosition(
                 equipmentId,
-                new Position(request.getLatitude(), request.getLongitude(), request.getElevation()));
+                new Position(request.latitude(), request.longitude(), request.elevation()));
     }
 }
