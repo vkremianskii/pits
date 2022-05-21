@@ -11,7 +11,8 @@ CREATE TABLE equipment
     state equipment_state,
     latitude numeric(10, 8),
     longitude numeric(11, 8),
-    elevation smallint
+    elevation integer,
+    payload_weight integer
 );
 
 INSERT INTO equipment (name, type) VALUES ('Dozer No.1', 'dozer');

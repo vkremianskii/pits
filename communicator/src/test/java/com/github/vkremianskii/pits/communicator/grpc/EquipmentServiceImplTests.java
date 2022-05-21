@@ -61,6 +61,22 @@ class EquipmentServiceImplTests {
         verify(registryClient).updateEquipmentPosition(1, 41.1494512, -8.6107884, 86);
     }
 
+    @Test
+    void should_receive_payload_weight_and_update_in_registry() {
+        // given
+        var request = PayloadWeightChanged.newBuilder()
+                .setEquipmentId(1)
+                .setWeight(10)
+                .build();
+
+        // when
+        var response = sut.payloadWeightChanged(request);
+
+        // then
+        assertThat(response).isNotNull();
+        verify(registryClient).updateTruckPayloadWeight(1, 10);
+    }
+
     @AfterEach
     void cleanup() throws InterruptedException {
         channel.shutdown().awaitTermination(5, SECONDS);

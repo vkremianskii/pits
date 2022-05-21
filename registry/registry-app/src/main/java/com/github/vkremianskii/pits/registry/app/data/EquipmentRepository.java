@@ -30,7 +30,8 @@ public class EquipmentRepository {
     private static final Field<String> FIELD_TYPE = field("type", String.class);
     private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
     private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
-    private static final Field<Short> FIELD_ELEVATION = field("elevation", Short.class);
+    private static final Field<Integer> FIELD_ELEVATION = field("elevation", Integer.class);
+    private static final Field<Integer> FIELD_PAYLOAD_WEIGHT = field("payload_weight", Integer.class);
 
     private static final Map<EquipmentState, String> STATE_TO_FULL_NAME = Map.of(
             TruckState.EMPTY, "truck_empty",
@@ -90,7 +91,14 @@ public class EquipmentRepository {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
                 .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
                 .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
-                .set(FIELD_ELEVATION, (short) position.elevation())
+                .set(FIELD_ELEVATION, position.elevation())
+                .where(FIELD_ID.eq(equipmentId))
+                .executeAsync()).then();
+    }
+
+    public Mono<Void> updateTruckPayloadWeight(int equipmentId, int payloadWeight) {
+        return Mono.fromCompletionStage(dslContext.update(TABLE)
+                .set(FIELD_PAYLOAD_WEIGHT, payloadWeight)
                 .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }
@@ -103,6 +111,7 @@ public class EquipmentRepository {
         final var latitude = record.get(FIELD_LATITUDE);
         final var longitude = record.get(FIELD_LONGITUDE);
         final var elevation = record.get(FIELD_ELEVATION);
+        final var payloadWeight = record.get(FIELD_PAYLOAD_WEIGHT);
 
         Position position = null;
         if (latitude != null && longitude != null && elevation != null) {
@@ -130,7 +139,8 @@ public class EquipmentRepository {
                     id,
                     name,
                     fullNameToState(stateName, TruckState.class),
-                    position);
+                    position,
+                    payloadWeight);
         };
     }
 

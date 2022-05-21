@@ -27,8 +27,10 @@ public class EquipmentServiceImpl extends EquipmentServiceGrpc.EquipmentServiceI
     }
 
     @Override
-    public void bodyWeightChanged(BodyWeightChanged request, StreamObserver<BodyWeightChangedResponse> responseObserver) {
-        final var response = BodyWeightChangedResponse.newBuilder().build();
+    public void payloadWeightChanged(PayloadWeightChanged request, StreamObserver<PayloadWeightChangedResponse> responseObserver) {
+        registryClient.updateTruckPayloadWeight(request.getEquipmentId(), request.getWeight());
+
+        final var response = PayloadWeightChangedResponse.newBuilder().build();
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();

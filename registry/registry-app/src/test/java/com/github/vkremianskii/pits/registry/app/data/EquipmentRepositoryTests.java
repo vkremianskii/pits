@@ -1,6 +1,5 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.model.Position;
 import com.github.vkremianskii.pits.registry.app.model.equipment.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,6 +89,22 @@ class EquipmentRepositoryTests {
             assertThat(t.position().latitude()).isCloseTo(41.1494512, offset(1e-8));
             assertThat(t.position().longitude()).isCloseTo(-8.6107884, offset(1e-8));
             assertThat(t.position().elevation()).isEqualTo(86);
+        });
+    }
+
+    @Test
+    void should_update_truck_payload_weight() {
+        // given
+        sut.put(1, "Truck No.1", TRUCK).block();
+
+        // when
+        sut.updateTruckPayloadWeight(1, 10).block();
+
+        // then
+        var equipment = sut.getEquipmentById(1).block();
+        assertThat(equipment).hasValueSatisfying(t -> {
+            assertThat(t).isInstanceOf(Truck.class);
+            assertThat(((Truck) t).payloadWeight()).isEqualTo(10);
         });
     }
 }

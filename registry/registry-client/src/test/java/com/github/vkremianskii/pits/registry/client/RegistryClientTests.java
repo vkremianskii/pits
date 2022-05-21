@@ -32,4 +32,25 @@ class RegistryClientTests {
                         "  \"elevation\": 86" +
                         "}")));
     }
+
+    @Test
+    void should_update_truck_payload_weight(WireMockRuntimeInfo wmRuntimeInfo) {
+        // given
+        stubFor(post(urlPathEqualTo("/equipment/1/payload/weight"))
+                .willReturn(aResponse().withStatus(200)));
+        var webClient = WebClient.builder()
+                .baseUrl("http://localhost:" + wmRuntimeInfo.getHttpPort())
+                .build();
+        var sut = new RegistryClient(webClient);
+
+        // when
+        sut.updateTruckPayloadWeight(1, 10).block();
+
+        // then
+        verify(postRequestedFor(urlPathEqualTo("/equipment/1/payload/weight"))
+                .withRequestBody(equalToJson("" +
+                        "{" +
+                        "  \"weight\": 10" +
+                        "}")));
+    }
 }

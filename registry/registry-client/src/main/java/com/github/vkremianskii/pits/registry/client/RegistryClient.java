@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.registry.client;
 
 import com.github.vkremianskii.pits.registry.types.UpdateEquipmentPositionRequest;
-import org.springframework.http.MediaType;
+import com.github.vkremianskii.pits.registry.types.UpdateTruckPayloadWeightRequest;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -23,6 +23,16 @@ public class RegistryClient {
                 .uri("/equipment/{id}/position", equipmentId)
                 .contentType(APPLICATION_JSON)
                 .bodyValue(new UpdateEquipmentPositionRequest(latitude, longitude, elevation))
+                .retrieve()
+                .toBodilessEntity()
+                .then();
+    }
+
+    public Mono<Void> updateTruckPayloadWeight(int equipmentId, int weight) {
+        return webClient.post()
+                .uri("/equipment/{id}/payload/weight", equipmentId)
+                .contentType(APPLICATION_JSON)
+                .bodyValue(new UpdateTruckPayloadWeightRequest(weight))
                 .retrieve()
                 .toBodilessEntity()
                 .then();

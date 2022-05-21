@@ -32,4 +32,12 @@ public class EquipmentController {
                 equipmentId,
                 new Position(request.getLatitude(), request.getLongitude(), request.getElevation()));
     }
+
+    @PostMapping("/{id}/payload/weight")
+    public Mono<Void> updateTruckPayloadWeight(@PathVariable("id") int equipmentId,
+                                               @RequestBody UpdateEquipmentPositionRequest request) {
+        return equipmentRepository.updateEquipmentPosition(
+                equipmentId,
+                new Position(request.getLatitude(), request.getLongitude(), request.getElevation()));
+    }
 }
