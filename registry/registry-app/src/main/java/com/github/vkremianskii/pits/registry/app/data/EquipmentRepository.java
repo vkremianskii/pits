@@ -89,9 +89,9 @@ public class EquipmentRepository {
 
     public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
-                .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
-                .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
-                .set(FIELD_ELEVATION, position.elevation())
+                .set(FIELD_LATITUDE, BigDecimal.valueOf(position.getLatitude()))
+                .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.getLongitude()))
+                .set(FIELD_ELEVATION, position.getElevation())
                 .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }

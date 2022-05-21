@@ -17,7 +17,7 @@ public class Truck extends Equipment {
         this.payloadWeight = payloadWeight;
     }
 
-    public Integer payloadWeight() {
+    public Integer getPayloadWeight() {
         return payloadWeight;
     }
 }

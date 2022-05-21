@@ -13,15 +13,15 @@ public class Position {
         this.elevation = elevation;
     }
 
-    public double latitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public double longitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public int elevation() {
+    public int getElevation() {
         return elevation;
     }
 

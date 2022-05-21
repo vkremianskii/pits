@@ -19,6 +19,7 @@ subprojects {
     ext {
         springVersion = "5.3.20"
         reactorVersion = "1.0.19"
+        jacksonVersion = "2.13.2"
         jetbrainsAnnotationsVersion = "23.0.0"
 
         // gRPC
