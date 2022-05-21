@@ -13,3 +13,8 @@ services:
     image: adminer:4.8.1
     ports:
       - "8090:8080"
+  rabbitmq:
+    image: rabbitmq:3.10.2-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

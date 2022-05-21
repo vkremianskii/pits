@@ -22,7 +22,7 @@ public class RegistryClient {
         return webClient.post()
                 .uri("/equipment/{id}/position", equipmentId)
                 .contentType(APPLICATION_JSON)
-                .bodyValue(new UpdateEquipmentPositionRequest(latitude, longitude, elevation))
+                .bodyValue(new UpdateEquipmentPositionRequest(equipmentId, latitude, longitude, elevation))
                 .retrieve()
                 .toBodilessEntity()
                 .then();
@@ -32,7 +32,7 @@ public class RegistryClient {
         return webClient.post()
                 .uri("/equipment/{id}/payload/weight", equipmentId)
                 .contentType(APPLICATION_JSON)
-                .bodyValue(new UpdateTruckPayloadWeightRequest(weight))
+                .bodyValue(new UpdateTruckPayloadWeightRequest(equipmentId, weight))
                 .retrieve()
                 .toBodilessEntity()
                 .then();

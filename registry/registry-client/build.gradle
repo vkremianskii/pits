@@ -1,11 +1,11 @@
 plugins {
-    id 'java'
+    id 'java-library'
 }
 
 version '1.0-SNAPSHOT'
 
 dependencies {
-    implementation project(':registry:registry-types')
+    api project(':registry:registry-types')
 
     implementation "org.springframework:spring-webflux:${springVersion}"
     runtimeOnly "io.projectreactor.netty:reactor-netty:${reactorVersion}"

@@ -13,12 +13,24 @@ plugins {
 
 version '1.0-SNAPSHOT'
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java',
+                       'build/generated/source/proto/main/grpc',
+                       'build/generated/source/proto/main/grpc',
+                       'build/generated/source/proto/main/java']
+        }
+    }
+}
+
 dependencies {
     implementation project(':registry:registry-client')
 
     implementation "javax.annotation:javax.annotation-api"
     implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
@@ -28,6 +40,7 @@ dependencies {
     compileOnly "org.apache.tomcat:tomcat-annotations-api"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
 }
 
 protobuf {

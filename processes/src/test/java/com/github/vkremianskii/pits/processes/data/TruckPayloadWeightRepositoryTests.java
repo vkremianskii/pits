@@ -8,9 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class EquipmentPositionRepositoryTests {
+class TruckPayloadWeightRepositoryTests {
     @Autowired
-    EquipmentPositionRepository sut;
+    TruckPayloadWeightRepository sut;
 
     @BeforeEach
     void cleanup() {
@@ -20,15 +20,13 @@ class EquipmentPositionRepositoryTests {
     @Test
     void should_put_and_get_record() {
         // when
-        sut.put(1, 41.1494512, -8.6107884, 86).block();
+        sut.put(1, 10).block();
 
         // then
         var record = sut.getLastRecordByEquipmentId(1).block();
         assertThat(record).hasValueSatisfying(r -> {
             assertThat(r.equipmentId()).isEqualTo(1);
-            assertThat(r.latitude()).isEqualTo(41.1494512);
-            assertThat(r.longitude()).isEqualTo(-8.6107884);
-            assertThat(r.elevation()).isEqualTo(86);
+            assertThat(r.weight()).isEqualTo(10);
         });
     }
 }

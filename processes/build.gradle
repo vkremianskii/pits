@@ -9,6 +9,7 @@ version '1.0-SNAPSHOT'
 dependencies {
     implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-jooq'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -16,6 +17,7 @@ dependencies {
     runtimeOnly 'org.flywaydb:flyway-core'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testRuntimeOnly 'com.h2database:h2'
 }
 

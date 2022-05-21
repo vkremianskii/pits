@@ -6,3 +6,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/processes
     username: processes
     password: processes
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+logging:
+  level:
+    root: INFO
