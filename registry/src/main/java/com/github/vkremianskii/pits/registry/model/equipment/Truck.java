@@ -8,7 +8,10 @@ import static com.github.vkremianskii.pits.registry.model.EquipmentType.TRUCK;
 
 public class Truck extends Equipment {
 
-    public Truck(int id, String name, @Nullable Position position) {
-        super(id, name, TRUCK, position);
+    public Truck(int id,
+                 String name,
+                 @Nullable TruckState state,
+                 @Nullable Position position) {
+        super(id, name, TRUCK, state, position);
     }
 }

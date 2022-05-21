@@ -8,12 +8,18 @@ public class Equipment {
     private final int id;
     private final String name;
     private final EquipmentType type;
-    private Position position;
+    private final EquipmentState state;
+    private final Position position;
 
-    protected  Equipment(int id, String name, EquipmentType type, @Nullable Position position) {
+    protected Equipment(int id,
+                         String name,
+                         EquipmentType type,
+                         @Nullable EquipmentState state,
+                         @Nullable Position position) {
         this.id = id;
         this.name = requireNonNull(name);
         this.type = requireNonNull(type);
+        this.state = state;
         this.position = position;
     }
 
@@ -27,6 +33,11 @@ public class Equipment {
 
     public EquipmentType getType() {
         return type;
+    }
+
+    @Nullable
+    public EquipmentState getState() {
+        return state;
     }
 
     @Nullable

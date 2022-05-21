@@ -8,7 +8,10 @@ import static com.github.vkremianskii.pits.registry.model.EquipmentType.DOZER;
 
 public class Dozer extends Equipment {
 
-    public Dozer(int id, String name, @Nullable Position position) {
-        super(id, name, DOZER, position);
+    public Dozer(int id,
+                 String name,
+                 @Nullable DozerState state,
+                 @Nullable Position position) {
+        super(id, name, DOZER, state, position);
     }
 }

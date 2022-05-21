@@ -1,12 +1,10 @@
 package com.github.vkremianskii.pits.registry.data;
 
 import com.github.vkremianskii.pits.registry.model.Equipment;
+import com.github.vkremianskii.pits.registry.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.model.Position;
-import com.github.vkremianskii.pits.registry.model.equipment.Dozer;
-import com.github.vkremianskii.pits.registry.model.equipment.Drill;
-import com.github.vkremianskii.pits.registry.model.equipment.Shovel;
-import com.github.vkremianskii.pits.registry.model.equipment.Truck;
+import com.github.vkremianskii.pits.registry.model.equipment.*;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
@@ -15,9 +13,11 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -26,10 +26,20 @@ public class EquipmentRepository {
     private static final Table<?> TABLE = table("equipment");
     private static final Field<Integer> FIELD_ID = field("id", Integer.class);
     private static final Field<String> FIELD_NAME = field("name", String.class);
+    private static final Field<String> FIELD_STATE = field("state", String.class);
     private static final Field<String> FIELD_TYPE = field("type", String.class);
     private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
     private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
     private static final Field<Short> FIELD_ELEVATION = field("elevation", Short.class);
+
+    private static final Map<EquipmentState, String> STATE_TO_FULL_NAME = Map.of(
+            TruckState.EMPTY, "truck_empty",
+            TruckState.LOAD, "truck_load",
+            TruckState.HAUL, "truck_haul",
+            TruckState.UNLOAD, "truck_unload");
+
+    private static final Map<String, EquipmentState> FULL_NAME_TO_STATE = STATE_TO_FULL_NAME.entrySet().stream()
+            .collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
 
     private final DSLContext dslContext;
 
@@ -69,11 +79,18 @@ public class EquipmentRepository {
                 .executeAsync()).then();
     }
 
+    public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
+        return Mono.fromCompletionStage(dslContext.update(TABLE)
+                .set(FIELD_STATE, stateToFullName(state))
+                .where(FIELD_ID.eq(equipmentId))
+                .executeAsync()).then();
+    }
+
     public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
                 .set(FIELD_LATITUDE, BigDecimal.valueOf(position.getLatitude()))
                 .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.getLongitude()))
-                .set(FIELD_ELEVATION, (short)position.getElevation())
+                .set(FIELD_ELEVATION, (short) position.getElevation())
                 .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }
@@ -81,8 +98,8 @@ public class EquipmentRepository {
     private static Equipment equipmentFromRecord(org.jooq.Record record) {
         final var id = record.get(FIELD_ID);
         final var name = record.get(FIELD_NAME);
-        final var type = EquipmentType.valueOf(record.get(FIELD_TYPE));
-
+        final var typeName = record.get(FIELD_TYPE);
+        final var stateName = record.get(FIELD_STATE);
         final var latitude = record.get(FIELD_LATITUDE);
         final var longitude = record.get(FIELD_LONGITUDE);
         final var elevation = record.get(FIELD_ELEVATION);
@@ -92,11 +109,40 @@ public class EquipmentRepository {
             position = new Position(latitude.doubleValue(), longitude.doubleValue(), elevation);
         }
 
+        final var type = EquipmentType.valueOf(typeName.toUpperCase());
         return switch (type) {
-            case DOZER -> new Dozer(id, name, position);
-            case DRILL -> new Drill(id, name, position);
-            case SHOVEL -> new Shovel(id, name, position);
-            case TRUCK -> new Truck(id, name, position);
+            case DOZER -> new Dozer(
+                    id,
+                    name,
+                    fullNameToState(stateName, DozerState.class),
+                    position);
+            case DRILL -> new Drill(
+                    id,
+                    name,
+                    fullNameToState(stateName, DrillState.class),
+                    position);
+            case SHOVEL -> new Shovel(
+                    id,
+                    name,
+                    fullNameToState(stateName, ShovelState.class),
+                    position);
+            case TRUCK -> new Truck(
+                    id,
+                    name,
+                    fullNameToState(stateName, TruckState.class),
+                    position);
         };
+    }
+
+    private static String stateToFullName(EquipmentState state) {
+        return STATE_TO_FULL_NAME.get(state);
+    }
+
+    private static <T> T fullNameToState(String name, Class<T> cls) {
+        final var state = FULL_NAME_TO_STATE.get(name);
+        if (state == null) {
+            return null;
+        }
+        return cls.cast(state);
     }
 }
