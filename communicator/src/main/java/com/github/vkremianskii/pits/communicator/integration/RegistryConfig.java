@@ -1,5 +1,7 @@
 package com.github.vkremianskii.pits.communicator.integration;
 
+import com.github.vkremianskii.pits.registry.client.RegistryClient;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,9 +17,14 @@ public class RegistryConfig {
     }
 
     @Bean(name = "registry")
-    WebClient registryClient() {
+    WebClient registryWebClient() {
         return WebClient.builder()
                 .baseUrl(properties.getBaseUrl())
                 .build();
+    }
+
+    @Bean
+    RegistryClient registryClient(@Qualifier("registry") WebClient webClient) {
+        return new RegistryClient(webClient);
     }
 }

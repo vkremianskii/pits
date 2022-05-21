@@ -2,7 +2,7 @@ package com.github.vkremianskii.pits.communicator;
 
 import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceImpl;
 import com.github.vkremianskii.pits.communicator.grpc.GrpcProperties;
-import com.github.vkremianskii.pits.communicator.integration.RegistryService;
+import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -17,20 +17,20 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class GrpcServer {
     private final GrpcProperties grpcProperties;
-    private final RegistryService registryService;
+    private final RegistryClient registryClient;
 
     private Server server;
 
     public GrpcServer(GrpcProperties grpcProperties,
-                      RegistryService registryService) {
+                      RegistryClient registryClient) {
         this.grpcProperties = requireNonNull(grpcProperties);
-        this.registryService = requireNonNull(registryService);
+        this.registryClient = requireNonNull(registryClient);
     }
 
     @EventListener
     public void handleContextStart(ContextRefreshedEvent event) throws IOException {
         server = ServerBuilder.forPort(grpcProperties.getPort())
-                .addService(new EquipmentServiceImpl(registryService))
+                .addService(new EquipmentServiceImpl(registryClient))
                 .build();
 
         server.start();

@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.communicator.grpc;
 
 import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceBlockingStub;
-import com.github.vkremianskii.pits.communicator.integration.RegistryService;
+import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessChannelBuilder;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 
 class EquipmentServiceImplTests {
 
-    RegistryService registryService = mock(RegistryService.class);
+    RegistryClient registryClient = mock(RegistryClient.class);
 
     Server server;
     ManagedChannel channel;
@@ -31,7 +31,7 @@ class EquipmentServiceImplTests {
         server = InProcessServerBuilder
                 .forName("equipment")
                 .directExecutor()
-                .addService(new EquipmentServiceImpl(registryService))
+                .addService(new EquipmentServiceImpl(registryClient))
                 .build()
                 .start();
 
@@ -46,7 +46,7 @@ class EquipmentServiceImplTests {
     @Test
     void should_receive_position_and_update_in_registry() {
         // given
-        var request = UpdatePositionRequest.newBuilder()
+        var request = PositionChanged.newBuilder()
                 .setEquipmentId(1)
                 .setLatitude(41.1494512)
                 .setLongitude(-8.6107884)
@@ -54,11 +54,11 @@ class EquipmentServiceImplTests {
                 .build();
 
         // when
-        var response = sut.updatePosition(request);
+        var response = sut.positionChanged(request);
 
         // then
         assertThat(response).isNotNull();
-        verify(registryService).updateEquipmentPosition(1, 41.1494512, -8.6107884, 86);
+        verify(registryClient).updateEquipmentPosition(1, 41.1494512, -8.6107884, 86);
     }
 
     @AfterEach
