@@ -1,6 +1,7 @@
 package com.github.vkremianskii.pits.communicator.app.grpc;
 
 import com.github.vkremianskii.pits.communicator.grpc.*;
+import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceImplBase;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
 import com.github.vkremianskii.pits.registry.types.dto.TruckPayloadWeightChanged;
 import io.grpc.stub.StreamObserver;
@@ -10,7 +11,7 @@ import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCH
 import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_TRUCK_PAYLOAD_WEIGHT;
 import static java.util.Objects.requireNonNull;
 
-public class EquipmentServiceImpl extends EquipmentServiceGrpc.EquipmentServiceImplBase {
+public class EquipmentServiceImpl extends EquipmentServiceImplBase {
     private final RabbitTemplate rabbitTemplate;
 
     public EquipmentServiceImpl(RabbitTemplate rabbitTemplate) {
@@ -24,7 +25,7 @@ public class EquipmentServiceImpl extends EquipmentServiceGrpc.EquipmentServiceI
                 request.getLatitude(),
                 request.getLongitude(),
                 request.getElevation());
-        rabbitTemplate.convertSendAndReceive(EXCHANGE_EQUIPMENT_POSITION, message);
+        rabbitTemplate.convertSendAndReceive(EXCHANGE_EQUIPMENT_POSITION, "", message);
 
         final var response = PositionChangedResponse.newBuilder().build();
 
@@ -37,7 +38,7 @@ public class EquipmentServiceImpl extends EquipmentServiceGrpc.EquipmentServiceI
         final var message = new TruckPayloadWeightChanged(
                 request.getEquipmentId(),
                 request.getWeight());
-        rabbitTemplate.convertSendAndReceive(EXCHANGE_TRUCK_PAYLOAD_WEIGHT, message);
+        rabbitTemplate.convertSendAndReceive(EXCHANGE_TRUCK_PAYLOAD_WEIGHT, "", message);
 
         final var response = PayloadWeightChangedResponse.newBuilder().build();
 

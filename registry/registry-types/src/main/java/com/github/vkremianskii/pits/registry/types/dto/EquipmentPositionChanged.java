@@ -1,5 +1,8 @@
 package com.github.vkremianskii.pits.registry.types.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class EquipmentPositionChanged {
@@ -8,7 +11,11 @@ public class EquipmentPositionChanged {
     private final double longitude;
     private final int elevation;
 
-    public EquipmentPositionChanged(int equipmentId, double latitude, double longitude, int elevation) {
+    @JsonCreator
+    public EquipmentPositionChanged(@JsonProperty("equipmentId") int equipmentId,
+                                    @JsonProperty("latitude") double latitude,
+                                    @JsonProperty("longitude") double longitude,
+                                    @JsonProperty("elevation") int elevation) {
         this.equipmentId = equipmentId;
         this.latitude = latitude;
         this.longitude = longitude;

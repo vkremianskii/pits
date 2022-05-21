@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.communicator.app.grpc;
 
-import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc;
+import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceBlockingStub;
 import com.github.vkremianskii.pits.communicator.grpc.PayloadWeightChanged;
 import com.github.vkremianskii.pits.communicator.grpc.PositionChanged;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
@@ -30,7 +30,7 @@ class EquipmentServiceImplTests {
 
     Server server;
     ManagedChannel channel;
-    EquipmentServiceGrpc.EquipmentServiceBlockingStub sut;
+    EquipmentServiceBlockingStub sut;
 
     @BeforeEach
     void setup() throws IOException {

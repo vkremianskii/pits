@@ -1,12 +1,17 @@
 package com.github.vkremianskii.pits.registry.types.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class TruckPayloadWeightChanged {
     private final int equipmentId;
     private final int weight;
 
-    public TruckPayloadWeightChanged(int equipmentId, int weight) {
+    @JsonCreator
+    public TruckPayloadWeightChanged(@JsonProperty("equipmentId") int equipmentId,
+                                     @JsonProperty("weight") int weight) {
         this.equipmentId = equipmentId;
         this.weight = weight;
     }

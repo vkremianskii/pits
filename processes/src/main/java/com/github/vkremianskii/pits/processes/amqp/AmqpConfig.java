@@ -4,6 +4,9 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,5 +28,18 @@ public class AmqpConfig {
                 new FanoutExchange(EXCHANGE_TRUCK_PAYLOAD_WEIGHT),
                 new Binding(QUEUE_EQUIPMENT_POSITION, QUEUE, EXCHANGE_EQUIPMENT_POSITION, "", null),
                 new Binding(QUEUE_TRUCK_PAYLOAD_WEIGHT, QUEUE, EXCHANGE_TRUCK_PAYLOAD_WEIGHT, "", null));
+    }
+
+    @Bean
+    RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+                                  Jackson2JsonMessageConverter jsonMessageConverter) {
+        final var rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(jsonMessageConverter);
+        return rabbitTemplate;
+    }
+
+    @Bean
+    Jackson2JsonMessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 }

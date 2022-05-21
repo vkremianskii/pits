@@ -28,7 +28,8 @@ Open-pit mining system – exercise in software engineering.
 
 ## Installation
 
-`docker-compose -f docker/docker-compose.yml up -d`
+- `docker-compose -f docker/docker-compose.yml build registry processes communicator`
+- `docker-compose -f docker/docker-compose.yml up -d`
 
 ## Services
 
