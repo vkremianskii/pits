@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
-import com.github.vkremianskii.pits.registry.app.model.Location;
+import com.github.vkremianskii.pits.registry.types.model.Location;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

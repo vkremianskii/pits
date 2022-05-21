@@ -1,9 +1,8 @@
 package com.github.vkremianskii.pits.communicator.grpc;
 
 import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceBlockingStub;
-import com.github.vkremianskii.pits.registry.client.RegistryClient;
-import com.github.vkremianskii.pits.registry.types.UpdateEquipmentPositionRequest;
-import com.github.vkremianskii.pits.registry.types.UpdateTruckPayloadWeightRequest;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
+import com.github.vkremianskii.pits.registry.types.dto.TruckPayloadWeightChanged;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessChannelBuilder;
@@ -25,7 +24,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class EquipmentServiceImplTests {
-    RegistryClient registryClient = mock(RegistryClient.class);
     RabbitTemplate rabbitTemplate = mock(RabbitTemplate.class);
 
     Server server;
@@ -37,7 +35,7 @@ class EquipmentServiceImplTests {
         server = InProcessServerBuilder
                 .forName("equipment")
                 .directExecutor()
-                .addService(new EquipmentServiceImpl(registryClient, rabbitTemplate))
+                .addService(new EquipmentServiceImpl(rabbitTemplate))
                 .build()
                 .start();
 
@@ -52,13 +50,13 @@ class EquipmentServiceImplTests {
     @Test
     void should_receive_position_and_update_in_registry() {
         // given
-        var request = PositionChanged.newBuilder()
+        var request = com.github.vkremianskii.pits.communicator.grpc.PositionChanged.newBuilder()
                 .setEquipmentId(1)
                 .setLatitude(41.1494512)
                 .setLongitude(-8.6107884)
                 .setElevation(86)
                 .build();
-        var expectedAmqpRequest = new UpdateEquipmentPositionRequest(
+        var expectedMessage = new EquipmentPositionChanged(
                 1,
                 41.1494512,
                 -8.6107884,
@@ -69,8 +67,7 @@ class EquipmentServiceImplTests {
 
         // then
         assertThat(response).isNotNull();
-        verify(registryClient).updateEquipmentPosition(1, 41.1494512, -8.6107884, 86);
-        verify(rabbitTemplate).convertSendAndReceive(eq(EXCHANGE_EQUIPMENT_POSITION), eq(expectedAmqpRequest));
+        verify(rabbitTemplate).convertSendAndReceive(eq(EXCHANGE_EQUIPMENT_POSITION), eq(expectedMessage));
     }
 
     @Test
@@ -80,15 +77,14 @@ class EquipmentServiceImplTests {
                 .setEquipmentId(1)
                 .setWeight(10)
                 .build();
-        var expectedAmqpRequest = new UpdateTruckPayloadWeightRequest(1, 10);
+        var expectedMessage = new TruckPayloadWeightChanged(1, 10);
 
         // when
         var response = sut.payloadWeightChanged(request);
 
         // then
         assertThat(response).isNotNull();
-        verify(registryClient).updateTruckPayloadWeight(1, 10);
-        verify(rabbitTemplate).convertSendAndReceive(eq(EXCHANGE_TRUCK_PAYLOAD_WEIGHT), eq(expectedAmqpRequest));
+        verify(rabbitTemplate).convertSendAndReceive(eq(EXCHANGE_TRUCK_PAYLOAD_WEIGHT), eq(expectedMessage));
     }
 
     @AfterEach

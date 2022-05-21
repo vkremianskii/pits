@@ -1,8 +1,8 @@
-package com.github.vkremianskii.pits.registry.app.model.equipment;
+package com.github.vkremianskii.pits.registry.types.model.equipment;
 
-import com.github.vkremianskii.pits.registry.app.model.Equipment;
-import com.github.vkremianskii.pits.registry.app.model.EquipmentType;
-import com.github.vkremianskii.pits.registry.app.model.Position;
+import com.github.vkremianskii.pits.registry.types.model.Equipment;
+import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
+import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.jetbrains.annotations.Nullable;
 
 public class Shovel extends Equipment {

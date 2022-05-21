@@ -6,6 +6,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/registry
     username: registry
     password: registry
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 
 logging:
   level:

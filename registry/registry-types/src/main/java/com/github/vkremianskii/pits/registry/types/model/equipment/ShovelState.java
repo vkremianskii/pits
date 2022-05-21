@@ -1,6 +1,6 @@
-package com.github.vkremianskii.pits.registry.app.model.equipment;
+package com.github.vkremianskii.pits.registry.types.model.equipment;
 
-import com.github.vkremianskii.pits.registry.app.model.EquipmentState;
+import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 
 public class ShovelState extends EquipmentState {
     private static final ShovelState[] values = new ShovelState[0];

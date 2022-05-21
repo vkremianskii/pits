@@ -1,11 +1,11 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.app.model.Location;
-import com.github.vkremianskii.pits.registry.app.model.LocationType;
-import com.github.vkremianskii.pits.registry.app.model.location.Face;
-import com.github.vkremianskii.pits.registry.app.model.location.Hole;
-import com.github.vkremianskii.pits.registry.app.model.location.Dump;
-import com.github.vkremianskii.pits.registry.app.model.location.Stockpile;
+import com.github.vkremianskii.pits.registry.types.model.Location;
+import com.github.vkremianskii.pits.registry.types.model.LocationType;
+import com.github.vkremianskii.pits.registry.types.model.location.Face;
+import com.github.vkremianskii.pits.registry.types.model.location.Hole;
+import com.github.vkremianskii.pits.registry.types.model.location.Dump;
+import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
@@ -14,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.github.vkremianskii.pits.registry.app.model.LocationType.*;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

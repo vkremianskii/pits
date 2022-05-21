@@ -1,12 +1,12 @@
-package com.github.vkremianskii.pits.registry.types;
+package com.github.vkremianskii.pits.registry.types.dto;
 
 import java.util.Objects;
 
-public class UpdateTruckPayloadWeightRequest {
+public class TruckPayloadWeightChanged {
     private final int equipmentId;
     private final int weight;
 
-    public UpdateTruckPayloadWeightRequest(int equipmentId, int weight) {
+    public TruckPayloadWeightChanged(int equipmentId, int weight) {
         this.equipmentId = equipmentId;
         this.weight = weight;
     }
@@ -23,7 +23,7 @@ public class UpdateTruckPayloadWeightRequest {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UpdateTruckPayloadWeightRequest that = (UpdateTruckPayloadWeightRequest) o;
+        TruckPayloadWeightChanged that = (TruckPayloadWeightChanged) o;
         return equipmentId == that.equipmentId && weight == that.weight;
     }
 

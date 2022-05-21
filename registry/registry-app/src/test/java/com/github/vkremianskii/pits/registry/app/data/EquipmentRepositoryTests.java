@@ -1,13 +1,13 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.app.model.Position;
-import com.github.vkremianskii.pits.registry.app.model.equipment.*;
+import com.github.vkremianskii.pits.registry.types.model.Position;
+import com.github.vkremianskii.pits.registry.types.model.equipment.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.github.vkremianskii.pits.registry.app.model.EquipmentType.*;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 

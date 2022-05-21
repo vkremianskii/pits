@@ -1,10 +1,10 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.app.model.Position;
-import com.github.vkremianskii.pits.registry.app.model.Equipment;
-import com.github.vkremianskii.pits.registry.app.model.EquipmentState;
-import com.github.vkremianskii.pits.registry.app.model.EquipmentType;
-import com.github.vkremianskii.pits.registry.app.model.equipment.*;
+import com.github.vkremianskii.pits.registry.types.model.Position;
+import com.github.vkremianskii.pits.registry.types.model.Equipment;
+import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
+import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
+import com.github.vkremianskii.pits.registry.types.model.equipment.*;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;

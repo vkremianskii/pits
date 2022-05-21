@@ -7,6 +7,8 @@ plugins {
 version '1.0-SNAPSHOT'
 
 dependencies {
+    implementation project(':registry:registry-types')
+
     implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'

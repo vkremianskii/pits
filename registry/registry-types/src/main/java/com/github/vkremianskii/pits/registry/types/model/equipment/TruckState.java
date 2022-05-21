@@ -1,6 +1,6 @@
-package com.github.vkremianskii.pits.registry.app.model.equipment;
+package com.github.vkremianskii.pits.registry.types.model.equipment;
 
-import com.github.vkremianskii.pits.registry.app.model.EquipmentState;
+import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 
 public class TruckState extends EquipmentState {
     public static final TruckState EMPTY = new TruckState("empty");

@@ -1,4 +1,4 @@
-package com.github.vkremianskii.pits.registry.app.model;
+package com.github.vkremianskii.pits.registry.types.model;
 
 import org.jetbrains.annotations.Nullable;
 

@@ -1,16 +1,15 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
-import com.github.vkremianskii.pits.registry.app.model.location.Dump;
-import com.github.vkremianskii.pits.registry.app.model.location.Face;
-import com.github.vkremianskii.pits.registry.app.model.location.Hole;
-import com.github.vkremianskii.pits.registry.app.model.location.Stockpile;
+import com.github.vkremianskii.pits.registry.types.model.location.Dump;
+import com.github.vkremianskii.pits.registry.types.model.location.Face;
+import com.github.vkremianskii.pits.registry.types.model.location.Hole;
+import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.github.vkremianskii.pits.registry.app.model.LocationType.*;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

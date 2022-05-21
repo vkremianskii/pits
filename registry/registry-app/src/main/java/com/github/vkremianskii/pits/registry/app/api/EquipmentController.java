@@ -1,10 +1,10 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
-import com.github.vkremianskii.pits.registry.app.model.Position;
-import com.github.vkremianskii.pits.registry.app.model.Equipment;
-import com.github.vkremianskii.pits.registry.types.UpdateEquipmentPositionRequest;
-import org.springframework.web.bind.annotation.*;
+import com.github.vkremianskii.pits.registry.types.model.Equipment;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -23,21 +23,5 @@ public class EquipmentController {
     @GetMapping
     public Mono<List<Equipment>> getEquipment() {
         return equipmentRepository.getEquipment();
-    }
-
-    @PostMapping("/{id}/position")
-    public Mono<Void> updateEquipmentPosition(@PathVariable("id") int equipmentId,
-                                              @RequestBody UpdateEquipmentPositionRequest request) {
-        return equipmentRepository.updateEquipmentPosition(
-                equipmentId,
-                new Position(request.getLatitude(), request.getLongitude(), request.getElevation()));
-    }
-
-    @PostMapping("/{id}/payload/weight")
-    public Mono<Void> updateTruckPayloadWeight(@PathVariable("id") int equipmentId,
-                                               @RequestBody UpdateEquipmentPositionRequest request) {
-        return equipmentRepository.updateEquipmentPosition(
-                equipmentId,
-                new Position(request.getLatitude(), request.getLongitude(), request.getElevation()));
     }
 }

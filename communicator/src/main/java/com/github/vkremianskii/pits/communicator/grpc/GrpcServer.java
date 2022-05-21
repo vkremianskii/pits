@@ -1,6 +1,5 @@
 package com.github.vkremianskii.pits.communicator.grpc;
 
-import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -16,23 +15,20 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class GrpcServer {
     private final GrpcProperties grpcProperties;
-    private final RegistryClient registryClient;
     private final RabbitTemplate rabbitTemplate;
 
     private Server server;
 
     public GrpcServer(GrpcProperties grpcProperties,
-                      RegistryClient registryClient,
                       RabbitTemplate rabbitTemplate) {
         this.grpcProperties = requireNonNull(grpcProperties);
-        this.registryClient = requireNonNull(registryClient);
         this.rabbitTemplate = requireNonNull(rabbitTemplate);
     }
 
     @EventListener
     public void handleContextStart(ContextRefreshedEvent event) throws IOException {
         server = ServerBuilder.forPort(grpcProperties.getPort())
-                .addService(new EquipmentServiceImpl(registryClient, rabbitTemplate))
+                .addService(new EquipmentServiceImpl(rabbitTemplate))
                 .build();
 
         server.start();

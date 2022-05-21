@@ -1,56 +1,59 @@
 package com.github.vkremianskii.pits.registry.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WireMockTest
 class RegistryClientTests {
+    static ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void should_update_equipment_position(WireMockRuntimeInfo wmRuntimeInfo) {
+    void should_get_equipment(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
-        stubFor(post(urlPathEqualTo("/equipment/1/position"))
-                .willReturn(aResponse().withStatus(200)));
+        stubFor(get(urlPathEqualTo("/equipment")).willReturn(aResponse()
+                .withStatus(200)
+                .withJsonBody(objectMapper.createObjectNode()
+                        .put("id", 1)
+                        .put("name", "Dozer No.1")
+                        .put("type", "DOZER"))));
         var webClient = WebClient.builder()
                 .baseUrl("http://localhost:" + wmRuntimeInfo.getHttpPort())
                 .build();
         var sut = new RegistryClient(webClient);
 
         // when
-        sut.updateEquipmentPosition(1, 41.1494512, -8.6107884, 86).block();
+        var equipment = sut.getEquipment().block();
 
         // then
-        verify(postRequestedFor(urlPathEqualTo("/equipment/1/position"))
-                .withRequestBody(equalToJson("" +
-                        "{" +
-                        "  \"latitude\": 41.1494512," +
-                        "  \"longitude\": -8.6107884," +
-                        "  \"elevation\": 86" +
-                        "}")));
+        assertThat(equipment).hasSize(1);
+        verify(getRequestedFor(urlPathEqualTo("/equipment")));
     }
 
     @Test
-    void should_update_truck_payload_weight(WireMockRuntimeInfo wmRuntimeInfo) {
+    void should_get_locations(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
-        stubFor(post(urlPathEqualTo("/equipment/1/payload/weight"))
-                .willReturn(aResponse().withStatus(200)));
+        stubFor(get(urlPathEqualTo("/locations")).willReturn(aResponse()
+                .withStatus(200)
+                .withJsonBody(objectMapper.createObjectNode()
+                        .put("id", 1)
+                        .put("name", "Dump No.1")
+                        .put("type", "DUMP"))));
         var webClient = WebClient.builder()
                 .baseUrl("http://localhost:" + wmRuntimeInfo.getHttpPort())
                 .build();
         var sut = new RegistryClient(webClient);
 
         // when
-        sut.updateTruckPayloadWeight(1, 10).block();
+        var locations = sut.getLocations().block();
 
         // then
-        verify(postRequestedFor(urlPathEqualTo("/equipment/1/payload/weight"))
-                .withRequestBody(equalToJson("" +
-                        "{" +
-                        "  \"weight\": 10" +
-                        "}")));
+        assertThat(locations).hasSize(1);
+        verify(getRequestedFor(urlPathEqualTo("/locations")));
     }
 }
