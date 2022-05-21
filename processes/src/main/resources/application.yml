@@ -1,0 +1,8 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/processes
+    username: processes
+    password: processes

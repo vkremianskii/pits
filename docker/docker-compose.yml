@@ -5,6 +5,8 @@ services:
       POSTGRES_DB: pits
       POSTGRES_USER: pits
       POSTGRES_PASSWORD: pits
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
   adminer:
