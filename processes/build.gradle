@@ -5,6 +5,7 @@ plugins {
 }
 
 version '1.0-SNAPSHOT'
+sourceCompatibility = 17
 
 dependencies {
     implementation project(':registry:registry-types')
