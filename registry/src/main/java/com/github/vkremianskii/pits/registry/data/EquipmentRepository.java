@@ -13,7 +13,9 @@ import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
@@ -25,9 +27,9 @@ public class EquipmentRepository {
     private static final Field<Integer> FIELD_ID = field("id", Integer.class);
     private static final Field<String> FIELD_NAME = field("name", String.class);
     private static final Field<String> FIELD_TYPE = field("type", String.class);
-    private static final Field<Double> FIELD_LATITUDE = field("latitude", Double.class);
-    private static final Field<Double> FIELD_LONGITUDE = field("longitude", Double.class);
-    private static final Field<Integer> FIELD_ELEVATION = field("elevation", Integer.class);
+    private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
+    private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
+    private static final Field<Short> FIELD_ELEVATION = field("elevation", Short.class);
 
     private final DSLContext dslContext;
 
@@ -44,10 +46,35 @@ public class EquipmentRepository {
                 .thenApply(r -> r.map(EquipmentRepository::equipmentFromRecord)));
     }
 
-    public Mono<Void> put(Equipment equipment) {
+    public Mono<Optional<Equipment>> getEquipmentById(int equipmentId) {
+        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
+                .where(FIELD_ID.eq(equipmentId))
+                .fetchAsync()
+                .thenApply(r -> r.map(EquipmentRepository::equipmentFromRecord))
+                .thenApply(e -> !e.isEmpty() ? e.get(0) : null)
+                .thenApply(Optional::ofNullable));
+    }
+
+    public Mono<Void> put(String name, EquipmentType type) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_NAME, FIELD_TYPE)
-                .values(equipment.getName(), equipment.getType().name())
+                .values(name, type.name())
+                .executeAsync()).then();
+    }
+
+    public Mono<Void> put(int equipmentId, String name, EquipmentType type) {
+        return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
+                .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE)
+                .values(equipmentId, name, type.name())
+                .executeAsync()).then();
+    }
+
+    public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
+        return Mono.fromCompletionStage(dslContext.update(TABLE)
+                .set(FIELD_LATITUDE, BigDecimal.valueOf(position.getLatitude()))
+                .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.getLongitude()))
+                .set(FIELD_ELEVATION, (short)position.getElevation())
+                .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }
 
@@ -62,7 +89,7 @@ public class EquipmentRepository {
 
         Position position = null;
         if (latitude != null && longitude != null && elevation != null) {
-            position = new Position(latitude, longitude, elevation);
+            position = new Position(latitude.doubleValue(), longitude.doubleValue(), elevation);
         }
 
         return switch (type) {

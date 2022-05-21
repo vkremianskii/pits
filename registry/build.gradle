@@ -7,10 +7,11 @@ plugins {
 version '1.0-SNAPSHOT'
 
 dependencies {
+    implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-jooq'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.flywaydb:flyway-core'
 

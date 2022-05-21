@@ -1,15 +1,12 @@
 package com.github.vkremianskii.pits.communicator;
 
-import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceImpl;
-import io.grpc.ServerBuilder;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class Application {
 
-    public static void main(String[] args) throws Exception {
-        ServerBuilder.forPort(8081)
-                .addService(new EquipmentServiceImpl())
-                .build()
-                .start()
-                .awaitTermination();
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
     }
 }

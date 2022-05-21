@@ -5,16 +5,16 @@ option java_generic_services = true;
 
 package com.github.vkremianskii.pits.communicator.grpc;
 
-message PositionRequest {
+message UpdatePositionRequest {
   int32 equipment_id = 1;
   double latitude = 2;
   double longitude = 3;
   int32 elevation = 4;
 };
 
-message PositionResponse {
+message UpdatePositionResponse {
 };
 
 service EquipmentService {
-  rpc position(PositionRequest) returns (PositionResponse);
+  rpc updatePosition(UpdatePositionRequest) returns (UpdatePositionResponse);
 };

@@ -40,10 +40,10 @@ public class LocationRepository {
                 .thenApply(r -> r.map(LocationRepository::locationFromRecord)));
     }
 
-    public Mono<Void> put(Location location) {
+    public Mono<Void> put(String name, LocationType type) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_NAME, FIELD_TYPE)
-                .values(location.getName(), location.getType().name())
+                .values(name, type.name())
                 .executeAsync()).then();
     }
 
