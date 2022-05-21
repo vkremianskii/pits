@@ -1,0 +1,4 @@
+spring:
+  rabbitmq:
+    listener:
+      auto-startup: false

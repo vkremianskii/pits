@@ -1,0 +1,49 @@
+buildscript {
+    dependencies {
+        classpath "com.google.protobuf:protobuf-gradle-plugin:${protobufPluginVersion}"
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'com.google.protobuf' version "${protobufPluginVersion}"
+}
+
+version '1.0-SNAPSHOT'
+sourceCompatibility = 17
+
+dependencies {
+    api "javax.annotation:javax.annotation-api:${javaxAnnotationsVersion}"
+    api "org.apache.tomcat:tomcat-annotations-api:${tomcatAnnotationsVersion}"
+    api "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    api "io.grpc:grpc-protobuf:${grpcVersion}"
+    api "io.grpc:grpc-stub:${grpcVersion}"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java',
+                       'src/main/proto',
+                       'build/generated/source/proto/main/grpc',
+                       'build/generated/source/proto/main/java']
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+

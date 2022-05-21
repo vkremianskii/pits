@@ -1,8 +1,11 @@
 rootProject.name = 'pits'
 
-include 'communicator'
 include 'processes'
+include 'frontends'
 
 include 'registry:registry-app'
 include 'registry:registry-client'
 include 'registry:registry-types'
+
+include 'communicator:communicator-app'
+include 'communicator:communicator-types'
