@@ -18,7 +18,7 @@ class EquipmentPositionRepositoryTests {
     }
 
     @Test
-    void should_put_and_get_record() {
+    void should_put_and_get_last_record() {
         // when
         sut.put(1, 41.1494512, -8.6107884, 86).block();
 

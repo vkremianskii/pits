@@ -42,6 +42,7 @@ public class EquipmentPayloadRepository {
     public Mono<Optional<EquipmentPayloadRecord>> getLastRecordByEquipmentId(int equipmentId) {
         return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
                 .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
                 .fetchAsync()
                 .thenApply(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord))
                 .thenApply(e -> !e.isEmpty() ? e.get(0) : null)

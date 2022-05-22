@@ -49,6 +49,7 @@ public class EquipmentPositionRepository {
     public Mono<Optional<EquipmentPositionRecord>> getLastRecordByEquipmentId(int equipmentId) {
         return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
                 .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
                 .fetchAsync()
                 .thenApply(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord))
                 .thenApply(e -> !e.isEmpty() ? e.get(0) : null)

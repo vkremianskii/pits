@@ -8,7 +8,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 17
 
 dependencies {
-    implementation project(':registry:registry-types')
+    implementation project(':registry:registry-client')
 
     implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
     implementation 'org.springframework.boot:spring-boot-starter'

@@ -12,6 +12,10 @@ spring:
     username: guest
     password: guest
 
+integration:
+  registry:
+    baseUrl: http://localhost:8080
+
 logging:
   level:
     root: INFO
