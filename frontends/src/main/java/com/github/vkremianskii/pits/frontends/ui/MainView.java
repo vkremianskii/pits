@@ -207,7 +207,31 @@ public class MainView {
             @Override
             public void mouseMoved(MouseEvent e) {
                 final var position = mapViewer.getPosition(e.getPoint());
-                coordsLabel.setText(String.format("lat %.06f lng %.06f", position.getLat(), position.getLon()));
+                coordsLabel.setText(String.format("lat %.06f lon %.06f", position.getLat(), position.getLon()));
+            }
+        });
+        mapViewer.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                final var position = mapViewer.getPosition(e.getPoint());
+                latitudeSpinner.setValue(position.getLat());
+                longitudeSpinner.setValue(position.getLon());
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
             }
         });
 
