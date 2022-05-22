@@ -4,4 +4,6 @@ plugins {
 
 dependencies {
     implementation project(':communicator:communicator-types')
+
+    implementation files('libs/jmapviewer-2.8.jar')
 }
