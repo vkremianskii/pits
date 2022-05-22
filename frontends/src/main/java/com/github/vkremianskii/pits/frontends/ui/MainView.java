@@ -7,6 +7,7 @@ import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
@@ -18,9 +19,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import static java.awt.Color.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -35,6 +38,13 @@ public class MainView {
     private static final int DEFAULT_ELEVATION = 86;
     private static final int DEFAULT_PAYLOAD = 0;
     private static final String OSM_USER_AGENT = "pits.frontends/1.0-SNAPSHOT";
+
+    private static final Map<EquipmentState, Color> COLOR_FROM_STATE = Map.of(
+            TruckState.EMPTY, new Color(0x90ee90),
+            TruckState.WAIT_LOAD, new Color(0xadd8e6),
+            TruckState.LOAD, new Color(0x00008b),
+            TruckState.HAUL, new Color(0x006400),
+            TruckState.UNLOAD, new Color(0x00008b));
 
     private final RegistryClient registryClient;
     private final GrpcClient grpcClient;
@@ -308,7 +318,15 @@ public class MainView {
                 .map(position -> {
                     final var marker = new MapMarkerDot(position.getLatitude(), position.getLongitude());
                     marker.setName(equipment.getName() + " (" + equipment.getId() + ")");
+                    marker.setBackColor(colorFromState(equipment.getState()));
                     return marker;
                 });
+    }
+
+    private static Color colorFromState(EquipmentState state) {
+        if (state == null) {
+            return WHITE;
+        }
+        return COLOR_FROM_STATE.getOrDefault(state, WHITE);
     }
 }
