@@ -19,11 +19,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.Duration;
-import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -217,21 +215,23 @@ public class MainView {
                         return;
                     }
                     equipmentById.clear();
-                    final var selectedItem = (Integer) equipmentIdComboBox.getSelectedItem();
-                    equipmentIdComboBox.removeAllItems();
-                    mapViewer.removeAllMapMarkers();
-                    equipment.stream()
-                            .sorted(comparingInt(Equipment::getId))
-                            .forEach(e -> {
-                                equipmentById.put(e.getId(), e);
-                                equipmentIdComboBox.addItem(e.getId());
-                                if (selectedItem != null && selectedItem == e.getId()) {
-                                    equipmentIdComboBox.setSelectedItem(selectedItem);
-                                }
-                                mapMarkerFromEquipment(e).ifPresent(mapViewer::addMapMarker);
-                            });
+                    equipmentById.putAll(newEquipmentById);
+                    SwingUtilities.invokeLater(this::refreshEquipmentControls);
                 })
                 .then();
+    }
+
+    private void refreshEquipmentControls() {
+        final var selectedItem = (Integer) equipmentIdComboBox.getSelectedItem();
+        equipmentIdComboBox.removeAllItems();
+        mapViewer.removeAllMapMarkers();
+        for (final var e : equipmentById.values()) {
+            equipmentIdComboBox.addItem(e.getId());
+            mapMarkerFromEquipment(e).ifPresent(mapViewer::addMapMarker);
+        }
+        if (selectedItem != null && equipmentById.containsKey(selectedItem)) {
+            equipmentIdComboBox.setSelectedItem(selectedItem);
+        }
     }
 
     private static Optional<MapMarkerDot> mapMarkerFromEquipment(Equipment equipment) {
