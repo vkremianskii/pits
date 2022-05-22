@@ -15,13 +15,13 @@ import reactor.core.publisher.Mono;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import static java.awt.Component.CENTER_ALIGNMENT;
+import static java.awt.Component.LEFT_ALIGNMENT;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -195,14 +195,30 @@ public class MainView {
     }
 
     private JPanel bootstrapMapPanel() {
+        final var coordsLabel = new JLabel();
+
         final var map = new JMapViewerTree("");
         mapViewer = map.getViewer();
+        mapViewer.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                final var position = mapViewer.getPosition(e.getPoint());
+                coordsLabel.setText(String.format("lat %.03f lng %.03f", position.getLat(), position.getLon()));
+            }
+        });
 
         final var tileLoader = (OsmTileLoader) map.getViewer().getTileController().getTileLoader();
         tileLoader.headers.put("User-Agent", OSM_USER_AGENT);
 
         final var mapPanel = new JPanel();
+        final var mapLayout = new BoxLayout(mapPanel, Y_AXIS);
+        mapPanel.setLayout(mapLayout);
         mapPanel.add(map);
+        mapPanel.add(coordsLabel);
 
         return mapPanel;
     }
