@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.frontends.grpc;
 
 import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceBlockingStub;
-import com.github.vkremianskii.pits.communicator.grpc.PayloadWeightChanged;
+import com.github.vkremianskii.pits.communicator.grpc.PayloadChanged;
 import com.github.vkremianskii.pits.communicator.grpc.PositionChanged;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -37,12 +37,12 @@ public class EquipmentClient {
         final var response = stub.positionChanged(request);
     }
 
-    public void sendPayloadWeightChanged(int equipmentId, int weight) {
-        final var request = PayloadWeightChanged.newBuilder()
+    public void sendPayloadChanged(int equipmentId, int payload) {
+        final var request = PayloadChanged.newBuilder()
                 .setEquipmentId(equipmentId)
-                .setWeight(weight)
+                .setPayload(payload)
                 .build();
 
-        final var response = stub.payloadWeightChanged(request);
+        final var response = stub.payloadChanged(request);
     }
 }

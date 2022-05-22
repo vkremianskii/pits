@@ -6,18 +6,18 @@ import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.jetbrains.annotations.Nullable;
 
 public class Truck extends Equipment {
-    private final Integer payloadWeight;
+    private final Integer payload;
 
     public Truck(int id,
                  String name,
                  @Nullable TruckState state,
                  @Nullable Position position,
-                 @Nullable Integer payloadWeight) {
+                 @Nullable Integer payload) {
         super(id, name, EquipmentType.TRUCK, state, position);
-        this.payloadWeight = payloadWeight;
+        this.payload = payload;
     }
 
-    public Integer getPayloadWeight() {
-        return payloadWeight;
+    public Integer getPayload() {
+        return payload;
     }
 }

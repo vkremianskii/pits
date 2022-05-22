@@ -5,35 +5,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
-public class TruckPayloadWeightChanged {
+public class EquipmentPayloadChanged {
     private final int equipmentId;
-    private final int weight;
+    private final int payload;
 
     @JsonCreator
-    public TruckPayloadWeightChanged(@JsonProperty("equipmentId") int equipmentId,
-                                     @JsonProperty("weight") int weight) {
+    public EquipmentPayloadChanged(@JsonProperty("equipmentId") int equipmentId,
+                                   @JsonProperty("payload") int payload) {
         this.equipmentId = equipmentId;
-        this.weight = weight;
+        this.payload = payload;
     }
 
     public int getEquipmentId() {
         return equipmentId;
     }
 
-    public int getWeight() {
-        return weight;
+    public int getPayload() {
+        return payload;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TruckPayloadWeightChanged that = (TruckPayloadWeightChanged) o;
-        return equipmentId == that.equipmentId && weight == that.weight;
+        EquipmentPayloadChanged that = (EquipmentPayloadChanged) o;
+        return equipmentId == that.equipmentId && payload == that.payload;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(equipmentId, weight);
+        return Objects.hash(equipmentId, payload);
     }
 }

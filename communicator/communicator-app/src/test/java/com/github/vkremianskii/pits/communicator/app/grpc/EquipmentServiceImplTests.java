@@ -1,10 +1,10 @@
 package com.github.vkremianskii.pits.communicator.app.grpc;
 
 import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceBlockingStub;
-import com.github.vkremianskii.pits.communicator.grpc.PayloadWeightChanged;
+import com.github.vkremianskii.pits.communicator.grpc.PayloadChanged;
 import com.github.vkremianskii.pits.communicator.grpc.PositionChanged;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
-import com.github.vkremianskii.pits.registry.types.dto.TruckPayloadWeightChanged;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentPayloadChanged;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessChannelBuilder;
@@ -17,7 +17,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import java.io.IOException;
 
 import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_POSITION;
-import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_TRUCK_PAYLOAD_WEIGHT;
+import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_PAYLOAD;
 import static com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.newBlockingStub;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +50,7 @@ class EquipmentServiceImplTests {
     }
 
     @Test
-    void should_receive_position_and_update_in_registry() {
+    void should_listen_to_position_changed_and_forward_to_rabbitmq() {
         // given
         var request = PositionChanged.newBuilder()
                 .setEquipmentId(1)
@@ -69,24 +69,24 @@ class EquipmentServiceImplTests {
 
         // then
         assertThat(response).isNotNull();
-        verify(rabbitTemplate).convertSendAndReceive(eq(EXCHANGE_EQUIPMENT_POSITION), eq(expectedMessage));
+        verify(rabbitTemplate).convertSendAndReceive(eq(EXCHANGE_EQUIPMENT_POSITION), eq(""), eq(expectedMessage));
     }
 
     @Test
-    void should_receive_payload_weight_and_update_in_registry() {
+    void should_listen_to_payload_changed_and_forward_to_rabbitmq() {
         // given
-        var request = PayloadWeightChanged.newBuilder()
+        var request = PayloadChanged.newBuilder()
                 .setEquipmentId(1)
-                .setWeight(10)
+                .setPayload(10)
                 .build();
-        var expectedMessage = new TruckPayloadWeightChanged(1, 10);
+        var expectedMessage = new EquipmentPayloadChanged(1, 10);
 
         // when
-        var response = sut.payloadWeightChanged(request);
+        var response = sut.payloadChanged(request);
 
         // then
         assertThat(response).isNotNull();
-        verify(rabbitTemplate).convertSendAndReceive(eq(EXCHANGE_TRUCK_PAYLOAD_WEIGHT), eq(expectedMessage));
+        verify(rabbitTemplate).convertSendAndReceive(eq(EXCHANGE_EQUIPMENT_PAYLOAD), eq(""), eq(expectedMessage));
     }
 
     @AfterEach

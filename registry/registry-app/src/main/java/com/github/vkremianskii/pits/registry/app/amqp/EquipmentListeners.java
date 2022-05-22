@@ -2,13 +2,13 @@ package com.github.vkremianskii.pits.registry.app.amqp;
 
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
-import com.github.vkremianskii.pits.registry.types.dto.TruckPayloadWeightChanged;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentPayloadChanged;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import static com.github.vkremianskii.pits.registry.app.amqp.AmqpConfig.QUEUE_EQUIPMENT_POSITION;
-import static com.github.vkremianskii.pits.registry.app.amqp.AmqpConfig.QUEUE_TRUCK_PAYLOAD_WEIGHT;
+import static com.github.vkremianskii.pits.registry.app.amqp.AmqpConfig.QUEUE_EQUIPMENT_PAYLOAD;
 import static java.util.Objects.requireNonNull;
 
 @Component
@@ -20,8 +20,8 @@ public class EquipmentListeners {
     }
 
     @RabbitListener(queues = QUEUE_EQUIPMENT_POSITION)
-    void handleEquipmentPosition(EquipmentPositionChanged message) {
-        equipmentRepository.updateEquipmentPosition(
+    void handlePositionChanged(EquipmentPositionChanged message) {
+        equipmentRepository.setEquipmentPosition(
                 message.getEquipmentId(),
                 new Position(
                         message.getLatitude(),
@@ -29,10 +29,10 @@ public class EquipmentListeners {
                         message.getElevation()));
     }
 
-    @RabbitListener(queues = QUEUE_TRUCK_PAYLOAD_WEIGHT)
-    void handleTruckPayloadWeight(TruckPayloadWeightChanged message) {
-        equipmentRepository.updateTruckPayloadWeight(
+    @RabbitListener(queues = QUEUE_EQUIPMENT_PAYLOAD)
+    void handlePayloadChanged(EquipmentPayloadChanged message) {
+        equipmentRepository.setEquipmentPayload(
                 message.getEquipmentId(),
-                message.getWeight());
+                message.getPayload());
     }
 }

@@ -34,9 +34,9 @@ public class Application {
         elevationLabel.setAlignmentX(CENTER_ALIGNMENT);
         final var elevationSpinner = new JSpinner(new SpinnerNumberModel(86, 0, 4000, 1));
 
-        final var payloadWeightLabel = new JLabel("Payload Weight");
-        payloadWeightLabel.setAlignmentX(CENTER_ALIGNMENT);
-        final var payloadWeightSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 450, 1));
+        final var payloadLabel = new JLabel("Payload");
+        payloadLabel.setAlignmentX(CENTER_ALIGNMENT);
+        final var payloadSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 450, 1));
 
         final var sendPositionButton = new JButton("Send position");
         sendPositionButton.addActionListener(e -> client.sendPositionChanged(
@@ -45,17 +45,17 @@ public class Application {
                 (double) longitudeSpinner.getValue(),
                 (int) elevationSpinner.getValue()));
 
-        final var sendPayloadWeightButton = new JButton("Send payload weight");
-        sendPayloadWeightButton.addActionListener(e -> client.sendPayloadWeightChanged(
+        final var sendPayloadButton = new JButton("Send payload");
+        sendPayloadButton.addActionListener(e -> client.sendPayloadChanged(
                 (int) equipmentIdSpinner.getValue(),
-                (int) payloadWeightSpinner.getValue()));
+                (int) payloadSpinner.getValue()));
 
         final var buttonsPanel = new JPanel();
         final var buttonsLayout = new BoxLayout(buttonsPanel, X_AXIS);
         buttonsPanel.setLayout(buttonsLayout);
         buttonsPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
         buttonsPanel.add(sendPositionButton);
-        buttonsPanel.add(sendPayloadWeightButton);
+        buttonsPanel.add(sendPayloadButton);
         buttonsPanel.setPreferredSize(new Dimension(400, buttonsPanel.getPreferredSize().height));
 
         final var mainPanel = new JPanel();
@@ -70,8 +70,8 @@ public class Application {
         mainPanel.add(longitudeSpinner);
         mainPanel.add(elevationLabel);
         mainPanel.add(elevationSpinner);
-        mainPanel.add(payloadWeightLabel);
-        mainPanel.add(payloadWeightSpinner);
+        mainPanel.add(payloadLabel);
+        mainPanel.add(payloadSpinner);
         mainPanel.add(buttonsPanel);
 
         final var frame = new JFrame("Frontends");

@@ -15,19 +15,19 @@ import static org.springframework.amqp.core.Binding.DestinationType.QUEUE;
 @Configuration
 public class AmqpConfig {
     public static final String QUEUE_EQUIPMENT_POSITION = "registry.queue.equipment.position";
-    public static final String QUEUE_TRUCK_PAYLOAD_WEIGHT = "registry.queue.truck.payload.weight";
+    public static final String QUEUE_EQUIPMENT_PAYLOAD = "registry.queue.equipment.payload";
     private static final String EXCHANGE_EQUIPMENT_POSITION = "exchange.equipment.position";
-    private static final String EXCHANGE_TRUCK_PAYLOAD_WEIGHT = "exchange.truck.payload.weight";
+    private static final String EXCHANGE_EQUIPMENT_PAYLOAD = "exchange.equipment.payload";
 
     @Bean
     Declarables declarables() {
         return new Declarables(
                 new Queue(QUEUE_EQUIPMENT_POSITION),
-                new Queue(QUEUE_TRUCK_PAYLOAD_WEIGHT),
+                new Queue(QUEUE_EQUIPMENT_PAYLOAD),
                 new FanoutExchange(EXCHANGE_EQUIPMENT_POSITION),
-                new FanoutExchange(EXCHANGE_TRUCK_PAYLOAD_WEIGHT),
+                new FanoutExchange(EXCHANGE_EQUIPMENT_PAYLOAD),
                 new Binding(QUEUE_EQUIPMENT_POSITION, QUEUE, EXCHANGE_EQUIPMENT_POSITION, "", null),
-                new Binding(QUEUE_TRUCK_PAYLOAD_WEIGHT, QUEUE, EXCHANGE_TRUCK_PAYLOAD_WEIGHT, "", null));
+                new Binding(QUEUE_EQUIPMENT_PAYLOAD, QUEUE, EXCHANGE_EQUIPMENT_PAYLOAD, "", null));
     }
 
     @Bean

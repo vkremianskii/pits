@@ -15,15 +15,15 @@ message PositionChanged {
 message PositionChangedResponse {
 };
 
-message PayloadWeightChanged {
+message PayloadChanged {
   int32 equipment_id = 1;
-  int32 weight = 2;
+  int32 payload = 2;
 };
 
-message PayloadWeightChangedResponse {
+message PayloadChangedResponse {
 };
 
 service EquipmentService {
   rpc positionChanged(PositionChanged) returns (PositionChangedResponse);
-  rpc payloadWeightChanged(PayloadWeightChanged) returns (PayloadWeightChangedResponse);
+  rpc payloadChanged(PayloadChanged) returns (PayloadChangedResponse);
 };

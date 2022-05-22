@@ -63,7 +63,7 @@ class EquipmentControllerTests {
                                 "longitude": -8.6107884,
                                 "elevation": 86
                             },
-                            "payloadWeight": 10
+                            "payload": 10
                         }]
                         """, true);
     }

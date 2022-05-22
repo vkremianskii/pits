@@ -1,7 +1,7 @@
 -- Equipment
 
 CREATE TYPE equipment_type AS ENUM ('dozer', 'drill', 'shovel', 'truck');
-CREATE TYPE equipment_state AS ENUM ('truck_empty', 'truck_load', 'truck_haul', 'truck_unload');
+CREATE TYPE equipment_state AS ENUM ('truck_empty', 'truck_wait_load', 'truck_load', 'truck_haul', 'truck_unload');
 
 CREATE TABLE equipment
 (
@@ -12,7 +12,7 @@ CREATE TABLE equipment
     latitude numeric(10, 8),
     longitude numeric(11, 8),
     elevation integer,
-    payload_weight integer
+    payload integer
 );
 
 INSERT INTO equipment (name, type) VALUES ('Dozer No.1', 'dozer');

@@ -1,9 +1,9 @@
 package com.github.vkremianskii.pits.processes.amqp;
 
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
-import com.github.vkremianskii.pits.processes.data.TruckPayloadWeightRepository;
+import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
-import com.github.vkremianskii.pits.registry.types.dto.TruckPayloadWeightChanged;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentPayloadChanged;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
@@ -11,24 +11,24 @@ import static org.mockito.Mockito.verify;
 
 class EquipmentListenersTests {
     EquipmentPositionRepository positionRepository = mock(EquipmentPositionRepository.class);
-    TruckPayloadWeightRepository payloadWeightRepository = mock(TruckPayloadWeightRepository.class);
-    EquipmentListeners sut = new EquipmentListeners(positionRepository, payloadWeightRepository);
+    EquipmentPayloadRepository payloadRepository = mock(EquipmentPayloadRepository.class);
+    EquipmentListeners sut = new EquipmentListeners(positionRepository, payloadRepository);
 
     @Test
-    void should_listen_to_position_and_insert_into_db() {
+    void should_listen_to_position_changed_and_insert_into_db() {
         // when
-        sut.handleEquipmentPosition(new EquipmentPositionChanged(1, 41.1494512, -8.6107884, 86));
+        sut.handlePositionChanged(new EquipmentPositionChanged(1, 41.1494512, -8.6107884, 86));
 
         // then
         verify(positionRepository).put(1, 41.1494512, -8.6107884, 86);
     }
 
     @Test
-    void should_listen_to_payload_weight_and_insert_into_db() {
+    void should_listen_to_payload_changed_and_insert_into_db() {
         // when
-        sut.handleTruckPayloadWeight(new TruckPayloadWeightChanged(1, 10));
+        sut.handlePayloadChanged(new EquipmentPayloadChanged(1, 10));
 
         // then
-        verify(payloadWeightRepository).put(1, 10);
+        verify(payloadRepository).put(1, 10);
     }
 }

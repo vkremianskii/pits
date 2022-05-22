@@ -12,14 +12,14 @@ CREATE TABLE equipment_position
 
 CREATE INDEX equ_pos_equ_id_ins_tim_idx ON equipment_position (equipment_id, insert_timestamp DESC);
 
--- Truck payload weights
+-- Equipment payloads
 
-CREATE TABLE truck_payload_weight
+CREATE TABLE equipment_payload
 (
     id bigserial NOT NULL PRIMARY KEY,
     equipment_id int NOT NULL,
-    weight integer NOT NULL,
+    payload integer NOT NULL,
     insert_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX tru_pay_equ_id_ins_tim_idx ON truck_payload_weight (equipment_id, insert_timestamp DESC);
+CREATE INDEX equ_pay_equ_id_ins_tim_idx ON equipment_payload (equipment_id, insert_timestamp DESC);

@@ -8,9 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class TruckPayloadWeightRepositoryTests {
+class EquipmentPayloadRepositoryTests {
     @Autowired
-    TruckPayloadWeightRepository sut;
+    EquipmentPayloadRepository sut;
 
     @BeforeEach
     void cleanup() {
@@ -26,7 +26,7 @@ class TruckPayloadWeightRepositoryTests {
         var record = sut.getLastRecordByEquipmentId(1).block();
         assertThat(record).hasValueSatisfying(r -> {
             assertThat(r.equipmentId()).isEqualTo(1);
-            assertThat(r.weight()).isEqualTo(10);
+            assertThat(r.payload()).isEqualTo(10);
         });
     }
 }

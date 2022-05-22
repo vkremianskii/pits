@@ -1,29 +1,29 @@
 package com.github.vkremianskii.pits.processes.amqp;
 
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
-import com.github.vkremianskii.pits.processes.data.TruckPayloadWeightRepository;
+import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
-import com.github.vkremianskii.pits.registry.types.dto.TruckPayloadWeightChanged;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentPayloadChanged;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import static com.github.vkremianskii.pits.processes.amqp.AmqpConfig.QUEUE_EQUIPMENT_POSITION;
-import static com.github.vkremianskii.pits.processes.amqp.AmqpConfig.QUEUE_TRUCK_PAYLOAD_WEIGHT;
+import static com.github.vkremianskii.pits.processes.amqp.AmqpConfig.QUEUE_EQUIPMENT_PAYLOAD;
 import static java.util.Objects.requireNonNull;
 
 @Component
 public class EquipmentListeners {
     private final EquipmentPositionRepository positionRepository;
-    private final TruckPayloadWeightRepository payloadWeightRepository;
+    private final EquipmentPayloadRepository payloadRepository;
 
     public EquipmentListeners(EquipmentPositionRepository positionRepository,
-                              TruckPayloadWeightRepository payloadWeightRepository) {
+                              EquipmentPayloadRepository payloadRepository) {
         this.positionRepository = requireNonNull(positionRepository);
-        this.payloadWeightRepository = requireNonNull(payloadWeightRepository);
+        this.payloadRepository = requireNonNull(payloadRepository);
     }
 
     @RabbitListener(queues = QUEUE_EQUIPMENT_POSITION)
-    void handleEquipmentPosition(EquipmentPositionChanged message) {
+    void handlePositionChanged(EquipmentPositionChanged message) {
         positionRepository.put(
                 message.getEquipmentId(),
                 message.getLatitude(),
@@ -31,10 +31,10 @@ public class EquipmentListeners {
                 message.getElevation());
     }
 
-    @RabbitListener(queues = QUEUE_TRUCK_PAYLOAD_WEIGHT)
-    void handleTruckPayloadWeight(TruckPayloadWeightChanged message) {
-        payloadWeightRepository.put(
+    @RabbitListener(queues = QUEUE_EQUIPMENT_PAYLOAD)
+    void handlePayloadChanged(EquipmentPayloadChanged message) {
+        payloadRepository.put(
                 message.getEquipmentId(),
-                message.getWeight());
+                message.getPayload());
     }
 }

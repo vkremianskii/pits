@@ -3,12 +3,12 @@ package com.github.vkremianskii.pits.communicator.app.grpc;
 import com.github.vkremianskii.pits.communicator.grpc.*;
 import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceImplBase;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
-import com.github.vkremianskii.pits.registry.types.dto.TruckPayloadWeightChanged;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentPayloadChanged;
 import io.grpc.stub.StreamObserver;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_POSITION;
-import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_TRUCK_PAYLOAD_WEIGHT;
+import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_PAYLOAD;
 import static java.util.Objects.requireNonNull;
 
 public class EquipmentServiceImpl extends EquipmentServiceImplBase {
@@ -34,13 +34,13 @@ public class EquipmentServiceImpl extends EquipmentServiceImplBase {
     }
 
     @Override
-    public void payloadWeightChanged(PayloadWeightChanged request, StreamObserver<PayloadWeightChangedResponse> responseObserver) {
-        final var message = new TruckPayloadWeightChanged(
+    public void payloadChanged(PayloadChanged request, StreamObserver<PayloadChangedResponse> responseObserver) {
+        final var message = new EquipmentPayloadChanged(
                 request.getEquipmentId(),
-                request.getWeight());
-        rabbitTemplate.convertSendAndReceive(EXCHANGE_TRUCK_PAYLOAD_WEIGHT, "", message);
+                request.getPayload());
+        rabbitTemplate.convertSendAndReceive(EXCHANGE_EQUIPMENT_PAYLOAD, "", message);
 
-        final var response = PayloadWeightChangedResponse.newBuilder().build();
+        final var response = PayloadChangedResponse.newBuilder().build();
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();

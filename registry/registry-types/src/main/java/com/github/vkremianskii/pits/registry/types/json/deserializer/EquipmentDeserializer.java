@@ -22,7 +22,7 @@ public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
         final var name = tree.get("name").textValue();
         final var typeName = tree.get("type").textValue();
         final var stateName = tree.has("state") ? tree.get("state").textValue() : null;
-        final var payloadWeight = tree.has("payloadWeight") ? tree.get("payloadWeight").asInt() : null;
+        final var payload = tree.has("payload") ? tree.get("payload").asInt() : null;
 
         Position position = null;
         if (tree.has("position")) {
@@ -55,7 +55,7 @@ public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
                     name,
                     stateName != null ? TruckState.valueOf(stateName) : null,
                     position,
-                    payloadWeight);
+                    payload);
         };
     }
 }

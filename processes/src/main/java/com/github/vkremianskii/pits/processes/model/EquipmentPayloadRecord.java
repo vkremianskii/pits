@@ -4,19 +4,19 @@ import java.time.Instant;
 
 import static java.util.Objects.requireNonNull;
 
-public class TruckPayloadWeightRecord {
+public class EquipmentPayloadRecord {
     private final long id;
     private final int equipmentId;
-    private final int weight;
+    private final int payload;
     private final Instant insertTimestamp;
 
-    public TruckPayloadWeightRecord(long id,
-                                    int equipmentId,
-                                    int weight,
-                                    Instant insertTimestamp) {
+    public EquipmentPayloadRecord(long id,
+                                  int equipmentId,
+                                  int payload,
+                                  Instant insertTimestamp) {
         this.id = id;
         this.equipmentId = equipmentId;
-        this.weight = weight;
+        this.payload = payload;
         this.insertTimestamp = requireNonNull(insertTimestamp);
     }
 
@@ -28,8 +28,8 @@ public class TruckPayloadWeightRecord {
         return equipmentId;
     }
 
-    public double weight() {
-        return weight;
+    public double payload() {
+        return payload;
     }
 
     public Instant insertTimestamp() {

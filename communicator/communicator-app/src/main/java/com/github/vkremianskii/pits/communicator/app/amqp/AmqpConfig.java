@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AmqpConfig {
     public static final String EXCHANGE_EQUIPMENT_POSITION = "exchange.equipment.position";
-    public static final String EXCHANGE_TRUCK_PAYLOAD_WEIGHT = "exchange.truck.payload.weight";
+    public static final String EXCHANGE_EQUIPMENT_PAYLOAD = "exchange.equipment.payload";
 
     @Bean
     Declarables declarables() {
         return new Declarables(
                 new FanoutExchange(EXCHANGE_EQUIPMENT_POSITION),
-                new FanoutExchange(EXCHANGE_TRUCK_PAYLOAD_WEIGHT));
+                new FanoutExchange(EXCHANGE_EQUIPMENT_PAYLOAD));
     }
 
     @Bean

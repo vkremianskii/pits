@@ -31,10 +31,11 @@ public class EquipmentRepository {
     private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
     private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
     private static final Field<Integer> FIELD_ELEVATION = field("elevation", Integer.class);
-    private static final Field<Integer> FIELD_PAYLOAD_WEIGHT = field("payload_weight", Integer.class);
+    private static final Field<Integer> FIELD_PAYLOAD = field("payload", Integer.class);
 
     private static final Map<EquipmentState, String> STATE_TO_FULL_NAME = Map.of(
             TruckState.EMPTY, "truck_empty",
+            TruckState.WAIT_LOAD, "truck_wait_load",
             TruckState.LOAD, "truck_load",
             TruckState.HAUL, "truck_haul",
             TruckState.UNLOAD, "truck_unload");
@@ -52,20 +53,6 @@ public class EquipmentRepository {
         return Mono.fromCompletionStage(dslContext.deleteFrom(TABLE).executeAsync()).then();
     }
 
-    public Mono<List<Equipment>> getEquipment() {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE).fetchAsync()
-                .thenApply(r -> r.map(EquipmentRepository::equipmentFromRecord)));
-    }
-
-    public Mono<Optional<Equipment>> getEquipmentById(int equipmentId) {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
-                .where(FIELD_ID.eq(equipmentId))
-                .fetchAsync()
-                .thenApply(r -> r.map(EquipmentRepository::equipmentFromRecord))
-                .thenApply(e -> !e.isEmpty() ? e.get(0) : null)
-                .thenApply(Optional::ofNullable));
-    }
-
     public Mono<Void> put(String name, EquipmentType type) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_NAME, FIELD_TYPE)
@@ -80,14 +67,28 @@ public class EquipmentRepository {
                 .executeAsync()).then();
     }
 
-    public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
+    public Mono<List<Equipment>> getEquipment() {
+        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE).fetchAsync()
+                .thenApply(r -> r.map(EquipmentRepository::equipmentFromRecord)));
+    }
+
+    public Mono<Optional<Equipment>> getEquipmentById(int equipmentId) {
+        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
+                .where(FIELD_ID.eq(equipmentId))
+                .fetchAsync()
+                .thenApply(r -> r.map(EquipmentRepository::equipmentFromRecord))
+                .thenApply(e -> !e.isEmpty() ? e.get(0) : null)
+                .thenApply(Optional::ofNullable));
+    }
+
+    public Mono<Void> setEquipmentState(int equipmentId, EquipmentState state) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
                 .set(FIELD_STATE, stateToFullName(state))
                 .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }
 
-    public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
+    public Mono<Void> setEquipmentPosition(int equipmentId, Position position) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
                 .set(FIELD_LATITUDE, BigDecimal.valueOf(position.getLatitude()))
                 .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.getLongitude()))
@@ -96,9 +97,9 @@ public class EquipmentRepository {
                 .executeAsync()).then();
     }
 
-    public Mono<Void> updateTruckPayloadWeight(int equipmentId, int payloadWeight) {
+    public Mono<Void> setEquipmentPayload(int equipmentId, int payload) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
-                .set(FIELD_PAYLOAD_WEIGHT, payloadWeight)
+                .set(FIELD_PAYLOAD, payload)
                 .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }
@@ -111,7 +112,7 @@ public class EquipmentRepository {
         final var latitude = record.get(FIELD_LATITUDE);
         final var longitude = record.get(FIELD_LONGITUDE);
         final var elevation = record.get(FIELD_ELEVATION);
-        final var payloadWeight = record.get(FIELD_PAYLOAD_WEIGHT);
+        final var payload = record.get(FIELD_PAYLOAD);
 
         Position position = null;
         if (latitude != null && longitude != null && elevation != null) {
@@ -140,7 +141,7 @@ public class EquipmentRepository {
                     name,
                     fullNameToState(stateName, TruckState.class),
                     position,
-                    payloadWeight);
+                    payload);
         };
     }
 

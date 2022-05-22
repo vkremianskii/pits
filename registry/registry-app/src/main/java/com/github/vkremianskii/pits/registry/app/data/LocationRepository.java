@@ -35,16 +35,16 @@ public class LocationRepository {
         return Mono.fromCompletionStage(dslContext.deleteFrom(TABLE).executeAsync()).then();
     }
 
-    public Mono<List<Location>> getLocations() {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE).fetchAsync()
-                .thenApply(r -> r.map(LocationRepository::locationFromRecord)));
-    }
-
     public Mono<Void> put(String name, LocationType type) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_NAME, FIELD_TYPE)
                 .values(name, type.name().toLowerCase())
                 .executeAsync()).then();
+    }
+
+    public Mono<List<Location>> getLocations() {
+        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE).fetchAsync()
+                .thenApply(r -> r.map(LocationRepository::locationFromRecord)));
     }
 
     private static Location locationFromRecord(org.jooq.Record record) {
