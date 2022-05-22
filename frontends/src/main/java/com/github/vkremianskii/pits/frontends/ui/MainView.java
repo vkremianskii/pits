@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.frontends.ui;
 import com.github.vkremianskii.pits.frontends.grpc.GrpcClient;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
+import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
@@ -40,6 +41,9 @@ public class MainView {
     private final TreeMap<Integer, Equipment> equipmentById = new TreeMap<>();
 
     private JComboBox<Integer> equipmentIdComboBox;
+    private JTextField nameTextField;
+    private JTextField typeTextField;
+    private JTextField stateTextField;
     private JSpinner latitudeSpinner;
     private JSpinner longitudeSpinner;
     private JSpinner elevationSpinner;
@@ -87,6 +91,7 @@ public class MainView {
             final var equipmentId = (int) e.getItem();
             final var equipment = equipmentById.get(equipmentId);
             final var position = Optional.ofNullable(equipment.getPosition());
+            final var state = Optional.ofNullable(equipment.getState());
 
             int payload = DEFAULT_PAYLOAD;
             if (equipment.getType() == EquipmentType.TRUCK) {
@@ -96,6 +101,9 @@ public class MainView {
                 }
             }
 
+            nameTextField.setText(equipment.getName());
+            typeTextField.setText(equipment.getType().name());
+            stateTextField.setText(state.map(EquipmentState::name).orElse(""));
             latitudeSpinner.setValue(position.map(Position::getLatitude).orElse(DEFAULT_LATITIUDE));
             latitudeSpinner.setEnabled(true);
             longitudeSpinner.setValue(position.map(Position::getLongitude).orElse(DEFAULT_LONGITUDE));
@@ -128,6 +136,18 @@ public class MainView {
         equipmentIdComboBox = new JComboBox<>();
         equipmentIdComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, equipmentIdComboBox.getPreferredSize().height));
 
+        final var nameLabel = new JLabel("Name");
+        nameTextField = new JTextField("");
+        nameTextField.setEnabled(false);
+
+        final var typeLabel = new JLabel("Type");
+        typeTextField = new JTextField("");
+        typeTextField.setEnabled(false);
+
+        final var stateLabel = new JLabel("State");
+        stateTextField = new JTextField("");
+        stateTextField.setEnabled(false);
+
         final var simulationPanel = bootstrapSimulationPanel();
 
         final var equipmentPanel = new JPanel();
@@ -136,6 +156,15 @@ public class MainView {
         equipmentPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
         equipmentPanel.add(equipmentIdLabel);
         equipmentPanel.add(equipmentIdComboBox);
+        equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
+        equipmentPanel.add(nameLabel);
+        equipmentPanel.add(nameTextField);
+        equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
+        equipmentPanel.add(typeLabel);
+        equipmentPanel.add(typeTextField);
+        equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
+        equipmentPanel.add(stateLabel);
+        equipmentPanel.add(stateTextField);
         equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
         equipmentPanel.add(simulationPanel);
 
