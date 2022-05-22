@@ -145,11 +145,13 @@ public class MainView {
     private JPanel bootstrapSimulationPanel() {
         final var latitudeLabel = new JLabel("Latitude");
         latitudeSpinner = new JSpinner(new SpinnerNumberModel(DEFAULT_LATITIUDE, -90.0, 90.0, 0.001));
+        latitudeSpinner.setEditor(new JSpinner.NumberEditor(latitudeSpinner, "0.000000"));
         latitudeSpinner.setMaximumSize(new Dimension(Integer.MAX_VALUE, latitudeSpinner.getPreferredSize().height));
         latitudeSpinner.setEnabled(false);
 
         final var longitudeLabel = new JLabel("Longitude");
         longitudeSpinner = new JSpinner(new SpinnerNumberModel(DEFAULT_LONGITUDE, -180.0, 180.0, 0.001));
+        longitudeSpinner.setEditor(new JSpinner.NumberEditor(longitudeSpinner, "0.000000"));
         longitudeSpinner.setMaximumSize(new Dimension(Integer.MAX_VALUE, longitudeSpinner.getPreferredSize().height));
         longitudeSpinner.setEnabled(false);
 
