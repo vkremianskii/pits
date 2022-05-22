@@ -2,6 +2,20 @@
 
 Open-pit mining system – exercise in software engineering.
 
+**Disclaimer**: pits is not intended for use in production. It is a personal project with a goal to practice and showcase my skills.
+
+## Architecture
+
+![Component diagram](doc/components.jpg)
+
+|Service|Purpose|Implemented|Dependencies|
+|-|-|-|-|
+|Registry|- Tracks lists of entities (equipment, locations)|:heavy_check_mark:|- PostgreSQL<br>- RabbitMQ|
+|Processes|- Tracks historical data (e.g., equipment positions)<br>- Supervises business processes (e.g., haul cycles)|:heavy_check_mark:|- PostgreSQL<br>- RabbitMQ<br>- Registry|
+|Communicator|- Talks to mobile equipment (e.g., trucks)|:heavy_check_mark:|- RabbitMQ<br>- Registry|
+|Web App|- UI for mine personnel|:x:|- Registry<br>- Processes|
+|Mobile Equipment|- On-board computer software|:x:|- Communicator|
+
 ## Technologies
 
 - Java 17
@@ -14,24 +28,10 @@ Open-pit mining system – exercise in software engineering.
 - RabbitMQ
 - Docker
 
-## Architecture
-
-![Component diagram](doc/components.jpg)
-
-|Service|Purpose|Implemented|Dependencies|
-|-|-|-|-|
-|Registry|Tracks lists of entities (equipment, locations)|:heavy_check_mark:|- PostgreSQL<br>- RabbitMQ|
-|Processes|- Tracks historical data (e.g., equipment positions)<br>- Executes business processes (e.g. haul cycles)|:heavy_check_mark:|- PostgreSQL<br>- RabbitMQ<br>- Registry|
-|Communicator|Talks to mobile equipment|:heavy_check_mark:|- RabbitMQ<br>- Registry|
-|Web App|UI for mine personnel|:x:|- Registry<br>- Processes|
-|Mobile Equipment|On-board computers (trucks, shovels)|:x:|Communicator|
-
 ## Installation
 
 - `docker-compose -f docker/docker-compose.yml build registry processes communicator`
 - `docker-compose -f docker/docker-compose.yml up -d`
-
-## Services
 
 |Service|Port|Protocol|
 |-|-|-|
@@ -39,6 +39,5 @@ Open-pit mining system – exercise in software engineering.
 |RabbitMQ|5672,15672|TCP,HTTP|
 |Registry|8080|HTTP|
 |Processes|8081|HTTP|
-|Communicator|8082|HTTP|
-|Communicator|8083|gRPC|
+|Communicator|8082,8083|HTTP,gRPC|
 |Adminer|8090|HTTP|
