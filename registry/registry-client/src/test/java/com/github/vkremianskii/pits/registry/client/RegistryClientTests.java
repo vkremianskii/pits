@@ -41,7 +41,8 @@ class RegistryClientTests {
                         },{
                             "id": 3,
                             "name": "Shovel No.1",
-                            "type": "SHOVEL"
+                            "type": "SHOVEL",
+                            "loadRadius": 20
                         },{
                             "id": 4,
                             "name": "Truck No.1",

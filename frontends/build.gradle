@@ -12,4 +12,5 @@ dependencies {
     implementation "io.projectreactor:reactor-core:${reactorVersion}"
 
     implementation files('libs/jmapviewer-2.8.jar')
+    implementation files('libs/openmap-5.1.15.jar')
 }

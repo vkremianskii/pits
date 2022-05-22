@@ -1,17 +1,19 @@
 package com.github.vkremianskii.pits.frontends.ui;
 
+import com.bbn.openmap.proj.Ellipsoid;
+import com.bbn.openmap.proj.coords.LatLonPoint;
+import com.bbn.openmap.proj.coords.UTMPoint;
 import com.github.vkremianskii.pits.frontends.grpc.GrpcClient;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
-import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
-import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
-import org.openstreetmap.gui.jmapviewer.OsmTileLoader;
+import org.openstreetmap.gui.jmapviewer.*;
+import org.openstreetmap.gui.jmapviewer.interfaces.MapPolygon;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,10 +21,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
+import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
+import static com.bbn.openmap.proj.coords.UTMPoint.UTMtoLL;
 import static java.awt.Color.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
@@ -37,6 +43,7 @@ public class MainView {
     private static final double DEFAULT_LONGITUDE = -8.6107884;
     private static final int DEFAULT_ELEVATION = 86;
     private static final int DEFAULT_PAYLOAD = 0;
+    private static final int NUM_CIRCLE_SEGMENTS = 32;
     private static final String OSM_USER_AGENT = "pits.frontends/1.0-SNAPSHOT";
 
     private static final Map<EquipmentState, Color> COLOR_FROM_STATE = Map.of(
@@ -304,9 +311,13 @@ public class MainView {
         final var selectedItem = (Integer) equipmentIdComboBox.getSelectedItem();
         equipmentIdComboBox.removeAllItems();
         mapViewer.removeAllMapMarkers();
+        mapViewer.removeAllMapPolygons();
         for (final var e : equipmentById.values()) {
             equipmentIdComboBox.addItem(e.getId());
             mapMarkerFromEquipment(e).ifPresent(mapViewer::addMapMarker);
+            if (e.getType() == EquipmentType.SHOVEL) {
+                loadZoneFromShovel((Shovel) e).ifPresent(mapViewer::addMapPolygon);
+            }
         }
         if (selectedItem != null && equipmentById.containsKey(selectedItem)) {
             equipmentIdComboBox.setSelectedItem(selectedItem);
@@ -321,6 +332,27 @@ public class MainView {
                     marker.setBackColor(colorFromState(equipment.getState()));
                     return marker;
                 });
+    }
+
+    private static Optional<MapPolygon> loadZoneFromShovel(Shovel shovel) {
+        return Optional.ofNullable(shovel.getPosition())
+                .map(position -> newMapPolygon(position.getLatitude(), position.getLongitude(), shovel.getLoadRadius()));
+    }
+
+    private static MapPolygon newMapPolygon(double latitude, double longitude, double radius) {
+        final var centerLL = new LatLonPoint.Double(latitude, longitude);
+        final var centerUTM = LLtoUTM(centerLL);
+
+        final var points = new ArrayList<Coordinate>();
+        for (double angle = 0.0; angle < 2.0 * Math.PI; angle += 2.0 * Math.PI / (double) NUM_CIRCLE_SEGMENTS) {
+            final var pointUTM = new UTMPoint(centerUTM);
+            pointUTM.northing += radius * Math.sin(angle);
+            pointUTM.easting += radius * Math.cos(angle);
+            final var pointLL = UTMtoLL(pointUTM, WGS_84, new LatLonPoint.Double());
+            points.add(new Coordinate(pointLL.getLatitude(), pointLL.getLongitude()));
+        }
+
+        return new MapPolygonImpl(points);
     }
 
     private static Color colorFromState(EquipmentState state) {

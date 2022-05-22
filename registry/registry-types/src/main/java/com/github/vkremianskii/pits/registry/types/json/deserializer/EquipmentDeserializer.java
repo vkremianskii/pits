@@ -23,6 +23,7 @@ public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
         final var typeName = tree.get("type").textValue();
         final var stateName = tree.has("state") ? tree.get("state").textValue() : null;
         final var payload = tree.has("payload") ? tree.get("payload").asInt() : null;
+        final var loadRadius = tree.has("loadRadius") ? tree.get("loadRadius").asInt() : 0;
 
         Position position = null;
         if (tree.has("position")) {
@@ -48,6 +49,7 @@ public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
             case SHOVEL -> new Shovel(
                     id,
                     name,
+                    loadRadius,
                     stateName != null ? ShovelState.valueOf(stateName) : null,
                     position);
             case TRUCK -> new Truck(

@@ -32,7 +32,7 @@ class EquipmentControllerTests {
                 .thenReturn(just(List.of(
                         new Dozer(1, "Dozer No.1", null, null),
                         new Drill(2, "Drill No.1", null, null),
-                        new Shovel(3, "Shovel No.1", null, null),
+                        new Shovel(3, "Shovel No.1", 20, null, null),
                         new Truck(4, "Truck No.1", HAUL, new Position(41.1494512, -8.6107884, 86), 10))));
 
         // expect
@@ -52,7 +52,8 @@ class EquipmentControllerTests {
                         },{
                             "id": 3,
                             "name": "Shovel No.1",
-                            "type": "SHOVEL"
+                            "type": "SHOVEL",
+                            "loadRadius": 20
                         },{
                             "id": 4,
                             "name": "Truck No.1",

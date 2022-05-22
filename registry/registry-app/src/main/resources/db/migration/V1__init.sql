@@ -11,13 +11,14 @@ CREATE TABLE equipment
     state equipment_state,
     latitude numeric(10, 8),
     longitude numeric(11, 8),
-    elevation integer,
-    payload integer
+    elevation smallint,
+    payload smallint,
+    load_radius smallint
 );
 
 INSERT INTO equipment (name, type) VALUES ('Dozer No.1', 'dozer');
 INSERT INTO equipment (name, type) VALUES ('Drill No.1', 'drill');
-INSERT INTO equipment (name, type) VALUES ('Shovel No.1', 'shovel');
+INSERT INTO equipment (name, type, load_radius) VALUES ('Shovel No.1', 'shovel', 20);
 INSERT INTO equipment (name, type) VALUES ('Truck No.1', 'truck');
 
 -- Locations
