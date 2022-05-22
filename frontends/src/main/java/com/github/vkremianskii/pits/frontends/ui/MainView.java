@@ -20,8 +20,6 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import static java.awt.Component.CENTER_ALIGNMENT;
-import static java.awt.Component.LEFT_ALIGNMENT;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -207,7 +205,7 @@ public class MainView {
             @Override
             public void mouseMoved(MouseEvent e) {
                 final var position = mapViewer.getPosition(e.getPoint());
-                coordsLabel.setText(String.format("lat %.03f lng %.03f", position.getLat(), position.getLon()));
+                coordsLabel.setText(String.format("lat %.06f lng %.06f", position.getLat(), position.getLon()));
             }
         });
 
@@ -252,6 +250,10 @@ public class MainView {
 
     private static Optional<MapMarkerDot> mapMarkerFromEquipment(Equipment equipment) {
         return Optional.ofNullable(equipment.getPosition())
-                .map(position -> new MapMarkerDot(position.getLatitude(), position.getLongitude()));
+                .map(position -> {
+                    final var marker = new MapMarkerDot(position.getLatitude(), position.getLongitude());
+                    marker.setName(equipment.getName() + " (" + equipment.getId() + ")");
+                    return marker;
+                });
     }
 }
