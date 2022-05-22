@@ -35,6 +35,7 @@ Open-pit mining system – exercise in software engineering.
 - PostgreSQL
 - RabbitMQ
 - Docker
+- Swing
 
 ## Installation
 

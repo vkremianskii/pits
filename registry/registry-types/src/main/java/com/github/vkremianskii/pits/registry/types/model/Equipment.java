@@ -2,6 +2,8 @@ package com.github.vkremianskii.pits.registry.types.model;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 import static java.util.Objects.requireNonNull;
 
 public class Equipment {
@@ -43,5 +45,22 @@ public class Equipment {
     @Nullable
     public Position getPosition() {
         return position;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Equipment)) return false;
+        Equipment equipment = (Equipment) o;
+        return id == equipment.id &&
+                Objects.equals(name, equipment.name) &&
+                type == equipment.type &&
+                Objects.equals(state, equipment.state) &&
+                Objects.equals(position, equipment.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, type, state, position);
     }
 }
