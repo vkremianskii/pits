@@ -1,32 +1,43 @@
 package com.github.vkremianskii.pits.frontends;
 
-import com.github.vkremianskii.pits.frontends.grpc.EquipmentClient;
-import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
-import org.openstreetmap.gui.jmapviewer.OsmTileLoader;
+import com.github.vkremianskii.pits.frontends.grpc.GrpcClient;
+import com.github.vkremianskii.pits.registry.client.RegistryClient;
+import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
+import com.github.vkremianskii.pits.registry.types.model.Equipment;
+import org.openstreetmap.gui.jmapviewer.*;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.Duration;
+import java.util.Optional;
 
-import static javax.swing.BorderFactory.createEmptyBorder;
+import static javax.swing.BorderFactory.*;
 import static javax.swing.Box.createRigidArea;
 import static javax.swing.BoxLayout.X_AXIS;
 import static javax.swing.BoxLayout.Y_AXIS;
+import static org.openstreetmap.gui.jmapviewer.JMapViewer.MAX_ZOOM;
 
 public class Application {
-    private static final String OSM_USER_AGENT = "pits/1.0-SNAPSHOT";
+    private static final String OSM_USER_AGENT = "pits.frontends/1.0-SNAPSHOT";
 
     public static void main(String[] args) {
-        final var client = new EquipmentClient();
-        client.start();
+        final var codecConfigurer = new RegistryCodecConfigurer(new Jackson2ObjectMapperBuilder());
+        final var registryClient = new RegistryClient("http://localhost:8080", codecConfigurer);
 
-        bootstrapUI(client);
+        final var grpcClient = new GrpcClient();
+        grpcClient.start();
+
+        bootstrapUI(registryClient, grpcClient);
     }
 
-    private static void bootstrapUI(EquipmentClient client) {
+    private static void bootstrapUI(RegistryClient registryClient, GrpcClient client) {
         final var simulationPanel = bootstrapSimulationPanel(client);
-        final var mapPanel = bootstrapMapPanel();
+        final var mapPanel = bootstrapMapPanel(registryClient);
 
         final var mainPanel = new JPanel();
         final var mainLayout = new BoxLayout(mainPanel, X_AXIS);
@@ -52,7 +63,7 @@ public class Application {
         });
     }
 
-    private static JPanel bootstrapSimulationPanel(EquipmentClient client) {
+    private static JPanel bootstrapSimulationPanel(GrpcClient client) {
         final var equipmentIdLabel = new JLabel("Equipment ID");
         final var equipmentIdSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
         equipmentIdSpinner.setMaximumSize(new Dimension(Integer.MAX_VALUE, equipmentIdSpinner.getPreferredSize().height));
@@ -88,7 +99,7 @@ public class Application {
         final var simulationPanel = new JPanel();
         final var simulationLayout = new BoxLayout(simulationPanel, Y_AXIS);
         simulationPanel.setLayout(simulationLayout);
-        simulationPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
+        simulationPanel.setBorder(createCompoundBorder(createTitledBorder("Simulation"), createEmptyBorder(3, 3, 3, 3)));
         simulationPanel.add(equipmentIdLabel);
         simulationPanel.add(equipmentIdSpinner);
         simulationPanel.add(createRigidArea(new Dimension(0, 3)));
@@ -111,7 +122,7 @@ public class Application {
         return simulationPanel;
     }
 
-    private static JPanel bootstrapMapPanel() {
+    private static JPanel bootstrapMapPanel(RegistryClient registryClient) {
         final var map = new JMapViewerTree("");
         final var tileLoader = (OsmTileLoader) map.getViewer().getTileController().getTileLoader();
         tileLoader.headers.put("User-Agent", OSM_USER_AGENT);
@@ -119,6 +130,26 @@ public class Application {
         final var mapPanel = new JPanel();
         mapPanel.add(map);
 
+        Flux.interval(Duration.ofSeconds(3))
+                .flatMap(__ -> refreshEquipment(map.getViewer(), registryClient))
+                .subscribe();
+
         return mapPanel;
+    }
+
+    private static Mono<Void> refreshEquipment(JMapViewer map, RegistryClient registryClient) {
+        return registryClient.getEquipment()
+                .doOnNext(equipment -> {
+                    map.removeAllMapMarkers();
+                    equipment.stream()
+                            .flatMap(e -> mapMarkerFromEquipment(e).stream())
+                            .forEach(map::addMapMarker);
+                })
+                .then();
+    }
+
+    private static Optional<MapMarkerDot> mapMarkerFromEquipment(Equipment equipment) {
+        return Optional.ofNullable(equipment.getPosition())
+                .map(position -> new MapMarkerDot(position.getLatitude(), position.getLongitude()));
     }
 }

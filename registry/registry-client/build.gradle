@@ -9,7 +9,7 @@ dependencies {
     api project(':registry:registry-types')
 
     implementation "org.springframework:spring-webflux:${springVersion}"
-    runtimeOnly "io.projectreactor.netty:reactor-netty:${reactorVersion}"
+    runtimeOnly "io.projectreactor.netty:reactor-netty:${reactorNettyVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"

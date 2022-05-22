@@ -13,7 +13,6 @@ import com.github.vkremianskii.pits.registry.types.model.location.Hole;
 import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
@@ -22,7 +21,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 
 @WireMockTest
 class RegistryClientTests {
-    Jackson2ObjectMapperBuilder objectMapperBuilder = new Jackson2ObjectMapperBuilder();
+    RegistryCodecConfigurer registryCodecConfigurer = new RegistryCodecConfigurer(new Jackson2ObjectMapperBuilder());
 
     @Test
     void should_get_equipment(WireMockRuntimeInfo wmRuntimeInfo) {
@@ -56,8 +55,7 @@ class RegistryClientTests {
                             "payload": 10
                         }]
                         """)));
-        var webClient = newWebClient(wmRuntimeInfo);
-        var sut = new RegistryClient(webClient);
+        var sut = newClient(wmRuntimeInfo);
 
         // when
         var equipment = sut.getEquipment().block();
@@ -96,8 +94,7 @@ class RegistryClientTests {
                             "type": "STOCKPILE"
                         }]
                         """)));
-        var webClient = newWebClient(wmRuntimeInfo);
-        var sut = new RegistryClient(webClient);
+        var sut = newClient(wmRuntimeInfo);
 
         // when
         var locations = sut.getLocations().block();
@@ -111,10 +108,8 @@ class RegistryClientTests {
         verify(getRequestedFor(urlPathEqualTo("/locations")));
     }
 
-    WebClient newWebClient(WireMockRuntimeInfo wmRuntimeInfo) {
-        return WebClient.builder()
-                .baseUrl("http://localhost:" + wmRuntimeInfo.getHttpPort())
-                .codecs(configurer -> new RegistryCodecConfigurer(objectMapperBuilder).configureCodecs(configurer))
-                .build();
+    RegistryClient newClient(WireMockRuntimeInfo wmRuntimeInfo) {
+        var baseUrl = "http://localhost:" + wmRuntimeInfo.getHttpPort();
+        return new RegistryClient(baseUrl, registryCodecConfigurer);
     }
 }

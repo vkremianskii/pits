@@ -1,30 +1,24 @@
 package com.github.vkremianskii.pits.communicator.app.integration;
 
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import static java.util.Objects.requireNonNull;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
 public class RegistryConfig {
-    private final RegistryProperties properties;
 
-    public RegistryConfig(RegistryProperties properties) {
-        this.properties = requireNonNull(properties);
-    }
-
-    @Bean(name = "registry")
-    WebClient registryWebClient() {
-        return WebClient.builder()
-                .baseUrl(properties.getBaseUrl())
-                .build();
+    @Bean
+    RegistryClient registryClient(RegistryProperties properties,
+                                  RegistryCodecConfigurer codecConfigurer) {
+        return new RegistryClient(
+                properties.getBaseUrl(),
+                codecConfigurer);
     }
 
     @Bean
-    RegistryClient registryClient(@Qualifier("registry") WebClient webClient) {
-        return new RegistryClient(webClient);
+    RegistryCodecConfigurer registryCodecConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder) {
+        return new RegistryCodecConfigurer(objectMapperBuilder);
     }
 }

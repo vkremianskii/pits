@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.registry.client;
 
+import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.Location;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -7,13 +8,14 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static java.util.Objects.requireNonNull;
-
 public class RegistryClient {
     private final WebClient webClient;
 
-    public RegistryClient(WebClient webClient) {
-        this.webClient = requireNonNull(webClient);
+    public RegistryClient(String baseUrl, RegistryCodecConfigurer codecConfigurer) {
+        this.webClient = WebClient.builder()
+                .baseUrl(baseUrl)
+                .codecs(codecConfigurer::configureCodecs)
+                .build();
     }
 
     public Mono<List<Equipment>> getEquipment() {

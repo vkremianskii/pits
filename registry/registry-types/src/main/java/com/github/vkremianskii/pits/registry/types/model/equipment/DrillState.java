@@ -17,7 +17,7 @@ public class DrillState extends EquipmentState {
         if (name == null) {
             throw new NullPointerException("name must not be null");
         }
-        for (var value : values()) {
+        for (final var value : values()) {
             if (value.name().equals(name)) {
                 return value;
             }
