@@ -4,6 +4,12 @@ Open-pit mining system – exercise in software engineering.
 
 **Disclaimer**: pits is not intended for use in production. It is a personal project with a goal to practice and showcase my skills.
 
+## Business Processes
+
+### Haul Cycles
+
+![State diagram](doc/haul-cycles.jpg)
+
 ## Architecture
 
 ![Component diagram](doc/components.jpg)
