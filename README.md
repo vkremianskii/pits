@@ -1,5 +1,7 @@
 # pits
 
+![gradle workflow](https://github.com/vkremianskii/pits/actions/workflows/gradle.yml/badge.svg)
+
 Open-pit mining system – exercise in software engineering.
 
 **Disclaimer**: pits is not intended for use in production. It is a personal project with a goal to practice and showcase my skills.
