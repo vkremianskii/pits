@@ -28,7 +28,7 @@ public class EquipmentPayloadRecord {
         return equipmentId;
     }
 
-    public double payload() {
+    public int payload() {
         return payload;
     }
 

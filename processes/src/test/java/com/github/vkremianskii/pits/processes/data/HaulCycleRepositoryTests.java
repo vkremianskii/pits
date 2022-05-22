@@ -21,12 +21,12 @@ class HaulCycleRepositoryTests {
     }
 
     @Test
-    void should_put_and_get_last_incomplete_haul_cycle() {
+    void should_insert_and_get_last_minimal_haul_cycle() {
         // when
-        sut.put(1, null, null, null, null, null, null, null, null, null).block();
+        sut.insert(1, null, null, null, null, null, null, null, null, null).block();
+        var haulCycle = sut.getLastHaulCycleForTruck(1).block();
 
         // then
-        var haulCycle = sut.getLastHaulCycleByTruckId(1).block();
         assertThat(haulCycle).hasValueSatisfying(c -> {
             assertThat(c.getTruckId()).isEqualTo(1);
             assertThat(c.getInsertTimestamp()).isNotNull();
@@ -34,12 +34,12 @@ class HaulCycleRepositoryTests {
     }
 
     @Test
-    void should_put_and_get_last_complete_haul_cycle() {
+    void should_insert_and_get_last_complete_haul_cycle() {
         // when
-        sut.put(1, 2, Instant.now(), Instant.now(), 41.1494512, -8.6107884, Instant.now(), 10, Instant.now(), Instant.now()).block();
+        sut.insert(1, 2, Instant.now(), Instant.now(), 41.1494512, -8.6107884, Instant.now(), 10, Instant.now(), Instant.now()).block();
+        var haulCycle = sut.getLastHaulCycleForTruck(1).block();
 
         // then
-        var haulCycle = sut.getLastCompleteHaulCycleByTruckId(1).block();
         assertThat(haulCycle).hasValueSatisfying(c -> {
             assertThat(c.getTruckId()).isEqualTo(1);
             assertThat(c.getInsertTimestamp()).isNotNull();

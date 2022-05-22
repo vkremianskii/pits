@@ -43,16 +43,16 @@ public class HaulCycleRepository {
         return Mono.fromCompletionStage(dslContext.deleteFrom(TABLE).executeAsync()).then();
     }
 
-    public Mono<Void> put(int truckId,
-                          @Nullable Integer shovelId,
-                          @Nullable Instant waitLoadTimestamp,
-                          @Nullable Instant startLoadTimestamp,
-                          @Nullable Double startLoadLatitude,
-                          @Nullable Double startLoadLongitude,
-                          @Nullable Instant endLoadTimestamp,
-                          @Nullable Integer endLoadPayload,
-                          @Nullable Instant startUnloadTimestamp,
-                          @Nullable Instant endUnloadTimestamp) {
+    public Mono<Void> insert(int truckId,
+                             @Nullable Integer shovelId,
+                             @Nullable Instant waitLoadTimestamp,
+                             @Nullable Instant startLoadTimestamp,
+                             @Nullable Double startLoadLatitude,
+                             @Nullable Double startLoadLongitude,
+                             @Nullable Instant endLoadTimestamp,
+                             @Nullable Integer endLoadPayload,
+                             @Nullable Instant startUnloadTimestamp,
+                             @Nullable Instant endUnloadTimestamp) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(
                         FIELD_TRUCK_ID,
@@ -79,23 +79,37 @@ public class HaulCycleRepository {
                 .executeAsync()).then();
     }
 
-    public Mono<Optional<HaulCycle>> getLastHaulCycleByTruckId(int truckId) {
+    public Mono<Void> update(long haulCycleId,
+                             @Nullable Integer shovelId,
+                             @Nullable Instant waitLoadTimestamp,
+                             @Nullable Instant startLoadTimestamp,
+                             @Nullable Double startLoadLatitude,
+                             @Nullable Double startLoadLongitude,
+                             @Nullable Instant endLoadTimestamp,
+                             @Nullable Integer endLoadPayload,
+                             @Nullable Instant startUnloadTimestamp,
+                             @Nullable Instant endUnloadTimestamp) {
+        return Mono.fromCompletionStage(dslContext.update(TABLE)
+                .set(FIELD_SHOVEL_ID, shovelId)
+                .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_START_LOAD_LATITUDE, Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null))
+                .set(FIELD_START_LOAD_LONGITUDE, Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null))
+                .set(FIELD_END_LOAD_TIMESTAMP, Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_END_LOAD_PAYLOAD, Optional.ofNullable(endLoadPayload).map(Integer::shortValue).orElse(null))
+                .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_END_UNLOAD_TIMESTAMP, Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
+                .where(FIELD_ID.eq(haulCycleId))
+                .executeAsync()).then();
+    }
+
+    public Mono<Optional<HaulCycle>> getLastHaulCycleForTruck(int truckId) {
         return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
                 .where(FIELD_TRUCK_ID.eq(truckId))
                 .orderBy(FIELD_INSERT_TIMESTAMP.desc())
                 .fetchAsync()
                 .thenApply(r -> r.map(HaulCycleRepository::haulCycleFromRecord))
-                .thenApply(e -> !e.isEmpty() ? e.get(0) : null)
-                .thenApply(Optional::ofNullable));
-    }
-
-    public Mono<Optional<HaulCycle>> getLastCompleteHaulCycleByTruckId(int truckId) {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
-                .where(FIELD_TRUCK_ID.eq(truckId).and(FIELD_END_UNLOAD_TIMESTAMP.isNotNull()))
-                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                .fetchAsync()
-                .thenApply(r -> r.map(HaulCycleRepository::haulCycleFromRecord))
-                .thenApply(e -> !e.isEmpty() ? e.get(0) : null)
+                .thenApply(hc -> !hc.isEmpty() ? hc.get(0) : null)
                 .thenApply(Optional::ofNullable));
     }
 

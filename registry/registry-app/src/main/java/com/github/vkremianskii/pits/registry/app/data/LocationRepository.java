@@ -35,7 +35,7 @@ public class LocationRepository {
         return Mono.fromCompletionStage(dslContext.deleteFrom(TABLE).executeAsync()).then();
     }
 
-    public Mono<Void> put(String name, LocationType type) {
+    public Mono<Void> insert(String name, LocationType type) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_NAME, FIELD_TYPE)
                 .values(name, type.name().toLowerCase())

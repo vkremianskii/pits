@@ -22,14 +22,15 @@ class EquipmentRepositoryTests {
     }
 
     @Test
-    void should_put_and_get_equipment() {
-        sut.put("Dozer No.1", DOZER, null).block();
-        sut.put("Drill No.1", DRILL, null).block();
-        sut.put("Shovel No.1", SHOVEL, (short) 20).block();
-        sut.put("Truck No.1", TRUCK, null).block();
-
+    void should_insert_and_get_equipment() {
+        // when
+        sut.insert("Dozer No.1", DOZER, null).block();
+        sut.insert("Drill No.1", DRILL, null).block();
+        sut.insert("Shovel No.1", SHOVEL, (short) 20).block();
+        sut.insert("Truck No.1", TRUCK, null).block();
         var equipment = sut.getEquipment().block();
 
+        // then
         assertThat(equipment).hasSize(4);
         assertThat(equipment).hasAtLeastOneElementOfType(Dozer.class);
         assertThat(equipment).hasAtLeastOneElementOfType(Drill.class);
@@ -40,10 +41,10 @@ class EquipmentRepositoryTests {
     @Test
     void should_set_equipment_state() {
         // given
-        sut.put(1, "Truck No.1", TRUCK, null).block();
-        sut.put(2, "Truck No.2", TRUCK, null).block();
-        sut.put(3, "Truck No.3", TRUCK, null).block();
-        sut.put(4, "Truck No.4", TRUCK, null).block();
+        sut.insert(1, "Truck No.1", TRUCK, null).block();
+        sut.insert(2, "Truck No.2", TRUCK, null).block();
+        sut.insert(3, "Truck No.3", TRUCK, null).block();
+        sut.insert(4, "Truck No.4", TRUCK, null).block();
 
         // when
         sut.setEquipmentState(1, TruckState.EMPTY).block();
@@ -77,7 +78,7 @@ class EquipmentRepositoryTests {
     @Test
     void should_set_equipment_position() {
         // given
-        sut.put(1, "Truck No.1", TRUCK, null).block();
+        sut.insert(1, "Truck No.1", TRUCK, null).block();
 
         // when
         sut.setEquipmentPosition(1, new Position(41.1494512, -8.6107884, 86)).block();
@@ -95,7 +96,7 @@ class EquipmentRepositoryTests {
     @Test
     void should_set_equipment_payload() {
         // given
-        sut.put(1, "Truck No.1", TRUCK, null).block();
+        sut.insert(1, "Truck No.1", TRUCK, null).block();
 
         // when
         sut.setEquipmentPayload(1, 10).block();

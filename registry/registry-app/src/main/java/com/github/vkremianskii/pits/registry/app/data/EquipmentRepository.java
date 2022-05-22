@@ -31,7 +31,7 @@ public class EquipmentRepository {
     private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
     private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
     private static final Field<Short> FIELD_ELEVATION = field("elevation", Short.class);
-    private static final Field<Short> FIELD_PAYLOAD = field("payload", Short.class);
+    private static final Field<Integer> FIELD_PAYLOAD = field("payload", Integer.class);
     private static final Field<Short> FIELD_LOAD_RADIUS = field("load_radius", Short.class);
 
     private static final Map<EquipmentState, String> STATE_TO_FULL_NAME = Map.of(
@@ -54,14 +54,14 @@ public class EquipmentRepository {
         return Mono.fromCompletionStage(dslContext.deleteFrom(TABLE).executeAsync()).then();
     }
 
-    public Mono<Void> put(String name, EquipmentType type, Short loadRadius) {
+    public Mono<Void> insert(String name, EquipmentType type, Short loadRadius) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
                 .values(name, type.name(), loadRadius)
                 .executeAsync()).then();
     }
 
-    public Mono<Void> put(int equipmentId, String name, EquipmentType type, Short loadRadius) {
+    public Mono<Void> insert(int equipmentId, String name, EquipmentType type, Short loadRadius) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
                 .values(equipmentId, name, type.name(), loadRadius)
@@ -100,7 +100,7 @@ public class EquipmentRepository {
 
     public Mono<Void> setEquipmentPayload(int equipmentId, int payload) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
-                .set(FIELD_PAYLOAD, (short) payload)
+                .set(FIELD_PAYLOAD, payload)
                 .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }
@@ -113,7 +113,7 @@ public class EquipmentRepository {
         final var latitude = record.get(FIELD_LATITUDE);
         final var longitude = record.get(FIELD_LONGITUDE);
         final var elevation = record.get(FIELD_ELEVATION);
-        final var payload = Optional.ofNullable(record.get(FIELD_PAYLOAD));
+        final var payload = record.get(FIELD_PAYLOAD);
         final var loadRadius = Optional.ofNullable(record.get(FIELD_LOAD_RADIUS));
 
         Position position = null;
@@ -144,7 +144,7 @@ public class EquipmentRepository {
                     name,
                     fullNameToState(stateName, TruckState.class),
                     position,
-                    payload.map(Short::intValue).orElse(null));
+                    payload);
         };
     }
 

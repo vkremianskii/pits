@@ -23,14 +23,12 @@ class LocationRepositoryTests {
     }
 
     @Test
-    void should_put_and_get_locations() {
-        // given
-        sut.put( "Dump No.1", DUMP).block();
-        sut.put("Face No.1", FACE).block();
-        sut.put("Hole No.1", HOLE).block();
-        sut.put("Stockpile No.1", STOCKPILE).block();
-
+    void should_insert_and_get_locations() {
         // when
+        sut.insert( "Dump No.1", DUMP).block();
+        sut.insert("Face No.1", FACE).block();
+        sut.insert("Hole No.1", HOLE).block();
+        sut.insert("Stockpile No.1", STOCKPILE).block();
         var locations = sut.getLocations().block();
 
         // then

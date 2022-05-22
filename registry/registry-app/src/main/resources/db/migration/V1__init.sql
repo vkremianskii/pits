@@ -12,7 +12,7 @@ CREATE TABLE equipment
     latitude numeric(10, 8),
     longitude numeric(11, 8),
     elevation smallint,
-    payload smallint,
+    payload integer,
     load_radius smallint
 );
 

@@ -20,7 +20,7 @@ class EquipmentListenersTests {
         sut.handlePositionChanged(new EquipmentPositionChanged(1, 41.1494512, -8.6107884, 86));
 
         // then
-        verify(positionRepository).put(1, 41.1494512, -8.6107884, 86);
+        verify(positionRepository).insert(1, 41.1494512, -8.6107884, 86);
     }
 
     @Test
@@ -29,6 +29,6 @@ class EquipmentListenersTests {
         sut.handlePayloadChanged(new EquipmentPayloadChanged(1, 10));
 
         // then
-        verify(payloadRepository).put(1, 10);
+        verify(payloadRepository).insert(1, 10);
     }
 }
