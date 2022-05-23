@@ -10,17 +10,14 @@ sourceCompatibility = 17
 dependencies {
     implementation project(':core:core-geo')
     implementation project(':core:core-types')
+    implementation project(':core:core-web')
     implementation project(':registry:registry-client')
 
-    implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-jooq'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.flywaydb:flyway-core'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
     testRuntimeOnly 'com.h2database:h2'
