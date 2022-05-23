@@ -18,3 +18,4 @@ integration:
 logging:
   level:
     root: INFO
+    com.github.vkremianskii.pits: DEBUG
