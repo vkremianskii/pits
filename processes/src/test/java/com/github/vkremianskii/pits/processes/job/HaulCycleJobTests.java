@@ -13,6 +13,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 class HaulCycleJobTests {
+
     RegistryClient registryClient = mock(RegistryClient.class);
     HaulCycleService haulCycleService = mock(HaulCycleService.class);
     HaulCycleJob sut = new HaulCycleJob(registryClient, haulCycleService);
@@ -37,6 +38,24 @@ class HaulCycleJobTests {
         verify(haulCycleService).computeHaulCycles(
                 same(truck2),
                 argThat(shovels -> shovels.size() == 1 && shovels.get(0).getId() == 2));
+        verifyNoMoreInteractions(haulCycleService);
+    }
+
+    @Test
+    void should_compute_haul_cycles_for_all_trucks_and_not_rethrow() {
+        // given
+        var truck1 = new Truck(1, "Truck No.1", null, null, null);
+        var truck2 = new Truck(2, "Truck No.2", null, null, null);
+        when(registryClient.getEquipment()).thenReturn(Mono.just(List.of(truck1, truck2)));
+        when(haulCycleService.computeHaulCycles(truck1, List.of())).thenReturn(Mono.error(new RuntimeException()));
+        when(haulCycleService.computeHaulCycles(truck2, List.of())).thenReturn(Mono.empty());
+
+        // when
+        sut.computeHaulCycles();
+
+        // then
+        verify(haulCycleService).computeHaulCycles(truck1, List.of());
+        verify(haulCycleService).computeHaulCycles(truck2, List.of());
         verifyNoMoreInteractions(haulCycleService);
     }
 }

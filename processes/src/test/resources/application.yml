@@ -3,4 +3,9 @@ spring:
     url: jdbc:h2:mem:test;MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE
   rabbitmq:
     listener:
-      auto-startup: false
+      simple:
+        auto-startup: false
+
+jobs:
+  haul-cycle:
+    cron: "* * * 31 2 *" # never

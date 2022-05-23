@@ -1,4 +1,5 @@
 spring:
   rabbitmq:
     listener:
-      auto-startup: false
+      simple:
+        auto-startup: false

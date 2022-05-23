@@ -26,7 +26,7 @@ class RegistryClientTests {
         stubFor(get(urlPathEqualTo("/equipment")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
-                .withBody("""       
+                .withBody("""
                         [{
                             "id": 1,
                             "name": "Dozer No.1",

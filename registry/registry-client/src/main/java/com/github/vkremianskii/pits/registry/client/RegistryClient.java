@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 public class RegistryClient {
     private final WebClient webClient;
@@ -27,7 +28,8 @@ public class RegistryClient {
                 .uri("/equipment")
                 .retrieve()
                 .bodyToFlux(Equipment.class)
-                .collectList();
+                .collectList()
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
@@ -37,7 +39,8 @@ public class RegistryClient {
                 .bodyValue(new UpdateEquipmentStateRequest(state))
                 .retrieve()
                 .toBodilessEntity()
-                .then();
+                .then()
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<List<Location>> getLocations() {
@@ -45,6 +48,7 @@ public class RegistryClient {
                 .uri("/locations")
                 .retrieve()
                 .bodyToFlux(Location.class)
-                .collectList();
+                .collectList()
+                .subscribeOn(boundedElastic());
     }
 }

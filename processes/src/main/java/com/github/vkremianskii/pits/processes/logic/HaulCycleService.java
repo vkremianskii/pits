@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ import java.util.TreeMap;
 import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
 import static java.util.Objects.requireNonNull;
+import static reactor.core.scheduler.Schedulers.parallel;
 
 @Service
 public class HaulCycleService {
@@ -55,7 +55,7 @@ public class HaulCycleService {
         LOG.info("Computing truck '{}' haul cycles", truck.getId());
         return haulCycleRepository.getLastHaulCycleForTruck(truck.getId())
                 .flatMap(c -> computeHaulCycles(truck, c.orElse(null)))
-                .then();
+                .subscribeOn(parallel());
     }
 
     private Mono<Void> computeHaulCycles(Truck truck, @Nullable HaulCycle lastHaulCycle) {
@@ -73,14 +73,13 @@ public class HaulCycleService {
                 .orElse(null);
 
         return Mono.zip(positions, payloads, lastPosition, lastPayload)
-                .map(__ -> computeHaulCycles(
+                .flatMap(__ -> computeHaulCycles(
                         truck,
                         mergeRecords(__.getT1(), __.getT2()),
                         startState,
                         __.getT3().orElse(null),
                         __.getT4().orElse(null),
-                        lastHaulCycle))
-                .then();
+                        lastHaulCycle));
     }
 
     private Mono<Void> computeHaulCycles(Truck truck,
@@ -179,8 +178,7 @@ public class HaulCycleService {
         return Optional.ofNullable(state)
                 .map(s -> {
                     LOG.info("Updating truck '{}' state in registry: {}", truck.getId(), s);
-                    registryClient.updateEquipmentState(truck.getId(), s).block();
-                    return Mono.<Void>empty();
+                    return registryClient.updateEquipmentState(truck.getId(), s);
                 })
                 .orElse(Mono.empty());
     }

@@ -3,4 +3,5 @@ spring:
     url: jdbc:h2:mem:test;MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE
   rabbitmq:
     listener:
-      auto-startup: false
+      simple:
+        auto-startup: false

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
@@ -26,23 +27,28 @@ public class HaulCycleJob {
         this.haulCycleService = requireNonNull(haulCycleService);
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "${jobs.haul-cycle.cron}")
     public void computeHaulCycles() {
-        try {
-            LOG.info("Haul cycle computation started");
-            final var equipment = registryClient.getEquipment().block();
-            final var trucks = equipment.stream()
-                    .filter(e -> e.getType() == TRUCK)
-                    .map(e -> (Truck) e)
-                    .toList();
-            final var shovels = equipment.stream()
-                    .filter(e -> e.getType() == SHOVEL)
-                    .map(e -> (Shovel) e)
-                    .toList();
-            trucks.forEach(truck -> haulCycleService.computeHaulCycles(truck, shovels).block());
-            LOG.info("Haul cycle computation finished");
-        } catch (Exception e) {
-            LOG.error("Haul cycle computation failed", e);
-        }
+        LOG.info("Haul cycle computation started");
+        registryClient.getEquipment()
+                .flatMap(equipment -> {
+                    final var trucks = equipment.stream()
+                            .filter(e -> e.getType() == TRUCK)
+                            .map(e -> (Truck) e)
+                            .toList();
+                    final var shovels = equipment.stream()
+                            .filter(e -> e.getType() == SHOVEL)
+                            .map(e -> (Shovel) e)
+                            .toList();
+                    return Mono.when(trucks.stream()
+                            .map(truck -> haulCycleService.computeHaulCycles(truck, shovels))
+                            .toList());
+                })
+                .doOnSuccess(__ -> LOG.info("Haul cycle computation finished"))
+                .onErrorResume(e -> {
+                    LOG.error("Haul cycle computation failed", e);
+                    return Mono.empty();
+                })
+                .block();
     }
 }
