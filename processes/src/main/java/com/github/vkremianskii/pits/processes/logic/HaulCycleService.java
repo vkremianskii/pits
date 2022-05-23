@@ -8,6 +8,7 @@ import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
+import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -36,13 +38,16 @@ public class HaulCycleService {
     private final HaulCycleRepository haulCycleRepository;
     private final EquipmentPositionRepository positionRepository;
     private final EquipmentPayloadRepository payloadRepository;
+    private final RegistryClient registryClient;
 
     public HaulCycleService(HaulCycleRepository haulCycleRepository,
                             EquipmentPositionRepository positionRepository,
-                            EquipmentPayloadRepository payloadRepository) {
+                            EquipmentPayloadRepository payloadRepository,
+                            RegistryClient registryClient) {
         this.haulCycleRepository = requireNonNull(haulCycleRepository);
         this.positionRepository = requireNonNull(positionRepository);
         this.payloadRepository = requireNonNull(payloadRepository);
+        this.registryClient = requireNonNull(registryClient);
     }
 
     public Mono<Void> computeHaulCycles(Truck truck, List<Shovel> shovels) {
@@ -79,7 +84,7 @@ public class HaulCycleService {
     }
 
     private Mono<Void> computeHaulCycles(Truck truck,
-                                         TreeMap<Instant, ?> records,
+                                         TreeMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> records,
                                          @Nullable TruckState startState,
                                          @Nullable EquipmentPositionRecord startPosition,
                                          @Nullable EquipmentPayloadRecord startPayload,
@@ -95,10 +100,10 @@ public class HaulCycleService {
             haulCycles.add(haulCycle);
         }
 
-        for (final var record : records.values()) {
-            if (record instanceof EquipmentPositionRecord positionRecord) {
-                latitude = positionRecord.latitude();
-                longitude = positionRecord.longitude();
+        for (final var pair : records.values()) {
+            if (pair.left != null) {
+                latitude = pair.left.latitude();
+                longitude = pair.left.longitude();
                 if (state == TruckState.LOAD) {
                     if (haulCycle != null) {
                         final var startLoadLL = new LatLonPoint.Double(haulCycle.startLoadLatitude, haulCycle.startLoadLongitude);
@@ -107,13 +112,14 @@ public class HaulCycleService {
                         final var pointUTM = LLtoUTM(pointLL, WGS_84, new UTMPoint());
                         if (distance(startLoadUTM, pointUTM) > DEFAULT_SHOVEL_LOAD_RADIUS) {
                             state = TruckState.HAUL;
-                            haulCycle.endLoadTimestamp = positionRecord.insertTimestamp();
+                            haulCycle.endLoadTimestamp = pair.left.insertTimestamp();
                             haulCycle.endLoadPayload = payload;
                         }
                     }
                 }
-            } else if (record instanceof EquipmentPayloadRecord payloadRecord) {
-                payload = payloadRecord.payload();
+            }
+            if (pair.right != null) {
+                payload = pair.right.payload();
                 if (state == null || state == TruckState.EMPTY || state == TruckState.WAIT_LOAD) {
                     if (payload > PAYLOAD_THRESHOLD) {
                         state = TruckState.LOAD;
@@ -121,19 +127,19 @@ public class HaulCycleService {
                             haulCycle = new MutableHaulCycle();
                             haulCycles.add(haulCycle);
                         }
-                        haulCycle.startLoadTimestamp = payloadRecord.insertTimestamp();
+                        haulCycle.startLoadTimestamp = pair.right.insertTimestamp();
                         haulCycle.startLoadLatitude = latitude;
                         haulCycle.startLoadLongitude = longitude;
                     }
                 } else if (state == TruckState.HAUL) {
                     if (haulCycle != null && haulCycle.endLoadPayload - payload > PAYLOAD_THRESHOLD) {
                         state = TruckState.UNLOAD;
-                        haulCycle.startUnloadTimestamp = payloadRecord.insertTimestamp();
+                        haulCycle.startUnloadTimestamp = pair.right.insertTimestamp();
                     }
                 } else if (state == TruckState.UNLOAD) {
                     if (haulCycle != null && payload < PAYLOAD_THRESHOLD) {
                         state = TruckState.EMPTY;
-                        haulCycle.endUnloadTimestamp = payloadRecord.insertTimestamp();
+                        haulCycle.endUnloadTimestamp = pair.right.insertTimestamp();
                         haulCycle = null;
                     }
                 }
@@ -170,17 +176,28 @@ public class HaulCycleService {
             }
         }
 
-        return Mono.empty();
+        return Optional.ofNullable(state)
+                .map(s -> {
+                    LOG.info("Updating truck '{}' state in registry: {}", truck.getId(), s);
+                    registryClient.updateEquipmentState(truck.getId(), s).block();
+                    return Mono.<Void>empty();
+                })
+                .orElse(Mono.empty());
     }
 
-    private static TreeMap<Instant, ?> mergeRecords(List<EquipmentPositionRecord> positions,
-                                                    List<EquipmentPayloadRecord> payloads) {
-        final var records = new TreeMap<Instant, Object>();
+    private static TreeMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> mergeRecords(List<EquipmentPositionRecord> positions,
+                                                                                                        List<EquipmentPayloadRecord> payloads) {
+        final var records = new TreeMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>>();
         for (final var record : positions) {
-            records.put(record.insertTimestamp(), record);
+            records.put(record.insertTimestamp(), new Pair<>(record, null));
         }
         for (final var record : payloads) {
-            records.put(record.insertTimestamp(), record);
+            records.compute(record.insertTimestamp(), (key, existing) -> {
+                if (existing == null) {
+                    return new Pair<>(null, record);
+                }
+                return new Pair<>(existing.left, record);
+            });
         }
         return records;
     }
@@ -253,6 +270,16 @@ public class HaulCycleService {
                     ", startUnloadTimestamp=" + startUnloadTimestamp +
                     ", endUnloadTimestamp=" + endUnloadTimestamp +
                     '}';
+        }
+    }
+
+    private static class Pair<L, R> {
+        public L left;
+        public R right;
+
+        public Pair(L left, R right) {
+            this.left = left;
+            this.right = right;
         }
     }
 }

@@ -1,14 +1,13 @@
 -- Equipment
 
 CREATE TYPE equipment_type AS ENUM ('dozer', 'drill', 'shovel', 'truck');
-CREATE TYPE equipment_state AS ENUM ('truck_empty', 'truck_wait_load', 'truck_load', 'truck_haul', 'truck_unload');
 
 CREATE TABLE equipment
 (
     id serial NOT NULL PRIMARY KEY,
     name varchar(64) NOT NULL,
     type equipment_type NOT NULL,
-    state equipment_state,
+    state varchar(32),
     latitude numeric(10, 8),
     longitude numeric(11, 8),
     elevation smallint,

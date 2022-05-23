@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static org.mockito.Mockito.when;
-import static reactor.core.publisher.Mono.just;
 
 @WebFluxTest
 class LocationControllerTests {
@@ -30,7 +30,7 @@ class LocationControllerTests {
     void should_get_locations() {
         // given
         when(locationRepository.getLocations())
-                .thenReturn(just(List.of(
+                .thenReturn(Mono.just(List.of(
                         new Dump(1, "Dump No.1"),
                         new Face(2, "Face No.1"),
                         new Hole(3, "Hole No.1"),

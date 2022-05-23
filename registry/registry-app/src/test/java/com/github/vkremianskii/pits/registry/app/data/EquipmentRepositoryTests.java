@@ -39,7 +39,7 @@ class EquipmentRepositoryTests {
     }
 
     @Test
-    void should_set_equipment_state() {
+    void should_update_equipment_state() {
         // given
         sut.insert(1, "Truck No.1", TRUCK, null).block();
         sut.insert(2, "Truck No.2", TRUCK, null).block();
@@ -47,10 +47,10 @@ class EquipmentRepositoryTests {
         sut.insert(4, "Truck No.4", TRUCK, null).block();
 
         // when
-        sut.setEquipmentState(1, TruckState.EMPTY).block();
-        sut.setEquipmentState(2, TruckState.LOAD).block();
-        sut.setEquipmentState(3, TruckState.HAUL).block();
-        sut.setEquipmentState(4, TruckState.UNLOAD).block();
+        sut.updateEquipmentState(1, TruckState.EMPTY).block();
+        sut.updateEquipmentState(2, TruckState.LOAD).block();
+        sut.updateEquipmentState(3, TruckState.HAUL).block();
+        sut.updateEquipmentState(4, TruckState.UNLOAD).block();
 
         // then
         var truck1 = sut.getEquipmentById(1).block();
@@ -76,12 +76,12 @@ class EquipmentRepositoryTests {
     }
 
     @Test
-    void should_set_equipment_position() {
+    void should_update_equipment_position() {
         // given
         sut.insert(1, "Truck No.1", TRUCK, null).block();
 
         // when
-        sut.setEquipmentPosition(1, new Position(41.1494512, -8.6107884, 86)).block();
+        sut.updateEquipmentPosition(1, new Position(41.1494512, -8.6107884, 86)).block();
 
         // then
         var equipment = sut.getEquipmentById(1).block();
@@ -94,12 +94,12 @@ class EquipmentRepositoryTests {
     }
 
     @Test
-    void should_set_equipment_payload() {
+    void should_update_equipment_payload() {
         // given
         sut.insert(1, "Truck No.1", TRUCK, null).block();
 
         // when
-        sut.setEquipmentPayload(1, 10).block();
+        sut.updateEquipmentPayload(1, 10).block();
 
         // then
         var equipment = sut.getEquipmentById(1).block();

@@ -3,10 +3,7 @@ package com.github.vkremianskii.pits.registry.client;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Drill;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.registry.types.model.equipment.*;
 import com.github.vkremianskii.pits.registry.types.model.location.Dump;
 import com.github.vkremianskii.pits.registry.types.model.location.Face;
 import com.github.vkremianskii.pits.registry.types.model.location.Hole;
@@ -68,6 +65,25 @@ class RegistryClientTests {
         assertThat(equipment).hasAtLeastOneElementOfType(Shovel.class);
         assertThat(equipment).hasAtLeastOneElementOfType(Truck.class);
         verify(getRequestedFor(urlPathEqualTo("/equipment")));
+    }
+
+    @Test
+    void should_update_equipment_state(WireMockRuntimeInfo wmRuntimeInfo) {
+        // given
+        stubFor(post(urlPathEqualTo("/equipment/1/state"))
+                .willReturn(aResponse().withStatus(200)));
+        var sut = newClient(wmRuntimeInfo);
+
+        // when
+        sut.updateEquipmentState(1, TruckState.EMPTY).block();
+
+        // then
+        verify(postRequestedFor(urlPathEqualTo("/equipment/1/state"))
+                .withRequestBody(equalToJson("""
+                        {
+                            "state": "EMPTY"
+                        }
+                        """)));
     }
 
     @Test

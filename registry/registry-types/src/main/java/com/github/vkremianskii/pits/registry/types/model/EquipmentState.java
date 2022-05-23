@@ -25,4 +25,11 @@ public abstract class EquipmentState {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+    @Override
+    public String toString() {
+        return "EquipmentState{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

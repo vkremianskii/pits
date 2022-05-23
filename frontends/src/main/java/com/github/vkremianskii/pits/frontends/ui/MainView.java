@@ -143,7 +143,7 @@ public class MainView {
                 (int) equipmentIdComboBox.getSelectedItem(),
                 (int) payloadSpinner.getValue()));
 
-        Flux.interval(Duration.ofSeconds(3))
+        Flux.interval(Duration.ofMillis(1_500))
                 .flatMap(__ -> refreshEquipment())
                 .subscribe();
     }
@@ -207,7 +207,7 @@ public class MainView {
         elevationSpinner.setEnabled(false);
 
         final var payloadLabel = new JLabel("Payload");
-        payloadSpinner = new JSpinner(new SpinnerNumberModel(DEFAULT_PAYLOAD, 0, 450, 1));
+        payloadSpinner = new JSpinner(new SpinnerNumberModel(DEFAULT_PAYLOAD, 0, 500_000, 1_000));
         payloadSpinner.setMaximumSize(new Dimension(Integer.MAX_VALUE, payloadSpinner.getPreferredSize().height));
         payloadSpinner.setEnabled(false);
 

@@ -21,7 +21,7 @@ public class EquipmentListeners {
 
     @RabbitListener(queues = QUEUE_EQUIPMENT_POSITION)
     void handlePositionChanged(EquipmentPositionChanged message) {
-        equipmentRepository.setEquipmentPosition(
+        equipmentRepository.updateEquipmentPosition(
                 message.getEquipmentId(),
                 new Position(
                         message.getLatitude(),
@@ -31,7 +31,7 @@ public class EquipmentListeners {
 
     @RabbitListener(queues = QUEUE_EQUIPMENT_PAYLOAD)
     void handlePayloadChanged(EquipmentPayloadChanged message) {
-        equipmentRepository.setEquipmentPayload(
+        equipmentRepository.updateEquipmentPayload(
                 message.getEquipmentId(),
                 message.getPayload());
     }

@@ -6,7 +6,9 @@ import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
+import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +23,12 @@ public class HaulCycleServiceTests {
     HaulCycleRepository haulCycleRepository = mock(HaulCycleRepository.class);
     EquipmentPositionRepository positionRepository = mock(EquipmentPositionRepository.class);
     EquipmentPayloadRepository payloadRepository = mock(EquipmentPayloadRepository.class);
-    HaulCycleService sut = new HaulCycleService(haulCycleRepository, positionRepository, payloadRepository);
+    RegistryClient registryClient = mock(RegistryClient.class);
+    HaulCycleService sut = new HaulCycleService(
+            haulCycleRepository,
+            positionRepository,
+            payloadRepository,
+            registryClient);
 
     @Test
     void should_compute_haul_cycles__empty_db() {
@@ -50,6 +57,7 @@ public class HaulCycleServiceTests {
         verifyNoMoreInteractions(haulCycleRepository);
         verifyNoMoreInteractions(positionRepository);
         verifyNoMoreInteractions(payloadRepository);
+        verifyNoInteractions(registryClient);
     }
 
     @Test
@@ -73,6 +81,7 @@ public class HaulCycleServiceTests {
                         new EquipmentPayloadRecord(3, 1, 30_000, Instant.ofEpochSecond(4)),
                         new EquipmentPayloadRecord(4, 1, 15_000, Instant.ofEpochSecond(6)),
                         new EquipmentPayloadRecord(5, 1, 0, Instant.ofEpochSecond(7)))));
+        when(registryClient.updateEquipmentState(eq(1), any())).thenReturn(Mono.empty());
 
         // when
         sut.computeHaulCycles(truck, emptyList()).block();
@@ -94,9 +103,11 @@ public class HaulCycleServiceTests {
         verify(positionRepository).getRecordsForEquipmentAfter(1, Instant.EPOCH);
         verify(payloadRepository).getLastRecordForEquipmentBefore(1, Instant.EPOCH);
         verify(payloadRepository).getRecordsForEquipmentAfter(1, Instant.EPOCH);
+        verify(registryClient).updateEquipmentState(1, TruckState.EMPTY);
         verifyNoMoreInteractions(haulCycleRepository);
         verifyNoMoreInteractions(positionRepository);
         verifyNoMoreInteractions(payloadRepository);
+        verifyNoMoreInteractions(registryClient);
     }
 
     @Test
@@ -134,6 +145,7 @@ public class HaulCycleServiceTests {
                         new EquipmentPayloadRecord(4, 1, 15_000, Instant.ofEpochSecond(7)),
                         new EquipmentPayloadRecord(5, 1, 30_000, Instant.ofEpochSecond(8)),
                         new EquipmentPayloadRecord(6, 1, 15_000, Instant.ofEpochSecond(10)))));
+        when(registryClient.updateEquipmentState(eq(1), any())).thenReturn(Mono.empty());
 
         // when
         sut.computeHaulCycles(truck, emptyList()).block();
@@ -166,8 +178,10 @@ public class HaulCycleServiceTests {
         verify(positionRepository).getRecordsForEquipmentAfter(1, Instant.ofEpochSecond(1));
         verify(payloadRepository).getLastRecordForEquipmentBefore(1, Instant.ofEpochSecond(1));
         verify(payloadRepository).getRecordsForEquipmentAfter(1, Instant.ofEpochSecond(1));
+        verify(registryClient).updateEquipmentState(1, TruckState.UNLOAD);
         verifyNoMoreInteractions(haulCycleRepository);
         verifyNoMoreInteractions(positionRepository);
         verifyNoMoreInteractions(payloadRepository);
+        verifyNoMoreInteractions(registryClient);
     }
 }

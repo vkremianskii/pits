@@ -9,12 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.github.vkremianskii.pits.registry.types.model.equipment.TruckState.HAUL;
-import static org.mockito.Mockito.when;
-import static reactor.core.publisher.Mono.just;
+import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @WebFluxTest
 class EquipmentControllerTests {
@@ -29,7 +33,7 @@ class EquipmentControllerTests {
     void should_get_equipment() {
         // given
         when(equipmentRepository.getEquipment())
-                .thenReturn(just(List.of(
+                .thenReturn(Mono.just(List.of(
                         new Dozer(1, "Dozer No.1", null, null),
                         new Drill(2, "Drill No.1", null, null),
                         new Shovel(3, "Shovel No.1", 20, null, null),
@@ -67,5 +71,68 @@ class EquipmentControllerTests {
                             "payload": 10
                         }]
                         """, true);
+    }
+
+    @Test
+    void should_update_equipment_state() {
+        // given
+        when(equipmentRepository.getEquipmentById(1))
+                .thenReturn(Mono.just(Optional.of(new Truck(1, "Truck No.1", null, null, null))));
+        when(equipmentRepository.updateEquipmentState(1, TruckState.EMPTY))
+                .thenReturn(Mono.empty());
+
+        // expect
+        webClient.post()
+                .uri("/equipment/{id}/state", 1)
+                .contentType(APPLICATION_JSON)
+                .bodyValue("""
+                        {
+                            "state": "EMPTY"
+                        }
+                        """)
+                .exchange()
+                .expectStatus().isOk();
+        verify(equipmentRepository).updateEquipmentState(1, TruckState.EMPTY);
+    }
+
+    @Test
+    void should_update_equipment_state__equipment_not_found() {
+        // given
+        when(equipmentRepository.getEquipmentById(1)).thenReturn(Mono.just(Optional.empty()));
+
+        // expect
+        webClient.post()
+                .uri("/equipment/{id}/state", 1)
+                .contentType(APPLICATION_JSON)
+                .bodyValue("""
+                        {
+                            "state": "EMPTY"
+                        }
+                        """)
+                .exchange()
+                .expectStatus().isEqualTo(NOT_FOUND);
+        verify(equipmentRepository).getEquipmentById(1);
+        verifyNoMoreInteractions(equipmentRepository);
+    }
+
+    @Test
+    void should_update_equipment_state__invalid_state() {
+        // given
+        when(equipmentRepository.getEquipmentById(1))
+                .thenReturn(Mono.just(Optional.of(new Dozer(1, "Dozer No.1", null, null))));
+
+        // expect
+        webClient.post()
+                .uri("/equipment/{id}/state", 1)
+                .contentType(APPLICATION_JSON)
+                .bodyValue("""
+                        {
+                            "state": "EMPTY"
+                        }
+                        """)
+                .exchange()
+                .expectStatus().isEqualTo(BAD_REQUEST);
+        verify(equipmentRepository).getEquipmentById(1);
+        verifyNoMoreInteractions(equipmentRepository);
     }
 }

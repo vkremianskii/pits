@@ -1,9 +1,9 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
+import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.*;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -82,14 +82,14 @@ public class EquipmentRepository {
                 .thenApply(Optional::ofNullable));
     }
 
-    public Mono<Void> setEquipmentState(int equipmentId, EquipmentState state) {
+    public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
                 .set(FIELD_STATE, stateToFullName(state))
                 .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }
 
-    public Mono<Void> setEquipmentPosition(int equipmentId, Position position) {
+    public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
                 .set(FIELD_LATITUDE, BigDecimal.valueOf(position.getLatitude()))
                 .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.getLongitude()))
@@ -98,7 +98,7 @@ public class EquipmentRepository {
                 .executeAsync()).then();
     }
 
-    public Mono<Void> setEquipmentPayload(int equipmentId, int payload) {
+    public Mono<Void> updateEquipmentPayload(int equipmentId, int payload) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
                 .set(FIELD_PAYLOAD, payload)
                 .where(FIELD_ID.eq(equipmentId))
