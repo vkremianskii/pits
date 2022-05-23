@@ -2,8 +2,8 @@ package com.github.vkremianskii.pits.communicator.app.grpc;
 
 import com.github.vkremianskii.pits.communicator.grpc.*;
 import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceImplBase;
-import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
-import com.github.vkremianskii.pits.registry.types.dto.EquipmentPayloadChanged;
+import com.github.vkremianskii.pits.core.types.dto.EquipmentPayloadChanged;
+import com.github.vkremianskii.pits.core.types.dto.EquipmentPositionChanged;
 import io.grpc.stub.StreamObserver;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 

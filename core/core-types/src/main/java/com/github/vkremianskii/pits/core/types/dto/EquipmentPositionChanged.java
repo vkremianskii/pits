@@ -1,4 +1,4 @@
-package com.github.vkremianskii.pits.registry.types.dto;
+package com.github.vkremianskii.pits.core.types.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

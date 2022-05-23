@@ -6,8 +6,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 17
 
 dependencies {
-    api "org.springframework:spring-web:${springVersion}"
+    api project(':core:core-types')
 
-    implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    api "org.springframework:spring-web:${springVersion}"
 }

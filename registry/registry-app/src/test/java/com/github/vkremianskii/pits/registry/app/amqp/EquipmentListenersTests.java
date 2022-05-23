@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.registry.app.amqp;
 
+import com.github.vkremianskii.pits.core.types.dto.EquipmentPayloadChanged;
+import com.github.vkremianskii.pits.core.types.dto.EquipmentPositionChanged;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
-import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
-import com.github.vkremianskii.pits.registry.types.dto.EquipmentPayloadChanged;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.junit.jupiter.api.Test;
 

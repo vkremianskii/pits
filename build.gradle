@@ -22,7 +22,7 @@ subprojects {
         springVersion = "5.3.20"
         reactorVersion = "3.4.18"
         reactorNettyVersion = "1.0.19"
-        jacksonVersion = "2.13.2"
+        jacksonVersion = "2.13.3"
 
         // gRPC
         grpcVersion = "1.46.0"

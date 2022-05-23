@@ -9,9 +9,9 @@ sourceCompatibility = 17
 
 dependencies {
     implementation project(':core:core-geo')
+    implementation project(':core:core-types')
     implementation project(':registry:registry-client')
 
-    implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-jooq'

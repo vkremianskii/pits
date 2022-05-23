@@ -1,9 +1,9 @@
 package com.github.vkremianskii.pits.processes.amqp;
 
+import com.github.vkremianskii.pits.core.types.dto.EquipmentPayloadChanged;
+import com.github.vkremianskii.pits.core.types.dto.EquipmentPositionChanged;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
-import com.github.vkremianskii.pits.registry.types.dto.EquipmentPositionChanged;
-import com.github.vkremianskii.pits.registry.types.dto.EquipmentPayloadChanged;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
