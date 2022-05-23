@@ -1,6 +1,5 @@
 package com.github.vkremianskii.pits.frontends.ui;
 
-import com.bbn.openmap.proj.Ellipsoid;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
 import com.github.vkremianskii.pits.frontends.grpc.GrpcClient;
@@ -29,7 +28,7 @@ import java.util.TreeMap;
 import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
 import static com.bbn.openmap.proj.coords.UTMPoint.UTMtoLL;
-import static java.awt.Color.*;
+import static java.awt.Color.WHITE;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
