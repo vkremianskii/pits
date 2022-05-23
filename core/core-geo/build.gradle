@@ -1,0 +1,3 @@
+dependencies {
+    api files('libs/openmap-5.1.15.jar')
+}

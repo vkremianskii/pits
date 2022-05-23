@@ -3,6 +3,10 @@ rootProject.name = 'pits'
 include 'processes'
 include 'frontends'
 
+include 'core:core-geo'
+include 'core:core-types'
+include 'core:core-web'
+
 include 'registry:registry-app'
 include 'registry:registry-client'
 include 'registry:registry-types'
