@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
+import com.github.vkremianskii.pits.core.web.CoreAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.types.model.location.Dump;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -18,6 +20,7 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 
 @WebFluxTest
+@Import(CoreAutoConfiguration.class)
 class LocationControllerTests {
     @MockBean
     EquipmentRepository equipmentRepository;

@@ -1,4 +1,4 @@
-package com.github.vkremianskii.pits.registry.app.error;
+package com.github.vkremianskii.pits.core.web.error;
 
 public class NotFoundError extends RuntimeException {
 

@@ -5,3 +5,5 @@ spring:
     listener:
       simple:
         auto-startup: false
+
+debug: true

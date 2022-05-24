@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.app.error.InternalServerError;
+import com.github.vkremianskii.pits.core.web.error.InternalServerError;
 import com.github.vkremianskii.pits.registry.types.model.Location;
 import com.github.vkremianskii.pits.registry.types.model.LocationType;
 import com.github.vkremianskii.pits.registry.types.model.location.Dump;

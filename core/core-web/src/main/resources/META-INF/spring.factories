@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vkremianskii.pits.core.web.AutoConfiguration
+com.github.vkremianskii.pits.core.web.CoreAutoConfiguration
