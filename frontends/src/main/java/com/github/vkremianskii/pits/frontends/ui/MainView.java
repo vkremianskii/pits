@@ -142,7 +142,7 @@ public class MainView {
                 (int) equipmentIdComboBox.getSelectedItem(),
                 (int) payloadSpinner.getValue()));
 
-        Flux.interval(Duration.ofMillis(1_500))
+        Flux.interval(Duration.ofSeconds(1))
                 .flatMap(__ -> refreshEquipment())
                 .subscribe();
     }

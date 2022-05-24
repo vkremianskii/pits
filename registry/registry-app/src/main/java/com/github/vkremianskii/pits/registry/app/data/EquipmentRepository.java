@@ -1,13 +1,14 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
+import com.github.vkremianskii.pits.registry.app.error.InternalServerError;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -19,35 +20,36 @@ import java.util.Optional;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
 
 @Repository
 public class EquipmentRepository {
     private static final Table<?> TABLE = table("equipment");
     private static final Field<Integer> FIELD_ID = field("id", Integer.class);
     private static final Field<String> FIELD_NAME = field("name", String.class);
-    private static final Field<EquipmentTypeEnum> FIELD_TYPE = field("type", EquipmentTypeEnum.class);
-    private static final Field<EquipmentStateEnum> FIELD_STATE = field("state", EquipmentStateEnum.class);
+    private static final Field<String> FIELD_TYPE = field("type", String.class);
+    private static final Field<String> FIELD_STATE = field("state", String.class);
     private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
     private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
     private static final Field<Short> FIELD_ELEVATION = field("elevation", Short.class);
     private static final Field<Integer> FIELD_PAYLOAD = field("payload", Integer.class);
     private static final Field<Short> FIELD_LOAD_RADIUS = field("load_radius", Short.class);
 
-    private static final Map<EquipmentType, EquipmentTypeEnum> TYPE_TO_TYPE_ENUM = Map.of(
-            DOZER, EquipmentTypeEnum.DOZER,
-            DRILL, EquipmentTypeEnum.DRILL,
-            SHOVEL, EquipmentTypeEnum.SHOVEL,
-            TRUCK, EquipmentTypeEnum.TRUCK);
+    private static final Map<EquipmentType, String> TYPE_TO_VALUE = Map.of(
+            DOZER, "dozer",
+            DRILL, "drill",
+            SHOVEL, "shovel",
+            TRUCK, "truck");
 
-    private static final Map<EquipmentState, EquipmentStateEnum> STATE_TO_STATE_ENUM = Map.of(
-            TruckState.EMPTY, EquipmentStateEnum.TRUCK_EMPTY,
-            TruckState.WAIT_LOAD, EquipmentStateEnum.TRUCK_WAIT_LOAD,
-            TruckState.LOAD, EquipmentStateEnum.TRUCK_LOAD,
-            TruckState.HAUL, EquipmentStateEnum.TRUCK_HAUL,
-            TruckState.UNLOAD, EquipmentStateEnum.TRUCK_UNLOAD);
+    private static final Map<EquipmentState, String> STATE_TO_VALUE = Map.of(
+            TruckState.EMPTY, "truck_empty",
+            TruckState.WAIT_LOAD, "truck_wait_load",
+            TruckState.LOAD, "truck_load",
+            TruckState.HAUL, "truck_haul",
+            TruckState.UNLOAD, "truck_unload");
 
-    private static final Map<EquipmentStateEnum, EquipmentState> STATE_ENUM_TO_STATE = STATE_TO_STATE_ENUM.entrySet().stream()
+    private static final Map<String, EquipmentState> VALUE_TO_STATE = STATE_TO_VALUE.entrySet().stream()
             .collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
 
     private final DSLContext dslContext;
@@ -63,14 +65,14 @@ public class EquipmentRepository {
     public Mono<Void> insert(String name, EquipmentType type, Short loadRadius) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                .values(name, typeEnumFromType(type), loadRadius)
+                .values(name, valueFromType(type), loadRadius)
                 .executeAsync()).then();
     }
 
     public Mono<Void> insert(int equipmentId, String name, EquipmentType type, Short loadRadius) {
         return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
                 .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                .values(equipmentId, name, typeEnumFromType(type), loadRadius)
+                .values(equipmentId, name, valueFromType(type), loadRadius)
                 .executeAsync()).then();
     }
 
@@ -90,7 +92,7 @@ public class EquipmentRepository {
 
     public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
         return Mono.fromCompletionStage(dslContext.update(TABLE)
-                .set(FIELD_STATE, stateEnumFromState(state))
+                .set(FIELD_STATE, valueFromState(state))
                 .where(FIELD_ID.eq(equipmentId))
                 .executeAsync()).then();
     }
@@ -128,92 +130,53 @@ public class EquipmentRepository {
         }
 
         return switch (type) {
-            case DOZER -> new Dozer(
+            case "dozer" -> new Dozer(
                     id,
                     name,
-                    stateFromStateEnum(state, DozerState.class),
+                    stateFromValue(state, DozerState.class),
                     position);
-            case DRILL -> new Drill(
+            case "drill" -> new Drill(
                     id,
                     name,
-                    stateFromStateEnum(state, DrillState.class),
+                    stateFromValue(state, DrillState.class),
                     position);
-            case SHOVEL -> new Shovel(
+            case "shovel" -> new Shovel(
                     id,
                     name,
                     loadRadius.map(Short::intValue).orElse(0),
-                    stateFromStateEnum(state, ShovelState.class),
+                    stateFromValue(state, ShovelState.class),
                     position);
-            case TRUCK -> new Truck(
+            case "truck" -> new Truck(
                     id,
                     name,
-                    stateFromStateEnum(state, TruckState.class),
+                    stateFromValue(state, TruckState.class),
                     position,
                     payload);
+            default -> throw new InternalServerError("Invalid equipment type: " + type);
         };
     }
 
-    private static EquipmentTypeEnum typeEnumFromType(EquipmentType type) {
-        return TYPE_TO_TYPE_ENUM.get(type);
+    private static String valueFromType(EquipmentType type) {
+        if (!TYPE_TO_VALUE.containsKey(type)) {
+            throw new InternalServerError("Unsupported equipment type: " + type);
+        }
+        return TYPE_TO_VALUE.get(type);
     }
 
-    private static EquipmentStateEnum stateEnumFromState(EquipmentState state) {
-        return STATE_TO_STATE_ENUM.get(state);
+    private static String valueFromState(EquipmentState state) {
+        if (!STATE_TO_VALUE.containsKey(state)) {
+            throw new InternalServerError("Unsupported equipment state: " + state);
+        }
+        return STATE_TO_VALUE.get(state);
     }
 
-    private static <T> T stateFromStateEnum(EquipmentStateEnum value, Class<T> cls) {
+    private static <T> T stateFromValue(String value, Class<T> cls) {
         if (value == null) {
             return null;
         }
-        final var state = STATE_ENUM_TO_STATE.get(value);
-        if (state == null) {
-            return null;
+        if (!VALUE_TO_STATE.containsKey(value)) {
+            throw new InternalServerError("Invalid equipment state: " + value);
         }
-        return cls.cast(state);
-    }
-
-    private enum EquipmentTypeEnum implements EnumType {
-        DOZER,
-        DRILL,
-        SHOVEL,
-        TRUCK;
-
-        @Override
-        public @NotNull String getLiteral() {
-            return name().toLowerCase();
-        }
-
-        @Override
-        public @Nullable Schema getSchema() {
-            return schema("public");
-        }
-
-        @Override
-        public @Nullable String getName() {
-            return "equipment_type";
-        }
-    }
-
-    private enum EquipmentStateEnum implements EnumType {
-        TRUCK_EMPTY,
-        TRUCK_WAIT_LOAD,
-        TRUCK_LOAD,
-        TRUCK_HAUL,
-        TRUCK_UNLOAD;
-
-        @Override
-        public @NotNull String getLiteral() {
-            return name().toLowerCase();
-        }
-
-        @Override
-        public @Nullable Schema getSchema() {
-            return schema("public");
-        }
-
-        @Override
-        public @Nullable String getName() {
-            return "equipment_state";
-        }
+        return cls.cast(VALUE_TO_STATE.get(value));
     }
 }

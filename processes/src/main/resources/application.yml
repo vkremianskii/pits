@@ -18,7 +18,7 @@ integration:
 
 jobs:
   haul-cycle:
-    cron: "0 * * * * *"
+    cron: "*/5 * * * * *"
 
 logging:
   level:

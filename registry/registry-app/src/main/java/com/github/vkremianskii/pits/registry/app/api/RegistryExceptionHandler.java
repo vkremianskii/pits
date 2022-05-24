@@ -1,6 +1,7 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
 import com.github.vkremianskii.pits.registry.app.error.BadRequestError;
+import com.github.vkremianskii.pits.registry.app.error.InternalServerError;
 import com.github.vkremianskii.pits.registry.app.error.NotFoundError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,12 @@ public class RegistryExceptionHandler {
     public ResponseEntity<Void> handleNotFoundError(NotFoundError e) {
         LOG.error("", e);
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Void> handleInternalServerError(InternalServerError e) {
+        LOG.error("", e);
+        return ResponseEntity.internalServerError().build();
     }
 
     @ExceptionHandler
