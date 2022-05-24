@@ -31,11 +31,11 @@ Open-pit mining system – exercise in software engineering.
 - jOOQ
 - Flyway
 - gRPC
+- Swing
 - Gradle
 - PostgreSQL
 - RabbitMQ
 - Docker
-- Swing
 
 ## Installation
 

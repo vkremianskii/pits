@@ -2,6 +2,7 @@ package com.github.vkremianskii.pits.processes.logic;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
+import com.github.vkremianskii.pits.core.types.Pair;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
@@ -16,16 +17,16 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
 import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
+import static com.github.vkremianskii.pits.core.types.Pair.pair;
+import static com.github.vkremianskii.pits.core.types.PairUtils.pairsToMap;
 import static java.util.Objects.requireNonNull;
 import static reactor.core.scheduler.Schedulers.parallel;
 
@@ -51,14 +52,15 @@ public class HaulCycleService {
     }
 
     public Mono<Void> computeHaulCycles(Truck truck, List<Shovel> shovels) {
-        // TODO: take shovel positions into account
         LOG.info("Computing truck '{}' haul cycles", truck.getId());
         return haulCycleRepository.getLastHaulCycleForTruck(truck.getId())
-                .flatMap(c -> computeHaulCycles(truck, c.orElse(null)))
+                .flatMap(c -> computeHaulCycles(truck, shovels, c.orElse(null)))
                 .subscribeOn(parallel());
     }
 
-    private Mono<Void> computeHaulCycles(Truck truck, @Nullable HaulCycle lastHaulCycle) {
+    private Mono<Void> computeHaulCycles(Truck truck,
+                                         List<Shovel> shovels,
+                                         @Nullable HaulCycle lastHaulCycle) {
         final var startTimestamp = Optional.ofNullable(lastHaulCycle)
                 .map(HaulCycle::getInsertTimestamp)
                 .orElse(Instant.EPOCH);
@@ -68,22 +70,66 @@ public class HaulCycleService {
         final var lastPosition = positionRepository.getLastRecordForEquipmentBefore(truck.getId(), startTimestamp);
         final var lastPayload = payloadRepository.getLastRecordForEquipmentBefore(truck.getId(), startTimestamp);
 
+        final var shovelToPositions = Flux.concat(shovels.stream()
+                        .map(shovel -> positionRepository.getRecordsForEquipmentAfter(shovel.getId(), startTimestamp)
+                                .map(records -> pair(shovel, records)))
+                        .toList())
+                .collectList();
+
+        final var shovelToLastPosition = Flux.concat(shovels.stream()
+                        .map(shovel -> positionRepository.getLastRecordForEquipmentBefore(shovel.getId(), startTimestamp)
+                                .map(record -> pair(shovel, record)))
+                        .toList())
+                .collectList();
+
         final var startState = Optional.ofNullable(lastHaulCycle)
                 .map(HaulCycleService::truckStateFromHaulCycle)
                 .orElse(null);
 
-        return Mono.zip(positions, payloads, lastPosition, lastPayload)
+        return Mono.zip(positions, payloads, lastPosition, lastPayload, shovelToPositions, shovelToLastPosition)
                 .flatMap(__ -> computeHaulCycles(
                         truck,
                         mergeRecords(__.getT1(), __.getT2()),
+                        shovelToOrderedPositions(pairsToMap(__.getT5()), pairsToMap(__.getT6())),
                         startState,
                         __.getT3().orElse(null),
                         __.getT4().orElse(null),
                         lastHaulCycle));
     }
 
+    private Map<Shovel, SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions(Map<Shovel, List<EquipmentPositionRecord>> shovelToPosition,
+                                                                                              Map<Shovel, Optional<EquipmentPositionRecord>> shovelToLastPosition) {
+        final var result = new HashMap<Shovel, SortedMap<Instant, EquipmentPositionRecord>>();
+        for (final var shovel : shovelToPosition.keySet()) {
+            if (!result.containsKey(shovel)) {
+                result.put(shovel, new TreeMap<>());
+            }
+        }
+        for (final var shovel : shovelToLastPosition.keySet()) {
+            if (!result.containsKey(shovel)) {
+                result.put(shovel, new TreeMap<>());
+            }
+        }
+
+        final var shovels = result.keySet();
+        for (final var shovel : shovels) {
+            final var orderedPositions = result.get(shovel);
+
+            final var lastPosition = shovelToLastPosition.get(shovel);
+            lastPosition.ifPresent(p -> orderedPositions.put(p.insertTimestamp(), p));
+
+            final var positions = shovelToPosition.get(shovel);
+            for (final var position : positions) {
+                orderedPositions.put(position.insertTimestamp(), position);
+            }
+        }
+
+        return result;
+    }
+
     private Mono<Void> computeHaulCycles(Truck truck,
-                                         TreeMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> records,
+                                         SortedMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> orderedRecords,
+                                         Map<Shovel, SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions,
                                          @Nullable TruckState startState,
                                          @Nullable EquipmentPositionRecord startPosition,
                                          @Nullable EquipmentPayloadRecord startPayload,
@@ -99,26 +145,49 @@ public class HaulCycleService {
             haulCycles.add(haulCycle);
         }
 
-        for (final var pair : records.values()) {
-            if (pair.left != null) {
-                latitude = pair.left.latitude();
-                longitude = pair.left.longitude();
-                if (state == TruckState.LOAD) {
+        for (final var entry : orderedRecords.entrySet()) {
+            final var timestamp = entry.getKey();
+            final var records = entry.getValue();
+            final var positionRecord = records.getLeft();
+            final var payloadRecord = records.getRight();
+            if (positionRecord != null) {
+                latitude = positionRecord.latitude();
+                longitude = positionRecord.longitude();
+                if (state == null || state == TruckState.EMPTY) {
+                    for (final var shovelEntry : shovelToOrderedPositions.entrySet()) {
+                        final var shovel = shovelEntry.getKey();
+                        final var shovelPositions = shovelEntry.getValue();
+                        final var shovelPositionsBefore = shovelPositions.headMap(timestamp);
+                        final var shovelPosition = !shovelPositionsBefore.isEmpty() ? shovelPositionsBefore.get(shovelPositionsBefore.lastKey()) : null;
+                        if (shovelPosition != null) {
+                            final var pointLL = new LatLonPoint.Double(latitude, longitude);
+                            final var shovelLL = new LatLonPoint.Double(shovelPosition.latitude(), shovelPosition.longitude());
+                            final var distance = distance(pointLL, shovelLL);
+                            if (distance <= shovel.getLoadRadius()) {
+                                state = TruckState.WAIT_LOAD;
+                                if (haulCycle == null) {
+                                    haulCycle = new MutableHaulCycle();
+                                    haulCycles.add(haulCycle);
+                                }
+                                haulCycle.shovelId = shovel.getId();
+                                haulCycle.waitLoadTimestamp = timestamp;
+                            }
+                        }
+                    }
+                } else if (state == TruckState.LOAD) {
                     if (haulCycle != null) {
                         final var startLoadLL = new LatLonPoint.Double(haulCycle.startLoadLatitude, haulCycle.startLoadLongitude);
-                        final var startLoadUTM = LLtoUTM(startLoadLL, WGS_84, new UTMPoint());
                         final var pointLL = new LatLonPoint.Double(latitude, longitude);
-                        final var pointUTM = LLtoUTM(pointLL, WGS_84, new UTMPoint());
-                        if (distance(startLoadUTM, pointUTM) > DEFAULT_SHOVEL_LOAD_RADIUS) {
+                        if (distance(startLoadLL, pointLL) > DEFAULT_SHOVEL_LOAD_RADIUS) {
                             state = TruckState.HAUL;
-                            haulCycle.endLoadTimestamp = pair.left.insertTimestamp();
+                            haulCycle.endLoadTimestamp = timestamp;
                             haulCycle.endLoadPayload = payload;
                         }
                     }
                 }
             }
-            if (pair.right != null) {
-                payload = pair.right.payload();
+            if (payloadRecord != null) {
+                payload = payloadRecord.payload();
                 if (state == null || state == TruckState.EMPTY || state == TruckState.WAIT_LOAD) {
                     if (payload > PAYLOAD_THRESHOLD) {
                         state = TruckState.LOAD;
@@ -126,19 +195,19 @@ public class HaulCycleService {
                             haulCycle = new MutableHaulCycle();
                             haulCycles.add(haulCycle);
                         }
-                        haulCycle.startLoadTimestamp = pair.right.insertTimestamp();
+                        haulCycle.startLoadTimestamp = timestamp;
                         haulCycle.startLoadLatitude = latitude;
                         haulCycle.startLoadLongitude = longitude;
                     }
                 } else if (state == TruckState.HAUL) {
                     if (haulCycle != null && haulCycle.endLoadPayload - payload > PAYLOAD_THRESHOLD) {
                         state = TruckState.UNLOAD;
-                        haulCycle.startUnloadTimestamp = pair.right.insertTimestamp();
+                        haulCycle.startUnloadTimestamp = timestamp;
                     }
                 } else if (state == TruckState.UNLOAD) {
                     if (haulCycle != null && payload < PAYLOAD_THRESHOLD) {
                         state = TruckState.EMPTY;
-                        haulCycle.endUnloadTimestamp = pair.right.insertTimestamp();
+                        haulCycle.endUnloadTimestamp = timestamp;
                         haulCycle = null;
                     }
                 }
@@ -183,18 +252,18 @@ public class HaulCycleService {
                 .orElse(Mono.empty());
     }
 
-    private static TreeMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> mergeRecords(List<EquipmentPositionRecord> positions,
-                                                                                                        List<EquipmentPayloadRecord> payloads) {
+    private static SortedMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> mergeRecords(List<EquipmentPositionRecord> positions,
+                                                                                                          List<EquipmentPayloadRecord> payloads) {
         final var records = new TreeMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>>();
         for (final var record : positions) {
-            records.put(record.insertTimestamp(), new Pair<>(record, null));
+            records.put(record.insertTimestamp(), pair(record, null));
         }
         for (final var record : payloads) {
             records.compute(record.insertTimestamp(), (key, existing) -> {
                 if (existing == null) {
-                    return new Pair<>(null, record);
+                    return pair(null, record);
                 }
-                return new Pair<>(existing.left, record);
+                return pair(existing.getLeft(), record);
             });
         }
         return records;
@@ -218,6 +287,12 @@ public class HaulCycleService {
             return TruckState.WAIT_LOAD;
         }
         return null;
+    }
+
+    private static double distance(LatLonPoint left, LatLonPoint right) {
+        final var leftUTM = LLtoUTM(left, WGS_84, new UTMPoint());
+        final var rightUTM = LLtoUTM(right, WGS_84, new UTMPoint());
+        return distance(leftUTM, rightUTM);
     }
 
     private static double distance(UTMPoint left, UTMPoint right) {
@@ -268,16 +343,6 @@ public class HaulCycleService {
                     ", startUnloadTimestamp=" + startUnloadTimestamp +
                     ", endUnloadTimestamp=" + endUnloadTimestamp +
                     '}';
-        }
-    }
-
-    private static class Pair<L, R> {
-        public L left;
-        public R right;
-
-        public Pair(L left, R right) {
-            this.left = left;
-            this.right = right;
         }
     }
 }
