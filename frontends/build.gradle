@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 version '1.0-SNAPSHOT'
@@ -13,4 +14,8 @@ dependencies {
     implementation "io.projectreactor:reactor-core:${reactorVersion}"
 
     implementation files('libs/jmapviewer-2.8.jar')
+}
+
+application {
+    mainClass = 'com.github.vkremianskii.pits.frontends.Application'
 }
