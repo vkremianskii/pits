@@ -17,6 +17,7 @@ import java.util.Map;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.*;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.*;
+import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class LocationRepository {
@@ -38,19 +39,22 @@ public class LocationRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.fromCompletionStage(dslContext.deleteFrom(TABLE).executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(String name, LocationType type) {
-        return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
-                .columns(FIELD_NAME, FIELD_TYPE)
-                .values(name, valueFromType(type))
-                .executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
+                        .columns(FIELD_NAME, FIELD_TYPE)
+                        .values(name, valueFromType(type))
+                        .execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<List<Location>> getLocations() {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE).fetchAsync()
-                .thenApply(r -> r.map(LocationRepository::locationFromRecord)));
+        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
+                        .fetch(r -> r.map(LocationRepository::locationFromRecord)))
+                .subscribeOn(boundedElastic());
     }
 
     private static Location locationFromRecord(org.jooq.Record record) {

@@ -2,7 +2,7 @@ package com.github.vkremianskii.pits.processes.logic.fsm;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
-import com.github.vkremianskii.pits.processes.logic.MutableHaulCycle;
+import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
@@ -16,7 +16,7 @@ import java.util.SortedMap;
 
 import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
-import static com.github.vkremianskii.pits.processes.logic.MutableHaulCycle.mutableHaulCycle;
+import static com.github.vkremianskii.pits.processes.model.MutableHaulCycle.mutableHaulCycle;
 import static java.util.Objects.requireNonNull;
 
 public class HaulCycleFsm {

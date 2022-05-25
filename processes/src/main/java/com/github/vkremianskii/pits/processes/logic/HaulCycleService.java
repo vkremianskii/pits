@@ -8,6 +8,7 @@ import com.github.vkremianskii.pits.processes.logic.fsm.HaulCycleFsmFactory;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
+import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
@@ -24,7 +25,6 @@ import java.util.*;
 import static com.github.vkremianskii.pits.core.types.Pair.pair;
 import static com.github.vkremianskii.pits.core.types.PairUtils.pairsToMap;
 import static java.util.Objects.requireNonNull;
-import static reactor.core.scheduler.Schedulers.parallel;
 
 @Service
 public class HaulCycleService {
@@ -49,10 +49,8 @@ public class HaulCycleService {
     }
 
     public Mono<Void> computeHaulCycles(Truck truck, List<Shovel> shovels) {
-        LOG.info("Computing truck '{}' haul cycles", truck.getId());
         return haulCycleRepository.getLastHaulCycleForTruck(truck.getId())
-                .flatMap(c -> computeHaulCycles(truck, shovels, c.orElse(null)))
-                .subscribeOn(parallel());
+                .flatMap(c -> computeHaulCycles(truck, shovels, c.orElse(null)));
     }
 
     private Mono<Void> computeHaulCycles(Truck truck,

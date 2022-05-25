@@ -6,6 +6,11 @@ import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.SimpleTransactionStatus;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -16,7 +21,8 @@ class HaulCycleJobTests {
 
     RegistryClient registryClient = mock(RegistryClient.class);
     HaulCycleService haulCycleService = mock(HaulCycleService.class);
-    HaulCycleJob sut = new HaulCycleJob(registryClient, haulCycleService);
+    PlatformTransactionManager transactionManager = new TransactionManagerStub();
+    HaulCycleJob sut = new HaulCycleJob(registryClient, haulCycleService, transactionManager);
 
     @Test
     void should_compute_haul_cycles_for_all_trucks() {
@@ -57,5 +63,21 @@ class HaulCycleJobTests {
         verify(haulCycleService).computeHaulCycles(truck1, List.of());
         verify(haulCycleService).computeHaulCycles(truck2, List.of());
         verifyNoMoreInteractions(haulCycleService);
+    }
+
+    static class TransactionManagerStub implements PlatformTransactionManager {
+
+        @Override
+        public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
+            return new SimpleTransactionStatus();
+        }
+
+        @Override
+        public void commit(TransactionStatus status) throws TransactionException {
+        }
+
+        @Override
+        public void rollback(TransactionStatus status) throws TransactionException {
+        }
     }
 }

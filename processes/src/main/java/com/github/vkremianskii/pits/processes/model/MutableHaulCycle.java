@@ -1,6 +1,5 @@
-package com.github.vkremianskii.pits.processes.logic;
+package com.github.vkremianskii.pits.processes.model;
 
-import com.github.vkremianskii.pits.processes.model.HaulCycle;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;

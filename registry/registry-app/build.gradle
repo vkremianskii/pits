@@ -8,14 +8,15 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 17
 
 dependencies {
+    implementation project(':core:core-data')
     implementation project(':core:core-web')
     implementation project(':registry:registry-types')
 
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    implementation 'org.springframework.boot:spring-boot-starter-jooq'
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.flywaydb:flyway-core'
 
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'com.h2database:h2'

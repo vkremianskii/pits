@@ -6,6 +6,7 @@ import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -15,6 +16,8 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
+import static reactor.core.scheduler.Schedulers.boundedElastic;
+import static reactor.core.scheduler.Schedulers.parallel;
 
 @Repository
 public class EquipmentPayloadRepository {
@@ -31,49 +34,50 @@ public class EquipmentPayloadRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.fromCompletionStage(dslContext.deleteFrom(TABLE).executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(int equipmentId, int payload) {
-        return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
-                .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD)
-                .values(equipmentId, payload)
-                .executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
+                        .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD)
+                        .values(equipmentId, payload)
+                        .execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(int equipmentId, int payload, Instant insertTimestamp) {
-        return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
-                .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD, FIELD_INSERT_TIMESTAMP)
-                .values(equipmentId, payload, Timestamp.from(insertTimestamp))
-                .executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
+                        .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD, FIELD_INSERT_TIMESTAMP)
+                        .values(equipmentId, payload, Timestamp.from(insertTimestamp))
+                        .execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipment(int equipmentId) {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
-                .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
-                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                .fetchAsync()
-                .thenApply(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord))
-                .thenApply(e -> !e.isEmpty() ? e.get(0) : null)
-                .thenApply(Optional::ofNullable));
+        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
+                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
+                        .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                        .limit(1)
+                        .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipmentBefore(int equipmentId, Instant timestamp) {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
-                .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
-                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                .fetchAsync()
-                .thenApply(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord))
-                .thenApply(e -> !e.isEmpty() ? e.get(0) : null)
-                .thenApply(Optional::ofNullable));
+        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
+                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
+                        .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                        .limit(1)
+                        .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<List<EquipmentPayloadRecord>> getRecordsForEquipmentAfter(int equipmentId, Instant timestamp) {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
-                .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
-                .orderBy(FIELD_INSERT_TIMESTAMP)
-                .fetchAsync()
-                .thenApply(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)));
+        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
+                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
+                        .orderBy(FIELD_INSERT_TIMESTAMP)
+                        .fetch(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
+                .subscribeOn(boundedElastic());
     }
 
     private static EquipmentPayloadRecord recordFromJooqRecord(org.jooq.Record record) {

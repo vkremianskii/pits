@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
-import com.github.vkremianskii.pits.core.web.CoreAutoConfiguration;
+import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.types.model.Position;
@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @WebFluxTest
-@Import(CoreAutoConfiguration.class)
+@Import(CoreWebAutoConfiguration.class)
 class EquipmentControllerTests {
     @MockBean
     EquipmentRepository equipmentRepository;

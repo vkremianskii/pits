@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 import reactor.core.publisher.Mono;
 
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
@@ -20,11 +21,14 @@ public class HaulCycleJob {
 
     private final RegistryClient registryClient;
     private final HaulCycleService haulCycleService;
+    private final PlatformTransactionManager transactionManager;
 
     public HaulCycleJob(RegistryClient registryClient,
-                        HaulCycleService haulCycleService) {
+                        HaulCycleService haulCycleService,
+                        PlatformTransactionManager transactionManager) {
         this.registryClient = requireNonNull(registryClient);
         this.haulCycleService = requireNonNull(haulCycleService);
+        this.transactionManager = requireNonNull(transactionManager);
     }
 
     @Scheduled(cron = "${jobs.haul-cycle.cron}")
@@ -40,15 +44,20 @@ public class HaulCycleJob {
                             .filter(e -> e.getType() == SHOVEL)
                             .map(e -> (Shovel) e)
                             .toList();
-                    return Mono.when(trucks.stream()
-                            .map(truck -> haulCycleService.computeHaulCycles(truck, shovels))
-                            .toList());
+                    return Mono.when(trucks.stream().map(truck -> {
+                        LOG.info("Computing truck '{}' haul cycles", truck.getId());
+                        final var tx = transactionManager.getTransaction(null);
+                        return haulCycleService.computeHaulCycles(truck, shovels)
+                                .doOnSuccess(__ -> transactionManager.commit(tx))
+                                .onErrorResume(e -> {
+                                    LOG.error("Error while computing truck '" + truck.getId() + "' haul cycles", e);
+                                    transactionManager.rollback(tx);
+                                    return Mono.empty();
+                                });
+                    }).toList()).then();
                 })
                 .doOnSuccess(__ -> LOG.info("Haul cycle computation finished"))
-                .onErrorResume(e -> {
-                    LOG.error("Haul cycle computation failed", e);
-                    return Mono.empty();
-                })
+                .doOnError(e -> LOG.error("Haul cycle computation failed", e))
                 .block();
     }
 }

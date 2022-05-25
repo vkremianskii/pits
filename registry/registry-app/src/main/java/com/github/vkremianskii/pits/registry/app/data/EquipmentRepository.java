@@ -22,6 +22,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
+import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class EquipmentRepository {
@@ -59,58 +60,63 @@ public class EquipmentRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.fromCompletionStage(dslContext.deleteFrom(TABLE).executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(String name, EquipmentType type, Short loadRadius) {
-        return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
-                .columns(FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                .values(name, valueFromType(type), loadRadius)
-                .executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
+                        .columns(FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
+                        .values(name, valueFromType(type), loadRadius)
+                        .execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(int equipmentId, String name, EquipmentType type, Short loadRadius) {
-        return Mono.fromCompletionStage(dslContext.insertInto(TABLE)
-                .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                .values(equipmentId, name, valueFromType(type), loadRadius)
-                .executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
+                        .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
+                        .values(equipmentId, name, valueFromType(type), loadRadius)
+                        .execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<List<Equipment>> getEquipment() {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE).fetchAsync()
-                .thenApply(r -> r.map(EquipmentRepository::equipmentFromRecord)));
+        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
+                        .fetch(r -> r.map(EquipmentRepository::equipmentFromRecord)))
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<Equipment>> getEquipmentById(int equipmentId) {
-        return Mono.fromCompletionStage(dslContext.selectFrom(TABLE)
-                .where(FIELD_ID.eq(equipmentId))
-                .fetchAsync()
-                .thenApply(r -> r.map(EquipmentRepository::equipmentFromRecord))
-                .thenApply(e -> !e.isEmpty() ? e.get(0) : null)
-                .thenApply(Optional::ofNullable));
+        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
+                        .where(FIELD_ID.eq(equipmentId))
+                        .fetchOptional(r -> r.map(EquipmentRepository::equipmentFromRecord)))
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
-        return Mono.fromCompletionStage(dslContext.update(TABLE)
-                .set(FIELD_STATE, valueFromState(state))
-                .where(FIELD_ID.eq(equipmentId))
-                .executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
+                        .set(FIELD_STATE, valueFromState(state))
+                        .where(FIELD_ID.eq(equipmentId))
+                        .execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
-        return Mono.fromCompletionStage(dslContext.update(TABLE)
-                .set(FIELD_LATITUDE, BigDecimal.valueOf(position.getLatitude()))
-                .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.getLongitude()))
-                .set(FIELD_ELEVATION, (short) position.getElevation())
-                .where(FIELD_ID.eq(equipmentId))
-                .executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
+                        .set(FIELD_LATITUDE, BigDecimal.valueOf(position.getLatitude()))
+                        .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.getLongitude()))
+                        .set(FIELD_ELEVATION, (short) position.getElevation())
+                        .where(FIELD_ID.eq(equipmentId))
+                        .execute())
+                .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> updateEquipmentPayload(int equipmentId, int payload) {
-        return Mono.fromCompletionStage(dslContext.update(TABLE)
-                .set(FIELD_PAYLOAD, payload)
-                .where(FIELD_ID.eq(equipmentId))
-                .executeAsync()).then();
+        return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
+                        .set(FIELD_PAYLOAD, payload)
+                        .where(FIELD_ID.eq(equipmentId))
+                        .execute())
+                .subscribeOn(boundedElastic());
     }
 
     private static Equipment equipmentFromRecord(org.jooq.Record record) {
