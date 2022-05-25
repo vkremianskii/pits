@@ -19,8 +19,3 @@ integration:
 jobs:
   haul-cycle:
     cron: "*/15 * * * * *"
-
-logging:
-  level:
-    root: INFO
-    com.github.vkremianskii.pits: DEBUG

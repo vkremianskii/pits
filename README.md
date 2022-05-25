@@ -33,27 +33,44 @@ Open-pit mining system – exercise in software engineering.
 
 ## Technologies
 
+### Backend
+
 - Java 17
 - Spring Boot 2
 - jOOQ
 - Flyway
 - gRPC
-- Swing
 - Gradle
+
+### Infra
+
+- Docker
 - PostgreSQL
 - RabbitMQ
-- Docker
+- ELK
+
+### Other
+
+- Swing
+- JMapViewer
 
 ## Installation
 
-- `docker-compose -f docker/docker-compose.yml build registry processes communicator`
-- `docker-compose -f docker/docker-compose.yml up -d`
+- Start infra services: `docker-compose -f docker/docker-compose.yml up -d db adminer rabbitmq`
+- Build backend services: `docker-compose -f docker/docker-compose.yml build registry processes communicator`
+- Start backend services: `docker-compose -f docker/docker-compose.yml up -d registry processes communicator`
+- Optionally, start ELK Stack: `docker-compose -f docker/docker-compose.yml up -d elasticsearch logstash kibana`
+
+### Services
 
 |Service|Port|Protocol|
 |-|-|-|
-|PostgreSQL|5432|TCP|
-|RabbitMQ|5672,15672|TCP,HTTP|
 |Registry|8080|HTTP|
 |Processes|8081|HTTP|
 |Communicator|8082,8083|HTTP,gRPC|
 |Adminer|8090|HTTP|
+|PostgreSQL|5432|TCP|
+|RabbitMQ|5672,15672|TCP,HTTP|
+|Elasticsearch|9200,9300|HTTP,TCP
+|Logstash|12201|UDP
+|Kibana|5601|HTTP

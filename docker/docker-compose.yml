@@ -1,23 +1,5 @@
 services:
-  db:
-    image: postgres:14.3
-    environment:
-      POSTGRES_DB: pits
-      POSTGRES_USER: pits
-      POSTGRES_PASSWORD: pits
-    volumes:
-      - ./db:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
-  adminer:
-    image: adminer:4.8.1
-    ports:
-      - "8090:8080"
-  rabbitmq:
-    image: rabbitmq:3.10.2-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+  # Backend
   registry:
     image: pits/registry
     build:
@@ -50,3 +32,59 @@ services:
     ports:
       - "8082:8082"
       - "8083:8083"
+
+  # Infra
+  db:
+    image: postgres:14.3
+    environment:
+      POSTGRES_DB: pits
+      POSTGRES_USER: pits
+      POSTGRES_PASSWORD: pits
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+  adminer:
+    image: adminer:4.8.1
+    ports:
+      - "8090:8080"
+  rabbitmq:
+    image: rabbitmq:3.10.2-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  # ELK
+  elasticsearch:
+    image: elasticsearch:${ELK_VERSION}
+    environment:
+      discovery.type: single-node
+    volumes:
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    networks:
+      - elastic
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  kibana:
+    image: kibana:${ELK_VERSION}
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+    ports:
+      - "5601:5601"
+  logstash:
+    image: logstash:${ELK_VERSION}
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    networks:
+      - elastic
+    ports:
+      - "12201:12201/udp"
+
+networks:
+  elastic:
+    driver: bridge

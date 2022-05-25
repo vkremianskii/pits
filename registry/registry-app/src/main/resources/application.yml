@@ -11,8 +11,3 @@ spring:
     port: 5672
     username: guest
     password: guest
-
-logging:
-  level:
-    root: INFO
-    com.github.vkremianskii.pits: DEBUG
