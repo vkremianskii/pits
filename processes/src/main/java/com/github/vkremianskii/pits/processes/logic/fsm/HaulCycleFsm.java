@@ -1,7 +1,8 @@
-package com.github.vkremianskii.pits.processes.logic;
+package com.github.vkremianskii.pits.processes.logic.fsm;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
+import com.github.vkremianskii.pits.processes.logic.MutableHaulCycle;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
@@ -22,8 +23,8 @@ public class HaulCycleFsm {
     private static final int PAYLOAD_THRESHOLD = 10_000; // kg
     private static final int DEFAULT_SHOVEL_LOAD_RADIUS = 20; // meters
 
-    private final Map<Shovel, SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions;
-    private final HaulCycleSink haulCycleSink;
+    private final Map<Shovel, ? extends SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions;
+    private final HaulCycleFsmSink haulCycleSink;
 
     private MutableHaulCycle haulCycle;
     private TruckState state;
@@ -31,8 +32,8 @@ public class HaulCycleFsm {
     private Double longitude;
     private Integer payload;
 
-    public HaulCycleFsm(Map<Shovel, SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions,
-                        HaulCycleSink haulCycleSink) {
+    public HaulCycleFsm(Map<Shovel, ? extends SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions,
+                        HaulCycleFsmSink haulCycleSink) {
         this.shovelToOrderedPositions = requireNonNull(shovelToOrderedPositions);
         this.haulCycleSink = requireNonNull(haulCycleSink);
     }

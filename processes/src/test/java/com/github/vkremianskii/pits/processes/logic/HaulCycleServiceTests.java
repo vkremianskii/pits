@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.processes.logic;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
+import com.github.vkremianskii.pits.processes.logic.fsm.HaulCycleFsmFactory;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
@@ -20,16 +21,18 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.*;
 
-public class HaulCycleServiceTests {
+class HaulCycleServiceTests {
     HaulCycleRepository haulCycleRepository = mock(HaulCycleRepository.class);
     EquipmentPositionRepository positionRepository = mock(EquipmentPositionRepository.class);
     EquipmentPayloadRepository payloadRepository = mock(EquipmentPayloadRepository.class);
     RegistryClient registryClient = mock(RegistryClient.class);
+    HaulCycleFsmFactory haulCycleFsmFactory = new HaulCycleFsmFactory();
     HaulCycleService sut = new HaulCycleService(
             haulCycleRepository,
             positionRepository,
             payloadRepository,
-            registryClient);
+            registryClient,
+            haulCycleFsmFactory);
 
     @Test
     void should_compute_haul_cycles__empty_db() {

@@ -4,6 +4,7 @@ import com.github.vkremianskii.pits.core.types.Pair;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
+import com.github.vkremianskii.pits.processes.logic.fsm.HaulCycleFsmFactory;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
@@ -22,7 +23,6 @@ import java.util.*;
 
 import static com.github.vkremianskii.pits.core.types.Pair.pair;
 import static com.github.vkremianskii.pits.core.types.PairUtils.pairsToMap;
-import static com.github.vkremianskii.pits.processes.logic.MutableHaulCycle.mutableHaulCycle;
 import static java.util.Objects.requireNonNull;
 import static reactor.core.scheduler.Schedulers.parallel;
 
@@ -34,15 +34,18 @@ public class HaulCycleService {
     private final EquipmentPositionRepository positionRepository;
     private final EquipmentPayloadRepository payloadRepository;
     private final RegistryClient registryClient;
+    private final HaulCycleFsmFactory haulCycleFsmFactory;
 
     public HaulCycleService(HaulCycleRepository haulCycleRepository,
                             EquipmentPositionRepository positionRepository,
                             EquipmentPayloadRepository payloadRepository,
-                            RegistryClient registryClient) {
+                            RegistryClient registryClient,
+                            HaulCycleFsmFactory haulCycleFsmFactory) {
         this.haulCycleRepository = requireNonNull(haulCycleRepository);
         this.positionRepository = requireNonNull(positionRepository);
         this.payloadRepository = requireNonNull(payloadRepository);
         this.registryClient = requireNonNull(registryClient);
+        this.haulCycleFsmFactory = requireNonNull(haulCycleFsmFactory);
     }
 
     public Mono<Void> computeHaulCycles(Truck truck, List<Shovel> shovels) {
@@ -123,7 +126,7 @@ public class HaulCycleService {
                                          @Nullable EquipmentPayloadRecord startPayload,
                                          @Nullable HaulCycle lastHaulCycle) {
         final var haulCycles = new ArrayList<MutableHaulCycle>();
-        final var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
+        final var haulCycleFsm = haulCycleFsmFactory.create(shovelToOrderedPositions, haulCycles::add);
         haulCycleFsm.initialize(
                 lastHaulCycle,
                 startPosition != null ? startPosition.latitude() : null,
