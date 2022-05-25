@@ -229,6 +229,7 @@ public class HaulCycleServiceTests {
                 .thenReturn(Mono.just(List.of(
                         new EquipmentPositionRecord(6, 3, 41.149017, -8.610865, 86, Instant.ofEpochSecond(7))
                 )));
+        when(registryClient.updateEquipmentState(1, TruckState.WAIT_LOAD)).thenReturn(Mono.empty());
 
         // when
         sut.computeHaulCycles(truck, List.of(shovel1, shovel2)).block();
