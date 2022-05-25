@@ -1,6 +1,7 @@
 package com.github.vkremianskii.pits.processes.model;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -34,5 +35,18 @@ public class EquipmentPayloadRecord {
 
     public Instant insertTimestamp() {
         return insertTimestamp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EquipmentPayloadRecord that = (EquipmentPayloadRecord) o;
+        return id == that.id && equipmentId == that.equipmentId && payload == that.payload && Objects.equals(insertTimestamp, that.insertTimestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, equipmentId, payload, insertTimestamp);
     }
 }
