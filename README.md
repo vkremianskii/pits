@@ -16,7 +16,7 @@ Open-pit mining system – exercise in software engineering.
 
 - Changes in equipment position and truck payload are persisted to *processes* database in real-time
 - Every N seconds, *processes* runs [HaulCycleJob](processes/src/main/java/com/github/vkremianskii/pits/processes/job/HaulCycleJob.java), which computes haul cycles for every truck
-- [HaulCycleService](processes/src/main/java/com/github/vkremianskii/pits/processes/logic/HaulCycleService.java) replays recorded events in a state machine, starting from the last persisted haul cycle
+- [HaulCycleService](processes/src/main/java/com/github/vkremianskii/pits/processes/logic/HaulCycleService.java) launches [HaulCycleFsm](processes/src/main/java/com/github/vkremianskii/pits/processes/logic/fsm/HaulCycleFsm.java) (a finite-state machine), and replays persisted events through it, starting from the latest haul cycle
 - After truck haul cycles are computed, they are persisted to *processes* database
 
 ## Architecture
