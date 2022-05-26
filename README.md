@@ -56,6 +56,12 @@ Open-pit mining system – exercise in software engineering.
 
 ## Installation
 
+### Requirements
+
+- Docker
+
+### Commands
+
 - Start infra services: `docker-compose -f docker/docker-compose.yml up -d db adminer rabbitmq`
 - Build backend services: `docker-compose -f docker/docker-compose.yml build registry processes communicator`
 - Start backend services: `docker-compose -f docker/docker-compose.yml up -d registry processes communicator`
