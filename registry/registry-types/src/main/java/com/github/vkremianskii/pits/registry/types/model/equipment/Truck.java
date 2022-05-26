@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class Truck extends Equipment {
-    private final Integer payload;
+    public final Integer payload;
 
     public Truck(int id,
                  String name,
@@ -19,14 +19,10 @@ public class Truck extends Equipment {
         this.payload = payload;
     }
 
-    public Integer getPayload() {
-        return payload;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Truck)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Truck truck = (Truck) o;
         return Objects.equals(payload, truck.payload);
@@ -35,5 +31,17 @@ public class Truck extends Equipment {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), payload);
+    }
+
+    @Override
+    public String toString() {
+        return "Truck{" +
+                "payload=" + payload +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", state=" + state +
+                ", position=" + position +
+                '}';
     }
 }

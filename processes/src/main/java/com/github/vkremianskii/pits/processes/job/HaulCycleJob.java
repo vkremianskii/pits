@@ -37,20 +37,20 @@ public class HaulCycleJob {
         registryClient.getEquipment()
                 .flatMap(equipment -> {
                     final var trucks = equipment.stream()
-                            .filter(e -> e.getType() == TRUCK)
+                            .filter(e -> e.type == TRUCK)
                             .map(e -> (Truck) e)
                             .toList();
                     final var shovels = equipment.stream()
-                            .filter(e -> e.getType() == SHOVEL)
+                            .filter(e -> e.type == SHOVEL)
                             .map(e -> (Shovel) e)
                             .toList();
                     return Mono.when(trucks.stream().map(truck -> {
-                        LOG.info("Computing truck '{}' haul cycles", truck.getId());
+                        LOG.info("Computing truck '{}' haul cycles", truck.id);
                         final var tx = transactionManager.getTransaction(null);
                         return haulCycleService.computeHaulCycles(truck, shovels)
                                 .doOnSuccess(__ -> transactionManager.commit(tx))
                                 .onErrorResume(e -> {
-                                    LOG.error("Error while computing truck '" + truck.getId() + "' haul cycles", e);
+                                    LOG.error("Error while computing truck '" + truck.id + "' haul cycles", e);
                                     transactionManager.rollback(tx);
                                     return Mono.empty();
                                 });

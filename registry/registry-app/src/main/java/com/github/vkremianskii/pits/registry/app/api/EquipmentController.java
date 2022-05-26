@@ -48,8 +48,8 @@ public class EquipmentController {
 
     private Mono<Void> updateEquipmentState(Equipment equipment, TextNode state) {
         return equipmentRepository.updateEquipmentState(
-                equipment.getId(),
-                deserializeEquipmentState(state, equipment.getType()));
+                equipment.id,
+                deserializeEquipmentState(state, equipment.type));
     }
 
     private EquipmentState deserializeEquipmentState(TextNode state, EquipmentType type) {

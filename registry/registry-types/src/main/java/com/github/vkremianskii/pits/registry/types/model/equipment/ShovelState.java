@@ -9,19 +9,7 @@ public class ShovelState extends EquipmentState {
         super(value);
     }
 
-    public static ShovelState[] values() {
-        return values;
-    }
-
     public static ShovelState valueOf(String name) {
-        if (name == null) {
-            throw new NullPointerException("name must not be null");
-        }
-        for (final var value : values()) {
-            if (value.name().equals(name)) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException("No shovel state with name '" + name + "'");
+        return valueOf(name, values);
     }
 }

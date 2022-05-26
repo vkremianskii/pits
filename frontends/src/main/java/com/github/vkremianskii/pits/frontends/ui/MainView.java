@@ -106,30 +106,30 @@ public class MainView {
             }
             final var equipmentId = (int) e.getItem();
             final var equipment = equipmentById.get(equipmentId);
-            final var position = Optional.ofNullable(equipment.getPosition());
-            final var state = Optional.ofNullable(equipment.getState());
+            final var position = Optional.ofNullable(equipment.position);
+            final var state = Optional.ofNullable(equipment.state);
 
             int payload = DEFAULT_PAYLOAD;
-            if (equipment.getType() == EquipmentType.TRUCK) {
+            if (equipment.type == EquipmentType.TRUCK) {
                 final var truck = (Truck) equipment;
-                if (truck.getPayload() != null) {
-                    payload = truck.getPayload();
+                if (truck.payload != null) {
+                    payload = truck.payload;
                 }
             }
 
-            nameTextField.setText(equipment.getName());
-            typeTextField.setText(equipment.getType().name());
-            stateTextField.setText(state.map(EquipmentState::name).orElse(""));
-            latitudeSpinner.setValue(position.map(Position::getLatitude).orElse(DEFAULT_LATITIUDE));
+            nameTextField.setText(equipment.name);
+            typeTextField.setText(equipment.type.name());
+            stateTextField.setText(state.map(s -> s.name).orElse(""));
+            latitudeSpinner.setValue(position.map(Position::latitude).orElse(DEFAULT_LATITIUDE));
             latitudeSpinner.setEnabled(true);
-            longitudeSpinner.setValue(position.map(Position::getLongitude).orElse(DEFAULT_LONGITUDE));
+            longitudeSpinner.setValue(position.map(Position::longitude).orElse(DEFAULT_LONGITUDE));
             longitudeSpinner.setEnabled(true);
-            elevationSpinner.setValue(position.map(Position::getElevation).orElse(DEFAULT_ELEVATION));
+            elevationSpinner.setValue(position.map(Position::elevation).orElse(DEFAULT_ELEVATION));
             elevationSpinner.setEnabled(true);
             payloadSpinner.setValue(payload);
-            payloadSpinner.setEnabled(equipment.getType() == EquipmentType.TRUCK);
+            payloadSpinner.setEnabled(equipment.type == EquipmentType.TRUCK);
             sendPositionButton.setEnabled(true);
-            sendPayloadButton.setEnabled(equipment.getType() == EquipmentType.TRUCK);
+            sendPayloadButton.setEnabled(equipment.type == EquipmentType.TRUCK);
         });
 
         sendPositionButton.addActionListener(e -> grpcClient.sendPositionChanged(
@@ -295,7 +295,7 @@ public class MainView {
     private Mono<Void> refreshEquipment() {
         return registryClient.getEquipment()
                 .doOnNext(equipment -> {
-                    final var newEquipmentById = equipment.stream().collect(toMap(Equipment::getId, identity()));
+                    final var newEquipmentById = equipment.stream().collect(toMap(e -> e.id, identity()));
                     if (newEquipmentById.equals(equipmentById)) {
                         return;
                     }
@@ -312,9 +312,9 @@ public class MainView {
         mapViewer.removeAllMapMarkers();
         mapViewer.removeAllMapPolygons();
         for (final var e : equipmentById.values()) {
-            equipmentIdComboBox.addItem(e.getId());
+            equipmentIdComboBox.addItem(e.id);
             mapMarkerFromEquipment(e).ifPresent(mapViewer::addMapMarker);
-            if (e.getType() == EquipmentType.SHOVEL) {
+            if (e.type == EquipmentType.SHOVEL) {
                 loadZoneFromShovel((Shovel) e).ifPresent(mapViewer::addMapPolygon);
             }
         }
@@ -324,18 +324,18 @@ public class MainView {
     }
 
     private static Optional<MapMarkerDot> mapMarkerFromEquipment(Equipment equipment) {
-        return Optional.ofNullable(equipment.getPosition())
+        return Optional.ofNullable(equipment.position)
                 .map(position -> {
-                    final var marker = new MapMarkerDot(position.getLatitude(), position.getLongitude());
-                    marker.setName(equipment.getName() + " (" + equipment.getId() + ")");
-                    marker.setBackColor(colorFromState(equipment.getState()));
+                    final var marker = new MapMarkerDot(position.latitude(), position.longitude());
+                    marker.setName(equipment.name + " (" + equipment.id + ")");
+                    marker.setBackColor(colorFromState(equipment.state));
                     return marker;
                 });
     }
 
     private static Optional<MapPolygon> loadZoneFromShovel(Shovel shovel) {
-        return Optional.ofNullable(shovel.getPosition())
-                .map(position -> newMapPolygon(position.getLatitude(), position.getLongitude(), shovel.getLoadRadius()));
+        return Optional.ofNullable(shovel.position)
+                .map(position -> newMapPolygon(position.latitude(), position.longitude(), shovel.loadRadius));
     }
 
     private static MapPolygon newMapPolygon(double latitude, double longitude, double radius) {

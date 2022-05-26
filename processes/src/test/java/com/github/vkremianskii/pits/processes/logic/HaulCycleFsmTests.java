@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.processes.logic;
 
+import com.bbn.openmap.geo.GeoArray;
 import com.github.vkremianskii.pits.processes.logic.fsm.HaulCycleFsm;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
@@ -72,7 +73,7 @@ class HaulCycleFsmTests {
         var haulCycles = new ArrayList<MutableHaulCycle>();
         var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
         var haulCycle = new HaulCycle(
-                1,
+                1L,
                 1,
                 Instant.ofEpochSecond(1),
                 2,

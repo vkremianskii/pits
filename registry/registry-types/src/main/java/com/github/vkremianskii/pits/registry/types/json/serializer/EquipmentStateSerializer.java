@@ -11,6 +11,6 @@ public class EquipmentStateSerializer extends JsonSerializer<EquipmentState> {
 
     @Override
     public void serialize(EquipmentState value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeString(value.name());
+        gen.writeString(value.name);
     }
 }

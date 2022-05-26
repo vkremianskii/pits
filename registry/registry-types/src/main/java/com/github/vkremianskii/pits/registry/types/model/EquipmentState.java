@@ -3,14 +3,10 @@ package com.github.vkremianskii.pits.registry.types.model;
 import java.util.Objects;
 
 public abstract class EquipmentState {
-    private final String name;
+    public final String name;
 
     protected EquipmentState(String name) {
         this.name = name;
-    }
-
-    public String name() {
-        return name;
     }
 
     @Override
@@ -28,8 +24,18 @@ public abstract class EquipmentState {
 
     @Override
     public String toString() {
-        return "EquipmentState{" +
-                "name='" + name + '\'' +
-                '}';
+        return name;
+    }
+
+    protected static <T extends EquipmentState> T valueOf(String name, T[] values) {
+        if (name == null) {
+            throw new NullPointerException("name must not be null");
+        }
+        for (final var value : values) {
+            if (value.name.equals(name)) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("No equipment state with name '" + name + "'");
     }
 }

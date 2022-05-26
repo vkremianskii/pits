@@ -40,10 +40,10 @@ class HaulCycleJobTests {
         // then
         verify(haulCycleService).computeHaulCycles(
                 same(truck1),
-                argThat(shovels -> shovels.size() == 1 && shovels.get(0).getId() == 2));
+                argThat(shovels -> shovels.size() == 1 && shovels.get(0).id == 2));
         verify(haulCycleService).computeHaulCycles(
                 same(truck2),
-                argThat(shovels -> shovels.size() == 1 && shovels.get(0).getId() == 2));
+                argThat(shovels -> shovels.size() == 1 && shovels.get(0).id == 2));
         verifyNoMoreInteractions(haulCycleService);
     }
 

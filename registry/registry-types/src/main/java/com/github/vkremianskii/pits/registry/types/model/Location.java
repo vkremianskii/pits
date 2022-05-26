@@ -5,26 +5,14 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public class Location {
-    private final int id;
-    private final String name;
-    private final LocationType type;
+    public final int id;
+    public final String name;
+    public final LocationType type;
 
     protected Location(int id, String name, LocationType type) {
         this.id = id;
         this.name = requireNonNull(name);
         this.type = requireNonNull(type);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocationType getType() {
-        return type;
     }
 
     @Override
@@ -38,5 +26,14 @@ public class Location {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, type);
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                '}';
     }
 }

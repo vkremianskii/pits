@@ -25,16 +25,16 @@ public class EquipmentListeners {
     @RabbitListener(queues = QUEUE_EQUIPMENT_POSITION)
     void handlePositionChanged(EquipmentPositionChanged message) {
         positionRepository.insert(
-                message.getEquipmentId(),
-                message.getLatitude(),
-                message.getLongitude(),
-                message.getElevation());
+                message.equipmentId(),
+                message.latitude(),
+                message.longitude(),
+                message.elevation());
     }
 
     @RabbitListener(queues = QUEUE_EQUIPMENT_PAYLOAD)
     void handlePayloadChanged(EquipmentPayloadChanged message) {
         payloadRepository.insert(
-                message.getEquipmentId(),
-                message.getPayload());
+                message.equipmentId(),
+                message.payload());
     }
 }

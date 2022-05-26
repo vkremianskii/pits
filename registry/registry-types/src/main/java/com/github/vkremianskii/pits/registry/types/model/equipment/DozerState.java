@@ -9,19 +9,7 @@ public class DozerState extends EquipmentState {
         super(value);
     }
 
-    public static DozerState[] values() {
-        return values;
-    }
-
     public static DozerState valueOf(String name) {
-        if (name == null) {
-            throw new NullPointerException("name must not be null");
-        }
-        for (final var value : values()) {
-            if (value.name().equals(name)) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException("No dozer state with name '" + name + "'");
+        return valueOf(name, values);
     }
 }

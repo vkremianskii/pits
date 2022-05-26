@@ -6,7 +6,6 @@ import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -17,7 +16,6 @@ import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 import static reactor.core.scheduler.Schedulers.boundedElastic;
-import static reactor.core.scheduler.Schedulers.parallel;
 
 @Repository
 public class EquipmentPayloadRepository {

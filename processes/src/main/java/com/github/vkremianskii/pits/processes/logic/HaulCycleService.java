@@ -49,7 +49,7 @@ public class HaulCycleService {
     }
 
     public Mono<Void> computeHaulCycles(Truck truck, List<Shovel> shovels) {
-        return haulCycleRepository.getLastHaulCycleForTruck(truck.getId())
+        return haulCycleRepository.getLastHaulCycleForTruck(truck.id)
                 .flatMap(c -> computeHaulCycles(truck, shovels, c.orElse(null)));
     }
 
@@ -57,22 +57,22 @@ public class HaulCycleService {
                                          List<Shovel> shovels,
                                          @Nullable HaulCycle lastHaulCycle) {
         final var startTimestamp = Optional.ofNullable(lastHaulCycle)
-                .map(HaulCycle::getInsertTimestamp)
+                .map(HaulCycle::insertTimestamp)
                 .orElse(Instant.EPOCH);
 
-        final var positions = positionRepository.getRecordsForEquipmentAfter(truck.getId(), startTimestamp);
-        final var payloads = payloadRepository.getRecordsForEquipmentAfter(truck.getId(), startTimestamp);
-        final var lastPosition = positionRepository.getLastRecordForEquipmentBefore(truck.getId(), startTimestamp);
-        final var lastPayload = payloadRepository.getLastRecordForEquipmentBefore(truck.getId(), startTimestamp);
+        final var positions = positionRepository.getRecordsForEquipmentAfter(truck.id, startTimestamp);
+        final var payloads = payloadRepository.getRecordsForEquipmentAfter(truck.id, startTimestamp);
+        final var lastPosition = positionRepository.getLastRecordForEquipmentBefore(truck.id, startTimestamp);
+        final var lastPayload = payloadRepository.getLastRecordForEquipmentBefore(truck.id, startTimestamp);
 
         final var shovelToPositions = Flux.concat(shovels.stream()
-                        .map(shovel -> positionRepository.getRecordsForEquipmentAfter(shovel.getId(), startTimestamp)
+                        .map(shovel -> positionRepository.getRecordsForEquipmentAfter(shovel.id, startTimestamp)
                                 .map(records -> pair(shovel, records)))
                         .toList())
                 .collectList();
 
         final var shovelToLastPosition = Flux.concat(shovels.stream()
-                        .map(shovel -> positionRepository.getLastRecordForEquipmentBefore(shovel.getId(), startTimestamp)
+                        .map(shovel -> positionRepository.getLastRecordForEquipmentBefore(shovel.id, startTimestamp)
                                 .map(record -> pair(shovel, record)))
                         .toList())
                 .collectList();
@@ -133,8 +133,8 @@ public class HaulCycleService {
 
         for (final var entry : orderedRecords.entrySet()) {
             final var records = entry.getValue();
-            final var positionRecord = records.getLeft();
-            final var payloadRecord = records.getRight();
+            final var positionRecord = records.left();
+            final var payloadRecord = records.right();
             if (positionRecord != null) {
                 haulCycleFsm.consume(positionRecord);
             }
@@ -143,33 +143,33 @@ public class HaulCycleService {
             }
         }
 
-        for (final var hc : haulCycles) {
-            if (hc.id != null) {
-                LOG.info("Updating haul cycle " + hc);
+        for (final var haulCycle : haulCycles) {
+            if (haulCycle.id != null) {
+                LOG.info("Updating haul cycle " + haulCycle);
                 haulCycleRepository.update(
-                        hc.id,
-                        hc.shovelId,
-                        hc.waitLoadTimestamp,
-                        hc.startLoadTimestamp,
-                        hc.startLoadLatitude,
-                        hc.startLoadLongitude,
-                        hc.endLoadTimestamp,
-                        hc.endLoadPayload,
-                        hc.startUnloadTimestamp,
-                        hc.endUnloadTimestamp);
+                        haulCycle.id,
+                        haulCycle.shovelId,
+                        haulCycle.waitLoadTimestamp,
+                        haulCycle.startLoadTimestamp,
+                        haulCycle.startLoadLatitude,
+                        haulCycle.startLoadLongitude,
+                        haulCycle.endLoadTimestamp,
+                        haulCycle.endLoadPayload,
+                        haulCycle.startUnloadTimestamp,
+                        haulCycle.endUnloadTimestamp);
             } else {
-                LOG.info("Inserting haul cycle: " + hc);
+                LOG.info("Inserting haul cycle: " + haulCycle);
                 haulCycleRepository.insert(
-                        truck.getId(),
-                        hc.shovelId,
-                        hc.waitLoadTimestamp,
-                        hc.startLoadTimestamp,
-                        hc.startLoadLatitude,
-                        hc.startLoadLongitude,
-                        hc.endLoadTimestamp,
-                        hc.endLoadPayload,
-                        hc.startUnloadTimestamp,
-                        hc.endUnloadTimestamp);
+                        truck.id,
+                        haulCycle.shovelId,
+                        haulCycle.waitLoadTimestamp,
+                        haulCycle.startLoadTimestamp,
+                        haulCycle.startLoadLatitude,
+                        haulCycle.startLoadLongitude,
+                        haulCycle.endLoadTimestamp,
+                        haulCycle.endLoadPayload,
+                        haulCycle.startUnloadTimestamp,
+                        haulCycle.endUnloadTimestamp);
             }
         }
 
@@ -178,8 +178,8 @@ public class HaulCycleService {
             return Mono.empty();
         }
 
-        LOG.info("Updating truck '{}' state in registry: {}", truck.getId(), state);
-        return registryClient.updateEquipmentState(truck.getId(), state);
+        LOG.info("Updating truck '{}' state in registry: {}", truck.id, state);
+        return registryClient.updateEquipmentState(truck.id, state);
     }
 
     private static SortedMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> mergeRecords(List<EquipmentPositionRecord> positions,
@@ -193,7 +193,7 @@ public class HaulCycleService {
                 if (existing == null) {
                     return pair(null, record);
                 }
-                return pair(existing.getLeft(), record);
+                return pair(existing.left(), record);
             });
         }
         return records;

@@ -9,19 +9,7 @@ public class DrillState extends EquipmentState {
         super(value);
     }
 
-    public static DrillState[] values() {
-        return values;
-    }
-
     public static DrillState valueOf(String name) {
-        if (name == null) {
-            throw new NullPointerException("name must not be null");
-        }
-        for (final var value : values()) {
-            if (value.name().equals(name)) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException("No drill state with name '" + name + "'");
+        return valueOf(name, values);
     }
 }

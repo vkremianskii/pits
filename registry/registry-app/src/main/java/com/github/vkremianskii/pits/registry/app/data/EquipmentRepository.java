@@ -103,9 +103,9 @@ public class EquipmentRepository {
 
     public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
         return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
-                        .set(FIELD_LATITUDE, BigDecimal.valueOf(position.getLatitude()))
-                        .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.getLongitude()))
-                        .set(FIELD_ELEVATION, (short) position.getElevation())
+                        .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
+                        .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
+                        .set(FIELD_ELEVATION, (short) position.elevation())
                         .where(FIELD_ID.eq(equipmentId))
                         .execute())
                 .subscribeOn(boundedElastic());

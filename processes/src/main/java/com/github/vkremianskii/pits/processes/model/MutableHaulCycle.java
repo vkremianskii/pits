@@ -43,16 +43,16 @@ public class MutableHaulCycle {
     }
 
     private MutableHaulCycle(HaulCycle haulCycle) {
-        id = haulCycle.getId();
-        shovelId = haulCycle.getShovelId();
-        waitLoadTimestamp = haulCycle.getWaitLoadTimestamp();
-        startLoadTimestamp = haulCycle.getStartLoadTimestamp();
-        startLoadLatitude = haulCycle.getStartLoadLatitude();
-        startLoadLongitude = haulCycle.getStartLoadLongitude();
-        endLoadTimestamp = haulCycle.getEndLoadTimestamp();
-        endLoadPayload = haulCycle.getEndLoadPayload();
-        startUnloadTimestamp = haulCycle.getStartUnloadTimestamp();
-        endUnloadTimestamp = haulCycle.getEndUnloadTimestamp();
+        id = haulCycle.id();
+        shovelId = haulCycle.shovelId();
+        waitLoadTimestamp = haulCycle.waitLoadTimestamp();
+        startLoadTimestamp = haulCycle.startLoadTimestamp();
+        startLoadLatitude = haulCycle.startLoadLatitude();
+        startLoadLongitude = haulCycle.startLoadLongitude();
+        endLoadTimestamp = haulCycle.endLoadTimestamp();
+        endLoadPayload = haulCycle.endLoadPayload();
+        startUnloadTimestamp = haulCycle.startUnloadTimestamp();
+        endUnloadTimestamp = haulCycle.endUnloadTimestamp();
     }
 
     @Override

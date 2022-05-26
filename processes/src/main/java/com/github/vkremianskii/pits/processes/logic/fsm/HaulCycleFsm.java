@@ -2,10 +2,10 @@ package com.github.vkremianskii.pits.processes.logic.fsm;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
-import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
+import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.jetbrains.annotations.Nullable;
@@ -69,13 +69,13 @@ public class HaulCycleFsm {
                     final var pointLL = new LatLonPoint.Double(latitude, longitude);
                     final var shovelLL = new LatLonPoint.Double(shovelPosition.latitude(), shovelPosition.longitude());
                     final var distance = distance(pointLL, shovelLL);
-                    if (distance <= shovel.getLoadRadius()) {
+                    if (distance <= shovel.loadRadius) {
                         state = TruckState.WAIT_LOAD;
                         if (haulCycle == null) {
                             haulCycle = new MutableHaulCycle();
                             haulCycleSink.append(haulCycle);
                         }
-                        haulCycle.shovelId = shovel.getId();
+                        haulCycle.shovelId = shovel.id;
                         haulCycle.waitLoadTimestamp = timestamp;
                     }
                 }
@@ -127,19 +127,19 @@ public class HaulCycleFsm {
 
     @Nullable
     private static TruckState truckStateFromHaulCycle(HaulCycle haulCycle) {
-        if (haulCycle.getEndUnloadTimestamp() != null) {
+        if (haulCycle.endUnloadTimestamp() != null) {
             return TruckState.EMPTY;
         }
-        if (haulCycle.getStartUnloadTimestamp() != null) {
+        if (haulCycle.startUnloadTimestamp() != null) {
             return TruckState.UNLOAD;
         }
-        if (haulCycle.getEndLoadTimestamp() != null) {
+        if (haulCycle.endLoadTimestamp() != null) {
             return TruckState.HAUL;
         }
-        if (haulCycle.getStartLoadTimestamp() != null) {
+        if (haulCycle.startLoadTimestamp() != null) {
             return TruckState.LOAD;
         }
-        if (haulCycle.getWaitLoadTimestamp() != null) {
+        if (haulCycle.waitLoadTimestamp() != null) {
             return TruckState.WAIT_LOAD;
         }
         return null;

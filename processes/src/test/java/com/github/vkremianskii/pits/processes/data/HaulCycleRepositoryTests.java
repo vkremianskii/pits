@@ -28,8 +28,8 @@ class HaulCycleRepositoryTests {
 
         // then
         assertThat(haulCycle).hasValueSatisfying(c -> {
-            assertThat(c.getTruckId()).isEqualTo(1);
-            assertThat(c.getInsertTimestamp()).isNotNull();
+            assertThat(c.truckId()).isEqualTo(1);
+            assertThat(c.insertTimestamp()).isNotNull();
         });
     }
 
@@ -41,17 +41,17 @@ class HaulCycleRepositoryTests {
 
         // then
         assertThat(haulCycle).hasValueSatisfying(c -> {
-            assertThat(c.getTruckId()).isEqualTo(1);
-            assertThat(c.getInsertTimestamp()).isNotNull();
-            assertThat(c.getShovelId()).isEqualTo(2);
-            assertThat(c.getWaitLoadTimestamp()).isNotNull();
-            assertThat(c.getStartLoadTimestamp()).isNotNull();
-            assertThat(c.getStartLoadLatitude()).isCloseTo(41.1494512, offset(1e-6));
-            assertThat(c.getStartLoadLongitude()).isCloseTo(-8.6107884, offset(1e-6));
-            assertThat(c.getEndLoadTimestamp()).isNotNull();
-            assertThat(c.getEndLoadPayload()).isEqualTo(10);
-            assertThat(c.getStartUnloadTimestamp()).isNotNull();
-            assertThat(c.getEndUnloadTimestamp()).isNotNull();
+            assertThat(c.truckId()).isEqualTo(1);
+            assertThat(c.insertTimestamp()).isNotNull();
+            assertThat(c.shovelId()).isEqualTo(2);
+            assertThat(c.waitLoadTimestamp()).isNotNull();
+            assertThat(c.startLoadTimestamp()).isNotNull();
+            assertThat(c.startLoadLatitude()).isCloseTo(41.1494512, offset(1e-6));
+            assertThat(c.startLoadLongitude()).isCloseTo(-8.6107884, offset(1e-6));
+            assertThat(c.endLoadTimestamp()).isNotNull();
+            assertThat(c.endLoadPayload()).isEqualTo(10);
+            assertThat(c.startUnloadTimestamp()).isNotNull();
+            assertThat(c.endUnloadTimestamp()).isNotNull();
         });
     }
 }

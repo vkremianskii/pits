@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class Shovel extends Equipment {
-    private final int loadRadius;
+    public final int loadRadius;
 
     public Shovel(int id,
                   String name,
@@ -19,14 +19,10 @@ public class Shovel extends Equipment {
         this.loadRadius = loadRadius;
     }
 
-    public int getLoadRadius() {
-        return loadRadius;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Shovel)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Shovel shovel = (Shovel) o;
         return loadRadius == shovel.loadRadius;
@@ -35,5 +31,17 @@ public class Shovel extends Equipment {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), loadRadius);
+    }
+
+    @Override
+    public String toString() {
+        return "Shovel{" +
+                "loadRadius=" + loadRadius +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", state=" + state +
+                ", position=" + position +
+                '}';
     }
 }

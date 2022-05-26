@@ -11,6 +11,6 @@ public class PairUtils {
     }
 
     public static <K, V> Map<K, V> pairsToMap(Collection<Pair<K, V>> pairs) {
-        return pairs.stream().collect(toMap(Pair::getLeft, Pair::getRight));
+        return pairs.stream().collect(toMap(Pair::left, Pair::right));
     }
 }
