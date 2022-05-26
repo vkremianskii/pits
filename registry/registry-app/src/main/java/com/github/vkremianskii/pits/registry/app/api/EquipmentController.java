@@ -3,10 +3,11 @@ package com.github.vkremianskii.pits.registry.app.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.core.web.error.BadRequestError;
 import com.github.vkremianskii.pits.core.web.error.NotFoundError;
+import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
+import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
@@ -39,8 +40,9 @@ public class EquipmentController {
     }
 
     @PostMapping
-    public Mono<Void> createEquipment(@RequestBody CreateEquipmentRequest request) {
-        return equipmentRepository.createEquipment(request.name(), request.type());
+    public Mono<CreateEquipmentResponse> createEquipment(@RequestBody CreateEquipmentRequest request) {
+        return equipmentRepository.createEquipment(request.name(), request.type())
+                .map(CreateEquipmentResponse::new);
     }
 
     @PostMapping("/{id}/state")

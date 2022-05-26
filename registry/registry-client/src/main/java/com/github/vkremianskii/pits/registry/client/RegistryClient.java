@@ -1,6 +1,7 @@
 package com.github.vkremianskii.pits.registry.client;
 
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
+import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.dto.UpdateEquipmentStateRequest;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
@@ -34,14 +35,13 @@ public class RegistryClient {
                 .subscribeOn(boundedElastic());
     }
 
-    public Mono<Void> createEquipment(String name, EquipmentType type) {
+    public Mono<CreateEquipmentResponse> createEquipment(String name, EquipmentType type) {
         return webClient.post()
                 .uri("/equipment")
                 .contentType(APPLICATION_JSON)
                 .bodyValue(new CreateEquipmentRequest(name, type))
                 .retrieve()
-                .toBodilessEntity()
-                .then()
+                .bodyToMono(CreateEquipmentResponse.class)
                 .subscribeOn(boundedElastic());
     }
 

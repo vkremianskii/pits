@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.registry.app.api;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
+import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.*;
@@ -80,6 +81,10 @@ class EquipmentControllerTests {
 
     @Test
     void should_create_equipment() {
+        // given
+        when(equipmentRepository.createEquipment("Truck No.1", TRUCK))
+                .thenReturn(Mono.just(1));
+
         // expect
         webClient.post()
                 .uri("/equipment")
@@ -91,7 +96,12 @@ class EquipmentControllerTests {
                         }
                         """)
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBody().json("""
+                        {
+                            "equipmentId": 1
+                        }
+                        """);
         verify(equipmentRepository).createEquipment("Truck No.1", TRUCK);
     }
 

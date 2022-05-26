@@ -95,11 +95,13 @@ public class EquipmentRepository {
                 .subscribeOn(boundedElastic());
     }
 
-    public Mono<Void> createEquipment(String name, EquipmentType type) {
-        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
+    public Mono<Integer> createEquipment(String name, EquipmentType type) {
+        return Mono.fromSupplier(() -> dslContext.insertInto(TABLE)
                         .columns(FIELD_NAME, FIELD_TYPE)
                         .values(name, valueFromType(type))
-                        .execute())
+                        .returning(FIELD_ID)
+                        .fetchOne()
+                        .get(FIELD_ID))
                 .subscribeOn(boundedElastic());
     }
 

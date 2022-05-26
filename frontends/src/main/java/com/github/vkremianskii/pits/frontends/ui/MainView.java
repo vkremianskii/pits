@@ -19,21 +19,26 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.*;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
 import static com.bbn.openmap.proj.coords.UTMPoint.UTMtoLL;
 import static com.github.vkremianskii.pits.core.types.Pair.pair;
+import static com.github.vkremianskii.pits.core.types.Tuple3.tuple;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.*;
 import static java.awt.Color.WHITE;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static javax.swing.BorderFactory.*;
 import static javax.swing.Box.createRigidArea;
@@ -42,9 +47,12 @@ import static javax.swing.BoxLayout.Y_AXIS;
 
 public class MainView {
     private static final Logger LOG = LoggerFactory.getLogger(MainView.class);
-    private static final double DEFAULT_LATITIUDE = 41.1494512;
-    private static final double DEFAULT_LONGITUDE = -8.6107884;
-    private static final int DEFAULT_ELEVATION = 86;
+    private static final int DEFAULT_MAP_CENTER_X = 643928;
+    private static final int DEFAULT_MAP_CENTER_Y = 270764;
+    private static final int DEFAULT_MAP_ZOOM = 12;
+    private static final double DEFAULT_LATITIUDE = 65.291190;
+    private static final double DEFAULT_LONGITUDE = 41.035438;
+    private static final int DEFAULT_ELEVATION = 0;
     private static final int DEFAULT_PAYLOAD = 0;
     private static final int NUM_CIRCLE_SEGMENTS = 32;
     private static final String OSM_USER_AGENT = "pits.frontends/1.0-SNAPSHOT";
@@ -147,6 +155,11 @@ public class MainView {
                 (int) equipmentIdComboBox.getSelectedItem(),
                 (int) payloadSpinner.getValue()));
 
+        mapViewer.setDisplayPosition(
+                DEFAULT_MAP_CENTER_X,
+                DEFAULT_MAP_CENTER_Y,
+                DEFAULT_MAP_ZOOM);
+
         Flux.interval(Duration.ofSeconds(1))
                 .flatMap(__ -> refreshEquipment())
                 .subscribe();
@@ -155,18 +168,24 @@ public class MainView {
     private JPanel bootstrapEquipmentPanel() {
         initializeDataButton = new JButton("Initialize data");
         initializeDataButton.setEnabled(false);
-        initializeDataButton.addActionListener(e -> {
-            final var equipment = List.of(
-                    pair("Dozer No.1", DOZER),
-                    pair("Drill No.1", DRILL),
-                    pair("Shovel No.1", SHOVEL),
-                    pair("Truck No.1", TRUCK));
-            Mono.when(equipment.stream()
-                            .map(p -> registryClient.createEquipment(p.left(), p.right()))
-                            .toList())
-                    .block();
-            initializeDataButton.setEnabled(false);
-        });
+        initializeDataButton.addActionListener(ignored -> Flux.fromStream(Stream.of(
+                        tuple("Dozer No.1", DOZER, new Position(65.305376, 41.026554, DEFAULT_ELEVATION)),
+                        tuple("Drill No.1", DRILL, new Position(65.299853, 41.019001, DEFAULT_ELEVATION)),
+                        tuple("Shovel No.1", SHOVEL, new Position(65.303583, 41.019173, DEFAULT_ELEVATION)),
+                        tuple("Truck No.1", TRUCK, new Position(65.294329, 41.026382, DEFAULT_ELEVATION))))
+                .flatMap(tuple -> registryClient.createEquipment(tuple.first(), tuple.second())
+                        .map(response -> pair(response.equipmentId(), tuple.third())))
+                .flatMap(pair -> grpcClient.sendPositionChanged(
+                        pair.left(),
+                        pair.right().latitude(),
+                        pair.right().longitude(),
+                        pair.right().elevation()))
+                .onErrorResume(e -> {
+                    LOG.error("Error while initializing data", e);
+                    return Mono.empty();
+                })
+                .then()
+                .block());
 
         final var equipmentIdLabel = new JLabel("Equipment ID");
         equipmentIdComboBox = new JComboBox<>();

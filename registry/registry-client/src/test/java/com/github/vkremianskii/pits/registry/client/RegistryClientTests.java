@@ -1,7 +1,9 @@
 package com.github.vkremianskii.pits.registry.client;
 
+import com.github.tomakehurst.wiremock.http.MimeType;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.equipment.*;
@@ -70,14 +72,21 @@ class RegistryClientTests {
     }
 
     @Test
-    void should_create_equipment_state(WireMockRuntimeInfo wmRuntimeInfo) {
+    void should_create_equipment(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
         stubFor(post(urlPathEqualTo("/equipment"))
-                .willReturn(aResponse().withStatus(200)));
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
+                        .withBody("""
+                                {
+                                    "equipmentId": 1
+                                }
+                                """)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
-        sut.createEquipment("Truck No.1", TRUCK).block();
+        var response = sut.createEquipment("Truck No.1", TRUCK).block();
 
         // then
         verify(postRequestedFor(urlPathEqualTo("/equipment"))
@@ -87,6 +96,7 @@ class RegistryClientTests {
                             "type": "TRUCK"
                         }
                         """)));
+        assertThat(response).isEqualTo(new CreateEquipmentResponse(1));
     }
 
     @Test
