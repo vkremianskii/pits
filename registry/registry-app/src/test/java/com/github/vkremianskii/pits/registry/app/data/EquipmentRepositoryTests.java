@@ -76,6 +76,19 @@ class EquipmentRepositoryTests {
     }
 
     @Test
+    void should_create_equipment() {
+        // when
+        sut.createEquipment("Truck No.1", TRUCK).block();
+
+        // then
+        var equipment = sut.getEquipment().block();
+        assertThat(equipment).hasSize(1);
+        var truck = equipment.get(0);
+        assertThat(truck.name).isEqualTo("Truck No.1");
+        assertThat(truck.type).isEqualTo(TRUCK);
+    }
+
+    @Test
     void should_update_equipment_position() {
         // given
         sut.insert(1, "Truck No.1", TRUCK, null).block();

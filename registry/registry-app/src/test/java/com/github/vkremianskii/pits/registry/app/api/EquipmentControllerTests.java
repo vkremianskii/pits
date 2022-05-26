@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.registry.app.api;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
+import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.*;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Optional;
 
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static com.github.vkremianskii.pits.registry.types.model.equipment.TruckState.HAUL;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -74,6 +76,23 @@ class EquipmentControllerTests {
                             "payload": 10
                         }]
                         """, true);
+    }
+
+    @Test
+    void should_create_equipment() {
+        // expect
+        webClient.post()
+                .uri("/equipment")
+                .contentType(APPLICATION_JSON)
+                .bodyValue("""
+                        {
+                            "name": "Truck No.1",
+                            "type": "TRUCK"
+                        }
+                        """)
+                .exchange()
+                .expectStatus().isOk();
+        verify(equipmentRepository).createEquipment("Truck No.1", TRUCK);
     }
 
     @Test

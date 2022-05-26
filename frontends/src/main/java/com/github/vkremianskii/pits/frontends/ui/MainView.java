@@ -13,22 +13,25 @@ import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.openstreetmap.gui.jmapviewer.*;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapPolygon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
 import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
 import static com.bbn.openmap.proj.coords.UTMPoint.UTMtoLL;
+import static com.github.vkremianskii.pits.core.types.Pair.pair;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.*;
 import static java.awt.Color.WHITE;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -38,6 +41,7 @@ import static javax.swing.BoxLayout.X_AXIS;
 import static javax.swing.BoxLayout.Y_AXIS;
 
 public class MainView {
+    private static final Logger LOG = LoggerFactory.getLogger(MainView.class);
     private static final double DEFAULT_LATITIUDE = 41.1494512;
     private static final double DEFAULT_LONGITUDE = -8.6107884;
     private static final int DEFAULT_ELEVATION = 86;
@@ -56,6 +60,7 @@ public class MainView {
     private final GrpcClient grpcClient;
     private final TreeMap<Integer, Equipment> equipmentById = new TreeMap<>();
 
+    private JButton initializeDataButton;
     private JComboBox<Integer> equipmentIdComboBox;
     private JTextField nameTextField;
     private JTextField typeTextField;
@@ -110,7 +115,7 @@ public class MainView {
             final var state = Optional.ofNullable(equipment.state);
 
             int payload = DEFAULT_PAYLOAD;
-            if (equipment.type == EquipmentType.TRUCK) {
+            if (equipment.type == TRUCK) {
                 final var truck = (Truck) equipment;
                 if (truck.payload != null) {
                     payload = truck.payload;
@@ -127,9 +132,9 @@ public class MainView {
             elevationSpinner.setValue(position.map(Position::elevation).orElse(DEFAULT_ELEVATION));
             elevationSpinner.setEnabled(true);
             payloadSpinner.setValue(payload);
-            payloadSpinner.setEnabled(equipment.type == EquipmentType.TRUCK);
+            payloadSpinner.setEnabled(equipment.type == TRUCK);
             sendPositionButton.setEnabled(true);
-            sendPayloadButton.setEnabled(equipment.type == EquipmentType.TRUCK);
+            sendPayloadButton.setEnabled(equipment.type == TRUCK);
         });
 
         sendPositionButton.addActionListener(e -> grpcClient.sendPositionChanged(
@@ -148,6 +153,21 @@ public class MainView {
     }
 
     private JPanel bootstrapEquipmentPanel() {
+        initializeDataButton = new JButton("Initialize data");
+        initializeDataButton.setEnabled(false);
+        initializeDataButton.addActionListener(e -> {
+            final var equipment = List.of(
+                    pair("Dozer No.1", DOZER),
+                    pair("Drill No.1", DRILL),
+                    pair("Shovel No.1", SHOVEL),
+                    pair("Truck No.1", TRUCK));
+            Mono.when(equipment.stream()
+                            .map(p -> registryClient.createEquipment(p.left(), p.right()))
+                            .toList())
+                    .block();
+            initializeDataButton.setEnabled(false);
+        });
+
         final var equipmentIdLabel = new JLabel("Equipment ID");
         equipmentIdComboBox = new JComboBox<>();
         equipmentIdComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, equipmentIdComboBox.getPreferredSize().height));
@@ -170,6 +190,7 @@ public class MainView {
         final var equipmentLayout = new BoxLayout(equipmentPanel, Y_AXIS);
         equipmentPanel.setLayout(equipmentLayout);
         equipmentPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
+        equipmentPanel.add(initializeDataButton);
         equipmentPanel.add(equipmentIdLabel);
         equipmentPanel.add(equipmentIdComboBox);
         equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
@@ -294,7 +315,8 @@ public class MainView {
 
     private Mono<Void> refreshEquipment() {
         return registryClient.getEquipment()
-                .doOnNext(equipment -> {
+                .doOnSuccess(equipment -> {
+                    SwingUtilities.invokeLater(() -> initializeDataButton.setEnabled(equipment.isEmpty()));
                     final var newEquipmentById = equipment.stream().collect(toMap(e -> e.id, identity()));
                     if (newEquipmentById.equals(equipmentById)) {
                         return;
@@ -303,14 +325,20 @@ public class MainView {
                     equipmentById.putAll(newEquipmentById);
                     SwingUtilities.invokeLater(this::refreshEquipmentControls);
                 })
+                .onErrorResume(e -> {
+                    LOG.error("Error while fetching equipment from registry", e);
+                    return Mono.just(emptyList());
+                })
                 .then();
     }
 
     private void refreshEquipmentControls() {
         final var selectedItem = (Integer) equipmentIdComboBox.getSelectedItem();
         equipmentIdComboBox.removeAllItems();
+
         mapViewer.removeAllMapMarkers();
         mapViewer.removeAllMapPolygons();
+
         for (final var e : equipmentById.values()) {
             equipmentIdComboBox.addItem(e.id);
             mapMarkerFromEquipment(e).ifPresent(mapViewer::addMapMarker);
@@ -318,6 +346,7 @@ public class MainView {
                 loadZoneFromShovel((Shovel) e).ifPresent(mapViewer::addMapPolygon);
             }
         }
+
         if (selectedItem != null && equipmentById.containsKey(selectedItem)) {
             equipmentIdComboBox.setSelectedItem(selectedItem);
         }

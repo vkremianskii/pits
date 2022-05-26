@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.registry.client;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
+import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.equipment.*;
 import com.github.vkremianskii.pits.registry.types.model.location.Dump;
 import com.github.vkremianskii.pits.registry.types.model.location.Face;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
@@ -65,6 +67,26 @@ class RegistryClientTests {
         assertThat(equipment).hasAtLeastOneElementOfType(Shovel.class);
         assertThat(equipment).hasAtLeastOneElementOfType(Truck.class);
         verify(getRequestedFor(urlPathEqualTo("/equipment")));
+    }
+
+    @Test
+    void should_create_equipment_state(WireMockRuntimeInfo wmRuntimeInfo) {
+        // given
+        stubFor(post(urlPathEqualTo("/equipment"))
+                .willReturn(aResponse().withStatus(200)));
+        var sut = newClient(wmRuntimeInfo);
+
+        // when
+        sut.createEquipment("Truck No.1", TRUCK).block();
+
+        // then
+        verify(postRequestedFor(urlPathEqualTo("/equipment"))
+                .withRequestBody(equalToJson("""
+                        {
+                            "name": "Truck No.1",
+                            "type": "TRUCK"
+                        }
+                        """)));
     }
 
     @Test

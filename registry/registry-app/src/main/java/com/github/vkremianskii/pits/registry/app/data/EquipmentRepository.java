@@ -37,6 +37,8 @@ public class EquipmentRepository {
     private static final Field<Integer> FIELD_PAYLOAD = field("payload", Integer.class);
     private static final Field<Short> FIELD_LOAD_RADIUS = field("load_radius", Short.class);
 
+    private static final int DEFAULT_SHOVEL_LOAD_RADIUS = 20;
+
     private static final Map<EquipmentType, String> TYPE_TO_VALUE = Map.of(
             DOZER, "dozer",
             DRILL, "drill",
@@ -90,6 +92,14 @@ public class EquipmentRepository {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
                         .where(FIELD_ID.eq(equipmentId))
                         .fetchOptional(r -> r.map(EquipmentRepository::equipmentFromRecord)))
+                .subscribeOn(boundedElastic());
+    }
+
+    public Mono<Void> createEquipment(String name, EquipmentType type) {
+        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
+                        .columns(FIELD_NAME, FIELD_TYPE)
+                        .values(name, valueFromType(type))
+                        .execute())
                 .subscribeOn(boundedElastic());
     }
 
@@ -149,7 +159,7 @@ public class EquipmentRepository {
             case "shovel" -> new Shovel(
                     id,
                     name,
-                    loadRadius.map(Short::intValue).orElse(0),
+                    loadRadius.map(Short::intValue).orElse(DEFAULT_SHOVEL_LOAD_RADIUS),
                     stateFromValue(state, ShovelState.class),
                     position);
             case "truck" -> new Truck(

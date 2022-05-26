@@ -12,6 +12,7 @@ dependencies {
     implementation project(':communicator:communicator-types')
 
     implementation "io.projectreactor:reactor-core:${reactorVersion}"
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
 
     implementation files('libs/jmapviewer-2.8.jar')
 }

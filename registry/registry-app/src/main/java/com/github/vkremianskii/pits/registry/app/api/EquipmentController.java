@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.core.web.error.BadRequestError;
 import com.github.vkremianskii.pits.core.web.error.NotFoundError;
+import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
@@ -35,6 +36,11 @@ public class EquipmentController {
     @GetMapping
     public Mono<List<Equipment>> getEquipment() {
         return equipmentRepository.getEquipment();
+    }
+
+    @PostMapping
+    public Mono<Void> createEquipment(@RequestBody CreateEquipmentRequest request) {
+        return equipmentRepository.createEquipment(request.name(), request.type());
     }
 
     @PostMapping("/{id}/state")
