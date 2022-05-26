@@ -22,17 +22,19 @@ public class EquipmentListeners {
     @RabbitListener(queues = QUEUE_EQUIPMENT_POSITION)
     void handlePositionChanged(EquipmentPositionChanged message) {
         equipmentRepository.updateEquipmentPosition(
-                message.equipmentId(),
-                new Position(
-                        message.latitude(),
-                        message.longitude(),
-                        message.elevation()));
+                        message.equipmentId(),
+                        new Position(
+                                message.latitude(),
+                                message.longitude(),
+                                message.elevation()))
+                .block();
     }
 
     @RabbitListener(queues = QUEUE_EQUIPMENT_PAYLOAD)
     void handlePayloadChanged(EquipmentPayloadChanged message) {
         equipmentRepository.updateEquipmentPayload(
-                message.equipmentId(),
-                message.payload());
+                        message.equipmentId(),
+                        message.payload())
+                .block();
     }
 }

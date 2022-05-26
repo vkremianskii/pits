@@ -9,11 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import reactor.core.publisher.Mono;
 
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static java.util.Objects.requireNonNull;
+import static org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW;
 
 @Component
 public class HaulCycleJob {
@@ -46,12 +49,13 @@ public class HaulCycleJob {
                             .toList();
                     return Mono.when(trucks.stream().map(truck -> {
                         LOG.info("Computing truck '{}' haul cycles", truck.id);
-                        final var tx = transactionManager.getTransaction(null);
+                        final var txDefinition = new DefaultTransactionDefinition(PROPAGATION_REQUIRES_NEW);
+                        final var txStatus = transactionManager.getTransaction(txDefinition);
                         return haulCycleService.computeHaulCycles(truck, shovels)
-                                .doOnSuccess(__ -> transactionManager.commit(tx))
+                                .doOnSuccess(__ -> transactionManager.commit(txStatus))
                                 .onErrorResume(e -> {
                                     LOG.error("Error while computing truck '" + truck.id + "' haul cycles", e);
-                                    transactionManager.rollback(tx);
+                                    transactionManager.rollback(txStatus);
                                     return Mono.empty();
                                 });
                     }).toList()).then();
