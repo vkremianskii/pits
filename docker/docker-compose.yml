@@ -60,12 +60,26 @@ services:
     environment:
       discovery.type: single-node
     volumes:
+      - ./elasticsearch/jvm_mem_512m:/usr/share/elasticsearch/config/jvm.options.d/jvm_mem_512m
       - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     networks:
       - elastic
     ports:
       - "9200:9200"
       - "9300:9300"
+    mem_limit: 1g
+  logstash:
+    image: logstash:${ELK_VERSION}
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./logstash/jvm.options:/usr/share/logstash/config/jvm.options
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    networks:
+      - elastic
+    ports:
+      - "12201:12201/udp"
+    mem_limit: 1g
   kibana:
     image: kibana:${ELK_VERSION}
     depends_on:
@@ -74,16 +88,7 @@ services:
       - elastic
     ports:
       - "5601:5601"
-  logstash:
-    image: logstash:${ELK_VERSION}
-    depends_on:
-      - elasticsearch
-    volumes:
-      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    networks:
-      - elastic
-    ports:
-      - "12201:12201/udp"
+    mem_limit: 512m
 
 networks:
   elastic:
