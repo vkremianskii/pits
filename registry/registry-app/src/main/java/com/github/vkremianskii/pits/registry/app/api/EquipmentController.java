@@ -15,7 +15,12 @@ import com.github.vkremianskii.pits.registry.types.model.equipment.DozerState;
 import com.github.vkremianskii.pits.registry.types.model.equipment.DrillState;
 import com.github.vkremianskii.pits.registry.types.model.equipment.ShovelState;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

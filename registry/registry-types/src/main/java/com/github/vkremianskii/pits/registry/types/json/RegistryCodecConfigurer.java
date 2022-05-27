@@ -16,7 +16,10 @@ import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.*;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static java.util.Objects.requireNonNull;
 
 public class RegistryCodecConfigurer {

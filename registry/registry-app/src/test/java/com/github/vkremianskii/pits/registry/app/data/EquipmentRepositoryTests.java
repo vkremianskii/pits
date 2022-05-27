@@ -1,14 +1,21 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
 import com.github.vkremianskii.pits.registry.types.model.Position;
-import com.github.vkremianskii.pits.registry.types.model.equipment.*;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Drill;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.*;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 

@@ -7,7 +7,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
-import com.github.vkremianskii.pits.registry.types.model.equipment.*;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
+import com.github.vkremianskii.pits.registry.types.model.equipment.DozerState;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Drill;
+import com.github.vkremianskii.pits.registry.types.model.equipment.DrillState;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
+import com.github.vkremianskii.pits.registry.types.model.equipment.ShovelState;
+import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 
 import java.io.IOException;
 

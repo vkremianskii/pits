@@ -9,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.*;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

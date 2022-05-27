@@ -7,7 +7,9 @@ import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class EquipmentListenersTests {
 

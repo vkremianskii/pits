@@ -16,7 +16,10 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.*;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

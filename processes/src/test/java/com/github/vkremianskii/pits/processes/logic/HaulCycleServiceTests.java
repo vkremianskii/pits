@@ -26,7 +26,13 @@ import java.util.TreeMap;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 class HaulCycleServiceTests {
 
