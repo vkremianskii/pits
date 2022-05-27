@@ -5,7 +5,6 @@ include 'frontends'
 
 include 'core:core-amqp'
 include 'core:core-data'
-include 'core:core-geo'
 include 'core:core-types'
 include 'core:core-web'
 

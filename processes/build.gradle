@@ -9,7 +9,6 @@ version '1.0-SNAPSHOT'
 dependencies {
     implementation project(':core:core-amqp')
     implementation project(':core:core-data')
-    implementation project(':core:core-geo')
     implementation project(':core:core-types')
     implementation project(':core:core-web')
     implementation project(':registry:registry-client')
