@@ -7,12 +7,12 @@ plugins {
 version '1.0-SNAPSHOT'
 
 dependencies {
+    implementation project(':core:core-amqp')
     implementation project(':core:core-types')
     implementation project(':core:core-web')
     implementation project(':registry:registry-client')
     implementation project(':communicator:communicator-types')
 
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation "biz.paluch.logging:logstash-gelf:${logstashGelfVersion}"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

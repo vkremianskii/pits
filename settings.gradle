@@ -3,6 +3,7 @@ rootProject.name = 'pits'
 include 'processes'
 include 'frontends'
 
+include 'core:core-amqp'
 include 'core:core-data'
 include 'core:core-geo'
 include 'core:core-types'
