@@ -5,7 +5,6 @@ plugins {
 }
 
 version '1.0-SNAPSHOT'
-sourceCompatibility = 17
 
 dependencies {
     implementation project(':core:core-data')
@@ -23,8 +22,4 @@ dependencies {
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
     testRuntimeOnly 'com.h2database:h2'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }

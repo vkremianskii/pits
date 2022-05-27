@@ -10,7 +10,6 @@ plugins {
 }
 
 version '1.0-SNAPSHOT'
-sourceCompatibility = 17
 
 dependencies {
     api "javax.annotation:javax.annotation-api:${javaxAnnotationsVersion}"

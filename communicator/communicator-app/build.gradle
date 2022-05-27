@@ -5,7 +5,6 @@ plugins {
 }
 
 version '1.0-SNAPSHOT'
-sourceCompatibility = 17
 
 dependencies {
     implementation project(':core:core-types')
@@ -18,8 +17,4 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }

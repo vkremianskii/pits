@@ -15,4 +15,12 @@ subprojects {
             mavenCentral()
         }
     }
+
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = 17
+    }
+
+    tasks.withType(Test) {
+        useJUnitPlatform()
+    }
 }

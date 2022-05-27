@@ -3,7 +3,6 @@ plugins {
 }
 
 version '1.0-SNAPSHOT'
-sourceCompatibility = 17
 
 dependencies {
     api project(':registry:registry-types')
@@ -15,8 +14,4 @@ dependencies {
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
     testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:${junitVersion}'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }
