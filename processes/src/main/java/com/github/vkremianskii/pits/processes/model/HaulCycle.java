@@ -16,4 +16,5 @@ public record HaulCycle(long id,
                         @Nullable Integer endLoadPayload,
                         @Nullable Instant startUnloadTimestamp,
                         @Nullable Instant endUnloadTimestamp) {
+
 }

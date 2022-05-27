@@ -6,7 +6,6 @@ import com.github.vkremianskii.pits.registry.types.json.deserializer.EquipmentSt
 import com.github.vkremianskii.pits.registry.types.json.deserializer.LocationDeserializer;
 import com.github.vkremianskii.pits.registry.types.json.serializer.EquipmentStateSerializer;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
-import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Location;
 import com.github.vkremianskii.pits.registry.types.model.equipment.DozerState;
 import com.github.vkremianskii.pits.registry.types.model.equipment.DrillState;
@@ -21,6 +20,7 @@ import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.*;
 import static java.util.Objects.requireNonNull;
 
 public class RegistryCodecConfigurer {
+
     private final Jackson2ObjectMapperBuilder objectMapperBuilder;
 
     public RegistryCodecConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder) {
@@ -29,15 +29,15 @@ public class RegistryCodecConfigurer {
 
     public void configureCodecs(CodecConfigurer configurer) {
         final var mapper = objectMapperBuilder
-                .serializationInclusion(JsonInclude.Include.NON_NULL)
-                .serializerByType(TruckState.class, new EquipmentStateSerializer())
-                .deserializerByType(DozerState.class, new EquipmentStateDeserializer(DOZER))
-                .deserializerByType(DrillState.class, new EquipmentStateDeserializer(DRILL))
-                .deserializerByType(ShovelState.class, new EquipmentStateDeserializer(SHOVEL))
-                .deserializerByType(TruckState.class, new EquipmentStateDeserializer(TRUCK))
-                .deserializerByType(Equipment.class, new EquipmentDeserializer())
-                .deserializerByType(Location.class, new LocationDeserializer())
-                .build();
+            .serializationInclusion(JsonInclude.Include.NON_NULL)
+            .serializerByType(TruckState.class, new EquipmentStateSerializer())
+            .deserializerByType(DozerState.class, new EquipmentStateDeserializer(DOZER))
+            .deserializerByType(DrillState.class, new EquipmentStateDeserializer(DRILL))
+            .deserializerByType(ShovelState.class, new EquipmentStateDeserializer(SHOVEL))
+            .deserializerByType(TruckState.class, new EquipmentStateDeserializer(TRUCK))
+            .deserializerByType(Equipment.class, new EquipmentDeserializer())
+            .deserializerByType(Location.class, new LocationDeserializer())
+            .build();
 
         configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
         configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(mapper));

@@ -38,7 +38,6 @@ import static java.awt.Color.WHITE;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static javax.swing.BorderFactory.*;
 import static javax.swing.Box.createRigidArea;
@@ -46,6 +45,7 @@ import static javax.swing.BoxLayout.X_AXIS;
 import static javax.swing.BoxLayout.Y_AXIS;
 
 public class MainView {
+
     private static final Logger LOG = LoggerFactory.getLogger(MainView.class);
     private static final int DEFAULT_MAP_CENTER_X = 643928;
     private static final int DEFAULT_MAP_CENTER_Y = 270764;
@@ -58,11 +58,11 @@ public class MainView {
     private static final String OSM_USER_AGENT = "pits.frontends/1.0-SNAPSHOT";
 
     private static final Map<EquipmentState, Color> COLOR_FROM_STATE = Map.of(
-            TruckState.EMPTY, new Color(0x90ee90),
-            TruckState.WAIT_LOAD, new Color(0xadd8e6),
-            TruckState.LOAD, new Color(0x00008b),
-            TruckState.HAUL, new Color(0x006400),
-            TruckState.UNLOAD, new Color(0x00008b));
+        TruckState.EMPTY, new Color(0x90ee90),
+        TruckState.WAIT_LOAD, new Color(0xadd8e6),
+        TruckState.LOAD, new Color(0x00008b),
+        TruckState.HAUL, new Color(0x006400),
+        TruckState.UNLOAD, new Color(0x00008b));
 
     private final RegistryClient registryClient;
     private final GrpcClient grpcClient;
@@ -146,46 +146,46 @@ public class MainView {
         });
 
         sendPositionButton.addActionListener(e -> grpcClient.sendPositionChanged(
-                (int) equipmentIdComboBox.getSelectedItem(),
-                (double) latitudeSpinner.getValue(),
-                (double) longitudeSpinner.getValue(),
-                (int) elevationSpinner.getValue()));
+            (int) equipmentIdComboBox.getSelectedItem(),
+            (double) latitudeSpinner.getValue(),
+            (double) longitudeSpinner.getValue(),
+            (int) elevationSpinner.getValue()));
 
         sendPayloadButton.addActionListener(e -> grpcClient.sendPayloadChanged(
-                (int) equipmentIdComboBox.getSelectedItem(),
-                (int) payloadSpinner.getValue()));
+            (int) equipmentIdComboBox.getSelectedItem(),
+            (int) payloadSpinner.getValue()));
 
         mapViewer.setDisplayPosition(
-                DEFAULT_MAP_CENTER_X,
-                DEFAULT_MAP_CENTER_Y,
-                DEFAULT_MAP_ZOOM);
+            DEFAULT_MAP_CENTER_X,
+            DEFAULT_MAP_CENTER_Y,
+            DEFAULT_MAP_ZOOM);
 
         Flux.interval(Duration.ofSeconds(1))
-                .flatMap(__ -> refreshEquipment())
-                .subscribe();
+            .flatMap(__ -> refreshEquipment())
+            .subscribe();
     }
 
     private JPanel bootstrapEquipmentPanel() {
         initializeDataButton = new JButton("Initialize data");
         initializeDataButton.setEnabled(false);
         initializeDataButton.addActionListener(ignored -> Flux.fromStream(Stream.of(
-                        tuple("Dozer No.1", DOZER, new Position(65.305376, 41.026554, DEFAULT_ELEVATION)),
-                        tuple("Drill No.1", DRILL, new Position(65.299853, 41.019001, DEFAULT_ELEVATION)),
-                        tuple("Shovel No.1", SHOVEL, new Position(65.303583, 41.019173, DEFAULT_ELEVATION)),
-                        tuple("Truck No.1", TRUCK, new Position(65.294329, 41.026382, DEFAULT_ELEVATION))))
-                .flatMap(tuple -> registryClient.createEquipment(tuple.first(), tuple.second())
-                        .map(response -> pair(response.equipmentId(), tuple.third())))
-                .flatMap(pair -> grpcClient.sendPositionChanged(
-                        pair.left(),
-                        pair.right().latitude(),
-                        pair.right().longitude(),
-                        pair.right().elevation()))
-                .onErrorResume(e -> {
-                    LOG.error("Error while initializing data", e);
-                    return Mono.empty();
-                })
-                .then()
-                .block());
+                tuple("Dozer No.1", DOZER, new Position(65.305376, 41.026554, DEFAULT_ELEVATION)),
+                tuple("Drill No.1", DRILL, new Position(65.299853, 41.019001, DEFAULT_ELEVATION)),
+                tuple("Shovel No.1", SHOVEL, new Position(65.303583, 41.019173, DEFAULT_ELEVATION)),
+                tuple("Truck No.1", TRUCK, new Position(65.294329, 41.026382, DEFAULT_ELEVATION))))
+            .flatMap(tuple -> registryClient.createEquipment(tuple.first(), tuple.second())
+                .map(response -> pair(response.equipmentId(), tuple.third())))
+            .flatMap(pair -> grpcClient.sendPositionChanged(
+                pair.left(),
+                pair.right().latitude(),
+                pair.right().longitude(),
+                pair.right().elevation()))
+            .onErrorResume(e -> {
+                LOG.error("Error while initializing data", e);
+                return Mono.empty();
+            })
+            .then()
+            .block());
 
         final var equipmentIdLabel = new JLabel("Equipment ID");
         equipmentIdComboBox = new JComboBox<>();
@@ -334,21 +334,21 @@ public class MainView {
 
     private Mono<Void> refreshEquipment() {
         return registryClient.getEquipment()
-                .doOnSuccess(equipment -> {
-                    SwingUtilities.invokeLater(() -> initializeDataButton.setEnabled(equipment.isEmpty()));
-                    final var newEquipmentById = equipment.stream().collect(toMap(e -> e.id, identity()));
-                    if (newEquipmentById.equals(equipmentById)) {
-                        return;
-                    }
-                    equipmentById.clear();
-                    equipmentById.putAll(newEquipmentById);
-                    SwingUtilities.invokeLater(this::refreshEquipmentControls);
-                })
-                .onErrorResume(e -> {
-                    LOG.error("Error while fetching equipment from registry", e);
-                    return Mono.just(emptyList());
-                })
-                .then();
+            .doOnSuccess(equipment -> {
+                SwingUtilities.invokeLater(() -> initializeDataButton.setEnabled(equipment.isEmpty()));
+                final var newEquipmentById = equipment.stream().collect(toMap(e -> e.id, identity()));
+                if (newEquipmentById.equals(equipmentById)) {
+                    return;
+                }
+                equipmentById.clear();
+                equipmentById.putAll(newEquipmentById);
+                SwingUtilities.invokeLater(this::refreshEquipmentControls);
+            })
+            .onErrorResume(e -> {
+                LOG.error("Error while fetching equipment from registry", e);
+                return Mono.just(emptyList());
+            })
+            .then();
     }
 
     private void refreshEquipmentControls() {
@@ -373,17 +373,17 @@ public class MainView {
 
     private static Optional<MapMarkerDot> mapMarkerFromEquipment(Equipment equipment) {
         return Optional.ofNullable(equipment.position)
-                .map(position -> {
-                    final var marker = new MapMarkerDot(position.latitude(), position.longitude());
-                    marker.setName(equipment.name + " (" + equipment.id + ")");
-                    marker.setBackColor(colorFromState(equipment.state));
-                    return marker;
-                });
+            .map(position -> {
+                final var marker = new MapMarkerDot(position.latitude(), position.longitude());
+                marker.setName(equipment.name + " (" + equipment.id + ")");
+                marker.setBackColor(colorFromState(equipment.state));
+                return marker;
+            });
     }
 
     private static Optional<MapPolygon> loadZoneFromShovel(Shovel shovel) {
         return Optional.ofNullable(shovel.position)
-                .map(position -> newMapPolygon(position.latitude(), position.longitude(), shovel.loadRadius));
+            .map(position -> newMapPolygon(position.latitude(), position.longitude(), shovel.loadRadius));
     }
 
     private static MapPolygon newMapPolygon(double latitude, double longitude, double radius) {

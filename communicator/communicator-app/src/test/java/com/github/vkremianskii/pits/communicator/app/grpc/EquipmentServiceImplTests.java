@@ -16,8 +16,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.IOException;
 
-import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_POSITION;
 import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_PAYLOAD;
+import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_POSITION;
 import static com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.newBlockingStub;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class EquipmentServiceImplTests {
+
     RabbitTemplate rabbitTemplate = mock(RabbitTemplate.class);
 
     Server server;
@@ -35,16 +36,16 @@ class EquipmentServiceImplTests {
     @BeforeEach
     void setup() throws IOException {
         server = InProcessServerBuilder
-                .forName("equipment")
-                .directExecutor()
-                .addService(new EquipmentServiceImpl(rabbitTemplate))
-                .build()
-                .start();
+            .forName("equipment")
+            .directExecutor()
+            .addService(new EquipmentServiceImpl(rabbitTemplate))
+            .build()
+            .start();
 
         channel = InProcessChannelBuilder
-                .forName("equipment")
-                .directExecutor()
-                .build();
+            .forName("equipment")
+            .directExecutor()
+            .build();
 
         sut = newBlockingStub(channel);
     }
@@ -53,16 +54,16 @@ class EquipmentServiceImplTests {
     void should_listen_to_position_changed_and_forward_to_rabbitmq() {
         // given
         var request = PositionChanged.newBuilder()
-                .setEquipmentId(1)
-                .setLatitude(41.1494512)
-                .setLongitude(-8.6107884)
-                .setElevation(86)
-                .build();
+            .setEquipmentId(1)
+            .setLatitude(41.1494512)
+            .setLongitude(-8.6107884)
+            .setElevation(86)
+            .build();
         var expectedMessage = new EquipmentPositionChanged(
-                1,
-                41.1494512,
-                -8.6107884,
-                86);
+            1,
+            41.1494512,
+            -8.6107884,
+            86);
 
         // when
         var response = sut.positionChanged(request);
@@ -76,9 +77,9 @@ class EquipmentServiceImplTests {
     void should_listen_to_payload_changed_and_forward_to_rabbitmq() {
         // given
         var request = PayloadChanged.newBuilder()
-                .setEquipmentId(1)
-                .setPayload(10)
-                .build();
+            .setEquipmentId(1)
+            .setPayload(10)
+            .build();
         var expectedMessage = new EquipmentPayloadChanged(1, 10);
 
         // when

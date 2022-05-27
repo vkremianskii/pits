@@ -15,21 +15,21 @@ import java.io.IOException;
 
 public class LocationDeserializer extends JsonDeserializer<Location> {
 
-        @Override
-        public Location deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            final var codec = p.getCodec();
-            final JsonNode tree = codec.readTree(p);
+    @Override
+    public Location deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        final var codec = p.getCodec();
+        final JsonNode tree = codec.readTree(p);
 
-            final var id = tree.get("id").asInt();
-            final var name = tree.get("name").textValue();
-            final var typeName = tree.get("type").textValue();
+        final var id = tree.get("id").asInt();
+        final var name = tree.get("name").textValue();
+        final var typeName = tree.get("type").textValue();
 
-            final var type = LocationType.valueOf(typeName);
-            return switch (type) {
-                case DUMP -> new Dump(id, name);
-                case FACE -> new Face(id, name);
-                case HOLE -> new Hole(id, name);
-                case STOCKPILE -> new Stockpile(id, name);
-            };
-        }
+        final var type = LocationType.valueOf(typeName);
+        return switch (type) {
+            case DUMP -> new Dump(id, name);
+            case FACE -> new Face(id, name);
+            case HOLE -> new Hole(id, name);
+            case STOCKPILE -> new Stockpile(id, name);
+        };
     }
+}

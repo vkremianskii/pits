@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class EquipmentPayloadRepositoryTests {
+
     @Autowired
     EquipmentPayloadRepository sut;
 

@@ -15,6 +15,7 @@ import java.io.IOException;
 import static java.util.Objects.requireNonNull;
 
 public class EquipmentStateDeserializer extends JsonDeserializer<EquipmentState> {
+
     private final EquipmentType equipmentType;
 
     public EquipmentStateDeserializer(EquipmentType equipmentType) {

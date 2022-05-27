@@ -19,6 +19,7 @@ import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class EquipmentPayloadRepository {
+
     private static final Table<?> TABLE = table("equipment_payload");
     private static final Field<Long> FIELD_ID = field("id", Long.class);
     private static final Field<Integer> FIELD_EQUIPMENT_ID = field("equipment_id", Integer.class);
@@ -33,49 +34,49 @@ public class EquipmentPayloadRepository {
 
     public Mono<Void> clear() {
         return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
-                .subscribeOn(boundedElastic());
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(int equipmentId, int payload) {
         return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                        .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD)
-                        .values(equipmentId, payload)
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD)
+                .values(equipmentId, payload)
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(int equipmentId, int payload, Instant insertTimestamp) {
         return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                        .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD, FIELD_INSERT_TIMESTAMP)
-                        .values(equipmentId, payload, Timestamp.from(insertTimestamp))
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD, FIELD_INSERT_TIMESTAMP)
+                .values(equipmentId, payload, Timestamp.from(insertTimestamp))
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipment(int equipmentId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
-                        .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                        .limit(1)
-                        .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
-                .subscribeOn(boundedElastic());
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                .limit(1)
+                .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipmentBefore(int equipmentId, Instant timestamp) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
-                        .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                        .limit(1)
-                        .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
-                .subscribeOn(boundedElastic());
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                .limit(1)
+                .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<List<EquipmentPayloadRecord>> getRecordsForEquipmentAfter(int equipmentId, Instant timestamp) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
-                        .orderBy(FIELD_INSERT_TIMESTAMP)
-                        .fetch(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
-                .subscribeOn(boundedElastic());
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
+                .orderBy(FIELD_INSERT_TIMESTAMP)
+                .fetch(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     private static EquipmentPayloadRecord recordFromJooqRecord(org.jooq.Record record) {
@@ -85,9 +86,9 @@ public class EquipmentPayloadRepository {
         final var insertTimestamp = record.get(FIELD_INSERT_TIMESTAMP);
 
         return new EquipmentPayloadRecord(
-                id,
-                equipmentId,
-                payload,
-                insertTimestamp.toInstant());
+            id,
+            equipmentId,
+            payload,
+            insertTimestamp.toInstant());
     }
 }

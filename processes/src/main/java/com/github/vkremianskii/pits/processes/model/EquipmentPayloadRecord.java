@@ -6,4 +6,5 @@ public record EquipmentPayloadRecord(long id,
                                      int equipmentId,
                                      int payload,
                                      Instant insertTimestamp) {
+
 }

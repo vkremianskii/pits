@@ -8,4 +8,5 @@ public record EquipmentPositionRecord(long id,
                                       double longitude,
                                       int elevation,
                                       Instant insertTimestamp) {
+
 }

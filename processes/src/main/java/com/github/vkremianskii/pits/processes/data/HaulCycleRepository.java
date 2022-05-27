@@ -20,6 +20,7 @@ import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class HaulCycleRepository {
+
     private static final Table<?> TABLE = table("haul_cycle");
     private static final Field<Long> FIELD_ID = field("id", Long.class);
     private static final Field<Integer> FIELD_TRUCK_ID = field("truck_id", Integer.class);
@@ -42,7 +43,7 @@ public class HaulCycleRepository {
 
     public Mono<Void> clear() {
         return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
-                .subscribeOn(boundedElastic());
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(int truckId,
@@ -56,30 +57,30 @@ public class HaulCycleRepository {
                              @Nullable Instant startUnloadTimestamp,
                              @Nullable Instant endUnloadTimestamp) {
         return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                        .columns(
-                                FIELD_TRUCK_ID,
-                                FIELD_SHOVEL_ID,
-                                FIELD_WAIT_LOAD_TIMESTAMP,
-                                FIELD_START_LOAD_TIMESTAMP,
-                                FIELD_START_LOAD_LATITUDE,
-                                FIELD_START_LOAD_LONGITUDE,
-                                FIELD_END_LOAD_TIMESTAMP,
-                                FIELD_END_LOAD_PAYLOAD,
-                                FIELD_START_UNLOAD_TIMESTAMP,
-                                FIELD_END_UNLOAD_TIMESTAMP)
-                        .values(
-                                truckId,
-                                shovelId,
-                                Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null),
-                                Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null),
-                                Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null),
-                                Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null),
-                                Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null),
-                                Optional.ofNullable(endLoadPayload).map(Integer::shortValue).orElse(null),
-                                Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null),
-                                Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .columns(
+                    FIELD_TRUCK_ID,
+                    FIELD_SHOVEL_ID,
+                    FIELD_WAIT_LOAD_TIMESTAMP,
+                    FIELD_START_LOAD_TIMESTAMP,
+                    FIELD_START_LOAD_LATITUDE,
+                    FIELD_START_LOAD_LONGITUDE,
+                    FIELD_END_LOAD_TIMESTAMP,
+                    FIELD_END_LOAD_PAYLOAD,
+                    FIELD_START_UNLOAD_TIMESTAMP,
+                    FIELD_END_UNLOAD_TIMESTAMP)
+                .values(
+                    truckId,
+                    shovelId,
+                    Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null),
+                    Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null),
+                    Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null),
+                    Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null),
+                    Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null),
+                    Optional.ofNullable(endLoadPayload).map(Integer::shortValue).orElse(null),
+                    Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null),
+                    Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> update(long haulCycleId,
@@ -93,27 +94,27 @@ public class HaulCycleRepository {
                              @Nullable Instant startUnloadTimestamp,
                              @Nullable Instant endUnloadTimestamp) {
         return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
-                        .set(FIELD_SHOVEL_ID, shovelId)
-                        .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
-                        .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
-                        .set(FIELD_START_LOAD_LATITUDE, Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null))
-                        .set(FIELD_START_LOAD_LONGITUDE, Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null))
-                        .set(FIELD_END_LOAD_TIMESTAMP, Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null))
-                        .set(FIELD_END_LOAD_PAYLOAD, Optional.ofNullable(endLoadPayload).map(Integer::shortValue).orElse(null))
-                        .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
-                        .set(FIELD_END_UNLOAD_TIMESTAMP, Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
-                        .where(FIELD_ID.eq(haulCycleId))
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .set(FIELD_SHOVEL_ID, shovelId)
+                .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_START_LOAD_LATITUDE, Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null))
+                .set(FIELD_START_LOAD_LONGITUDE, Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null))
+                .set(FIELD_END_LOAD_TIMESTAMP, Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_END_LOAD_PAYLOAD, Optional.ofNullable(endLoadPayload).map(Integer::shortValue).orElse(null))
+                .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_END_UNLOAD_TIMESTAMP, Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
+                .where(FIELD_ID.eq(haulCycleId))
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<HaulCycle>> getLastHaulCycleForTruck(int truckId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .where(FIELD_TRUCK_ID.eq(truckId))
-                        .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                        .limit(1)
-                        .fetchOptional(r -> r.map(HaulCycleRepository::haulCycleFromRecord)))
-                .subscribeOn(boundedElastic());
+                .where(FIELD_TRUCK_ID.eq(truckId))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                .limit(1)
+                .fetchOptional(r -> r.map(HaulCycleRepository::haulCycleFromRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     private static HaulCycle haulCycleFromRecord(org.jooq.Record record) {
@@ -131,17 +132,17 @@ public class HaulCycleRepository {
         final var insertTimestamp = record.get(FIELD_INSERT_TIMESTAMP);
 
         return new HaulCycle(
-                id,
-                truckId,
-                insertTimestamp.toInstant(),
-                shovelId,
-                waitLoadTimestamp.map(Timestamp::toInstant).orElse(null),
-                startLoadTimestamp.map(Timestamp::toInstant).orElse(null),
-                startLoadLatitude.map(BigDecimal::doubleValue).orElse(null),
-                startLoadLongitude.map(BigDecimal::doubleValue).orElse(null),
-                endLoadTimestamp.map(Timestamp::toInstant).orElse(null),
-                endLoadPayload.map(Short::intValue).orElse(null),
-                startUnloadTimestamp.map(Timestamp::toInstant).orElse(null),
-                endUnloadTimestamp.map(Timestamp::toInstant).orElse(null));
+            id,
+            truckId,
+            insertTimestamp.toInstant(),
+            shovelId,
+            waitLoadTimestamp.map(Timestamp::toInstant).orElse(null),
+            startLoadTimestamp.map(Timestamp::toInstant).orElse(null),
+            startLoadLatitude.map(BigDecimal::doubleValue).orElse(null),
+            startLoadLongitude.map(BigDecimal::doubleValue).orElse(null),
+            endLoadTimestamp.map(Timestamp::toInstant).orElse(null),
+            endLoadPayload.map(Short::intValue).orElse(null),
+            startUnloadTimestamp.map(Timestamp::toInstant).orElse(null),
+            endUnloadTimestamp.map(Timestamp::toInstant).orElse(null));
     }
 }

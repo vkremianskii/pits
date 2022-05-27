@@ -12,6 +12,7 @@ import static org.assertj.core.data.Offset.offset;
 
 @SpringBootTest
 class HaulCycleRepositoryTests {
+
     @Autowired
     HaulCycleRepository sut;
 

@@ -12,7 +12,7 @@ public class HaulCycleFsmFactory {
     public HaulCycleFsm create(Map<Shovel, SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions,
                                HaulCycleFsmSink haulCycleSink) {
         return new HaulCycleFsm(
-                shovelToOrderedPositions,
-                haulCycleSink);
+            shovelToOrderedPositions,
+            haulCycleSink);
     }
 }

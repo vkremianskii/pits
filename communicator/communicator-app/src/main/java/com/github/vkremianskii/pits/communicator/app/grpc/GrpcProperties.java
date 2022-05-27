@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "grpc")
 public class GrpcProperties {
+
     private int port;
 
     public int getPort() {

@@ -19,6 +19,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class GrpcClient {
+
     private final ExecutorService executor = newSingleThreadExecutor();
 
     private ManagedChannel channel;
@@ -26,8 +27,8 @@ public class GrpcClient {
 
     public void start() {
         channel = ManagedChannelBuilder.forAddress("localhost", 8083)
-                .usePlaintext()
-                .build();
+            .usePlaintext()
+            .build();
 
         equipmentStub = newFutureStub(channel);
     }
@@ -39,36 +40,36 @@ public class GrpcClient {
 
     public Mono<PositionChangedResponse> sendPositionChanged(int equipmentId, double latitude, double longitude, int elevation) {
         final var request = PositionChanged.newBuilder()
-                .setEquipmentId(equipmentId)
-                .setLatitude(latitude)
-                .setLongitude(longitude)
-                .setElevation(elevation)
-                .build();
+            .setEquipmentId(equipmentId)
+            .setLatitude(latitude)
+            .setLongitude(longitude)
+            .setElevation(elevation)
+            .build();
 
         return monoFromListenableFuture(equipmentStub.positionChanged(request));
     }
 
     public Mono<PayloadChangedResponse> sendPayloadChanged(int equipmentId, int payload) {
         final var request = PayloadChanged.newBuilder()
-                .setEquipmentId(equipmentId)
-                .setPayload(payload)
-                .build();
+            .setEquipmentId(equipmentId)
+            .setPayload(payload)
+            .build();
 
         return monoFromListenableFuture(equipmentStub.payloadChanged(request));
     }
 
     private <T> Mono<T> monoFromListenableFuture(ListenableFuture<T> future) {
         return Mono.create(sink ->
-                Futures.addCallback(future, new FutureCallback<T>() {
-                    @Override
-                    public void onSuccess(T result) {
-                        sink.success(result);
-                    }
+            Futures.addCallback(future, new FutureCallback<T>() {
+                @Override
+                public void onSuccess(T result) {
+                    sink.success(result);
+                }
 
-                    @Override
-                    public void onFailure(Throwable t) {
-                        sink.error(t);
-                    }
-                }, executor));
+                @Override
+                public void onFailure(Throwable t) {
+                    sink.error(t);
+                }
+            }, executor));
     }
 }

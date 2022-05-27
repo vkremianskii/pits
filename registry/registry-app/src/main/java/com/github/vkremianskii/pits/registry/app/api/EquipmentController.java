@@ -25,6 +25,7 @@ import static java.util.Objects.requireNonNull;
 @RestController
 @RequestMapping("/equipment")
 public class EquipmentController {
+
     private final EquipmentRepository equipmentRepository;
     private final ObjectMapper objectMapper;
 
@@ -42,22 +43,22 @@ public class EquipmentController {
     @PostMapping
     public Mono<CreateEquipmentResponse> createEquipment(@RequestBody CreateEquipmentRequest request) {
         return equipmentRepository.createEquipment(request.name(), request.type())
-                .map(CreateEquipmentResponse::new);
+            .map(CreateEquipmentResponse::new);
     }
 
     @PostMapping("/{id}/state")
     public Mono<Void> updateEquipmentState(@PathVariable("id") int equipmentId,
                                            @RequestBody FuzzyUpdateEquipmentStateRequest request) {
         return equipmentRepository.getEquipmentById(equipmentId)
-                .flatMap(equipment -> equipment
-                        .map(e -> updateEquipmentState(e, request.state))
-                        .orElse(Mono.error(new NotFoundError())));
+            .flatMap(equipment -> equipment
+                .map(e -> updateEquipmentState(e, request.state))
+                .orElse(Mono.error(new NotFoundError())));
     }
 
     private Mono<Void> updateEquipmentState(Equipment equipment, TextNode state) {
         return equipmentRepository.updateEquipmentState(
-                equipment.id,
-                deserializeEquipmentState(state, equipment.type));
+            equipment.id,
+            deserializeEquipmentState(state, equipment.type));
     }
 
     private EquipmentState deserializeEquipmentState(TextNode state, EquipmentType type) {
@@ -75,6 +76,7 @@ public class EquipmentController {
     }
 
     public static class FuzzyUpdateEquipmentStateRequest {
+
         public TextNode state;
     }
 }

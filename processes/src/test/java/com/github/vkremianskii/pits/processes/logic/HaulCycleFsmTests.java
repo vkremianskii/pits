@@ -1,6 +1,5 @@
 package com.github.vkremianskii.pits.processes.logic;
 
-import com.bbn.openmap.geo.GeoArray;
 import com.github.vkremianskii.pits.processes.logic.fsm.HaulCycleFsm;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
@@ -52,16 +51,16 @@ class HaulCycleFsmTests {
 
         // then
         assertThat(haulCycles).containsExactly(new MutableHaulCycle(
-                null,
-                null,
-                null,
-                Instant.ofEpochSecond(3),
-                41.1494512,
-                -8.6107884,
-                Instant.ofEpochSecond(5),
-                30_000,
-                Instant.ofEpochSecond(6),
-                Instant.ofEpochSecond(7)));
+            null,
+            null,
+            null,
+            Instant.ofEpochSecond(3),
+            41.1494512,
+            -8.6107884,
+            Instant.ofEpochSecond(5),
+            30_000,
+            Instant.ofEpochSecond(6),
+            Instant.ofEpochSecond(7)));
         var state = haulCycleFsm.getState();
         assertThat(state).isEqualTo(TruckState.EMPTY);
     }
@@ -73,18 +72,18 @@ class HaulCycleFsmTests {
         var haulCycles = new ArrayList<MutableHaulCycle>();
         var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
         var haulCycle = new HaulCycle(
-                1L,
-                1,
-                Instant.ofEpochSecond(1),
-                2,
-                Instant.ofEpochSecond(1),
-                Instant.ofEpochSecond(2),
-                41.1494512,
-                -8.6107884,
-                Instant.ofEpochSecond(3),
-                30_000,
-                null,
-                null);
+            1L,
+            1,
+            Instant.ofEpochSecond(1),
+            2,
+            Instant.ofEpochSecond(1),
+            Instant.ofEpochSecond(2),
+            41.1494512,
+            -8.6107884,
+            Instant.ofEpochSecond(3),
+            30_000,
+            null,
+            null);
         haulCycleFsm.initialize(haulCycle, 41.14807, -8.61107, 30_000);
 
         // when
@@ -98,28 +97,28 @@ class HaulCycleFsmTests {
 
         // then
         assertThat(haulCycles).containsExactlyInAnyOrder(
-                new MutableHaulCycle(
-                        1L,
-                        2,
-                        Instant.ofEpochSecond(1),
-                        Instant.ofEpochSecond(2),
-                        41.1494512,
-                        -8.6107884,
-                        Instant.ofEpochSecond(3),
-                        30_000,
-                        Instant.ofEpochSecond(4),
-                        Instant.ofEpochSecond(5)),
-                new MutableHaulCycle(
-                        null,
-                        null,
-                        null,
-                        Instant.ofEpochSecond(7),
-                        41.1494512,
-                        -8.6107884,
-                        Instant.ofEpochSecond(9),
-                        30_000,
-                        Instant.ofEpochSecond(10),
-                        null));
+            new MutableHaulCycle(
+                1L,
+                2,
+                Instant.ofEpochSecond(1),
+                Instant.ofEpochSecond(2),
+                41.1494512,
+                -8.6107884,
+                Instant.ofEpochSecond(3),
+                30_000,
+                Instant.ofEpochSecond(4),
+                Instant.ofEpochSecond(5)),
+            new MutableHaulCycle(
+                null,
+                null,
+                null,
+                Instant.ofEpochSecond(7),
+                41.1494512,
+                -8.6107884,
+                Instant.ofEpochSecond(9),
+                30_000,
+                Instant.ofEpochSecond(10),
+                null));
         var state = haulCycleFsm.getState();
         assertThat(state).isEqualTo(TruckState.UNLOAD);
     }
@@ -130,14 +129,14 @@ class HaulCycleFsmTests {
         var shovel1 = new Shovel(2, "Shovel No.1", 20, null, null);
         var shovel2 = new Shovel(3, "Shovel No.2", 20, null, null);
         var shovelToOrderedPositions = Map.of(
-                shovel1, new TreeMap<>(Map.of(
-                        Instant.ofEpochSecond(2),
-                        new EquipmentPositionRecord(5, 2, 41.149320, -8.610143, 86, Instant.ofEpochSecond(2))
-                )),
-                shovel2, new TreeMap<>(Map.of(
-                        Instant.ofEpochSecond(7),
-                        new EquipmentPositionRecord(6, 3, 41.149017, -8.610865, 86, Instant.ofEpochSecond(7))
-                )));
+            shovel1, new TreeMap<>(Map.of(
+                Instant.ofEpochSecond(2),
+                new EquipmentPositionRecord(5, 2, 41.149320, -8.610143, 86, Instant.ofEpochSecond(2))
+            )),
+            shovel2, new TreeMap<>(Map.of(
+                Instant.ofEpochSecond(7),
+                new EquipmentPositionRecord(6, 3, 41.149017, -8.610865, 86, Instant.ofEpochSecond(7))
+            )));
         var haulCycles = new ArrayList<MutableHaulCycle>();
         var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
         haulCycleFsm.initialize(null, 41.14807, -8.61107, 30_000);
@@ -153,28 +152,28 @@ class HaulCycleFsmTests {
 
         // then
         assertThat(haulCycles).containsExactlyInAnyOrder(
-                new MutableHaulCycle(
-                        null,
-                        2,
-                        Instant.ofEpochSecond(3),
-                        Instant.ofEpochSecond(4),
-                        41.149343,
-                        -8.610256,
-                        Instant.ofEpochSecond(5),
-                        100_000,
-                        Instant.ofEpochSecond(6),
-                        Instant.ofEpochSecond(7)),
-                new MutableHaulCycle(
-                        null,
-                        3,
-                        Instant.ofEpochSecond(8),
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null));
+            new MutableHaulCycle(
+                null,
+                2,
+                Instant.ofEpochSecond(3),
+                Instant.ofEpochSecond(4),
+                41.149343,
+                -8.610256,
+                Instant.ofEpochSecond(5),
+                100_000,
+                Instant.ofEpochSecond(6),
+                Instant.ofEpochSecond(7)),
+            new MutableHaulCycle(
+                null,
+                3,
+                Instant.ofEpochSecond(8),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null));
         var state = haulCycleFsm.getState();
         assertThat(state).isEqualTo(TruckState.WAIT_LOAD);
     }

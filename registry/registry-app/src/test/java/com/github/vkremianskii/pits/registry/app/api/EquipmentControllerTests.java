@@ -3,8 +3,6 @@ package com.github.vkremianskii.pits.registry.app.api;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
-import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
-import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.*;
 import org.junit.jupiter.api.Test;
@@ -28,6 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @WebFluxTest
 @Import(CoreWebAutoConfiguration.class)
 class EquipmentControllerTests {
+
     @MockBean
     EquipmentRepository equipmentRepository;
     @MockBean
@@ -39,69 +38,69 @@ class EquipmentControllerTests {
     void should_get_equipment() {
         // given
         when(equipmentRepository.getEquipment())
-                .thenReturn(Mono.just(List.of(
-                        new Dozer(1, "Dozer No.1", null, null),
-                        new Drill(2, "Drill No.1", null, null),
-                        new Shovel(3, "Shovel No.1", 20, null, null),
-                        new Truck(4, "Truck No.1", HAUL, new Position(41.1494512, -8.6107884, 86), 10))));
+            .thenReturn(Mono.just(List.of(
+                new Dozer(1, "Dozer No.1", null, null),
+                new Drill(2, "Drill No.1", null, null),
+                new Shovel(3, "Shovel No.1", 20, null, null),
+                new Truck(4, "Truck No.1", HAUL, new Position(41.1494512, -8.6107884, 86), 10))));
 
         // expect
         webClient.get()
-                .uri("/equipment")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody().json("""
-                        [{
-                            "id": 1,
-                            "name": "Dozer No.1",
-                            "type": "DOZER"
-                        },{
-                            "id": 2,
-                            "name": "Drill No.1",
-                            "type": "DRILL"
-                        },{
-                            "id": 3,
-                            "name": "Shovel No.1",
-                            "type": "SHOVEL",
-                            "loadRadius": 20
-                        },{
-                            "id": 4,
-                            "name": "Truck No.1",
-                            "type": "TRUCK",
-                            "state": "HAUL",
-                            "position": {
-                                "latitude": 41.1494512,
-                                "longitude": -8.6107884,
-                                "elevation": 86
-                            },
-                            "payload": 10
-                        }]
-                        """, true);
+            .uri("/equipment")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().json("""
+                [{
+                    "id": 1,
+                    "name": "Dozer No.1",
+                    "type": "DOZER"
+                },{
+                    "id": 2,
+                    "name": "Drill No.1",
+                    "type": "DRILL"
+                },{
+                    "id": 3,
+                    "name": "Shovel No.1",
+                    "type": "SHOVEL",
+                    "loadRadius": 20
+                },{
+                    "id": 4,
+                    "name": "Truck No.1",
+                    "type": "TRUCK",
+                    "state": "HAUL",
+                    "position": {
+                        "latitude": 41.1494512,
+                        "longitude": -8.6107884,
+                        "elevation": 86
+                    },
+                    "payload": 10
+                }]
+                """, true);
     }
 
     @Test
     void should_create_equipment() {
         // given
         when(equipmentRepository.createEquipment("Truck No.1", TRUCK))
-                .thenReturn(Mono.just(1));
+            .thenReturn(Mono.just(1));
 
         // expect
         webClient.post()
-                .uri("/equipment")
-                .contentType(APPLICATION_JSON)
-                .bodyValue("""
-                        {
-                            "name": "Truck No.1",
-                            "type": "TRUCK"
-                        }
-                        """)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody().json("""
-                        {
-                            "equipmentId": 1
-                        }
-                        """);
+            .uri("/equipment")
+            .contentType(APPLICATION_JSON)
+            .bodyValue("""
+                {
+                    "name": "Truck No.1",
+                    "type": "TRUCK"
+                }
+                """)
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().json("""
+                {
+                    "equipmentId": 1
+                }
+                """);
         verify(equipmentRepository).createEquipment("Truck No.1", TRUCK);
     }
 
@@ -109,21 +108,21 @@ class EquipmentControllerTests {
     void should_update_equipment_state() {
         // given
         when(equipmentRepository.getEquipmentById(1))
-                .thenReturn(Mono.just(Optional.of(new Truck(1, "Truck No.1", null, null, null))));
+            .thenReturn(Mono.just(Optional.of(new Truck(1, "Truck No.1", null, null, null))));
         when(equipmentRepository.updateEquipmentState(1, TruckState.EMPTY))
-                .thenReturn(Mono.empty());
+            .thenReturn(Mono.empty());
 
         // expect
         webClient.post()
-                .uri("/equipment/{id}/state", 1)
-                .contentType(APPLICATION_JSON)
-                .bodyValue("""
-                        {
-                            "state": "EMPTY"
-                        }
-                        """)
-                .exchange()
-                .expectStatus().isOk();
+            .uri("/equipment/{id}/state", 1)
+            .contentType(APPLICATION_JSON)
+            .bodyValue("""
+                {
+                    "state": "EMPTY"
+                }
+                """)
+            .exchange()
+            .expectStatus().isOk();
         verify(equipmentRepository).updateEquipmentState(1, TruckState.EMPTY);
     }
 
@@ -134,15 +133,15 @@ class EquipmentControllerTests {
 
         // expect
         webClient.post()
-                .uri("/equipment/{id}/state", 1)
-                .contentType(APPLICATION_JSON)
-                .bodyValue("""
-                        {
-                            "state": "EMPTY"
-                        }
-                        """)
-                .exchange()
-                .expectStatus().isEqualTo(NOT_FOUND);
+            .uri("/equipment/{id}/state", 1)
+            .contentType(APPLICATION_JSON)
+            .bodyValue("""
+                {
+                    "state": "EMPTY"
+                }
+                """)
+            .exchange()
+            .expectStatus().isEqualTo(NOT_FOUND);
         verify(equipmentRepository).getEquipmentById(1);
         verifyNoMoreInteractions(equipmentRepository);
     }
@@ -151,19 +150,19 @@ class EquipmentControllerTests {
     void should_update_equipment_state__invalid_state() {
         // given
         when(equipmentRepository.getEquipmentById(1))
-                .thenReturn(Mono.just(Optional.of(new Dozer(1, "Dozer No.1", null, null))));
+            .thenReturn(Mono.just(Optional.of(new Dozer(1, "Dozer No.1", null, null))));
 
         // expect
         webClient.post()
-                .uri("/equipment/{id}/state", 1)
-                .contentType(APPLICATION_JSON)
-                .bodyValue("""
-                        {
-                            "state": "EMPTY"
-                        }
-                        """)
-                .exchange()
-                .expectStatus().isEqualTo(BAD_REQUEST);
+            .uri("/equipment/{id}/state", 1)
+            .contentType(APPLICATION_JSON)
+            .bodyValue("""
+                {
+                    "state": "EMPTY"
+                }
+                """)
+            .exchange()
+            .expectStatus().isEqualTo(BAD_REQUEST);
         verify(equipmentRepository).getEquipmentById(1);
         verifyNoMoreInteractions(equipmentRepository);
     }

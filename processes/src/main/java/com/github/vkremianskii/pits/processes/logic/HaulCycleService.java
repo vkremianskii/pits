@@ -28,6 +28,7 @@ import static java.util.Objects.requireNonNull;
 
 @Service
 public class HaulCycleService {
+
     private static final Logger LOG = LoggerFactory.getLogger(HaulCycleService.class);
 
     private final HaulCycleRepository haulCycleRepository;
@@ -50,15 +51,15 @@ public class HaulCycleService {
 
     public Mono<Void> computeHaulCycles(Truck truck, List<Shovel> shovels) {
         return haulCycleRepository.getLastHaulCycleForTruck(truck.id)
-                .flatMap(c -> computeHaulCycles(truck, shovels, c.orElse(null)));
+            .flatMap(c -> computeHaulCycles(truck, shovels, c.orElse(null)));
     }
 
     private Mono<Void> computeHaulCycles(Truck truck,
                                          List<Shovel> shovels,
                                          @Nullable HaulCycle lastHaulCycle) {
         final var startTimestamp = Optional.ofNullable(lastHaulCycle)
-                .map(HaulCycle::insertTimestamp)
-                .orElse(Instant.EPOCH);
+            .map(HaulCycle::insertTimestamp)
+            .orElse(Instant.EPOCH);
 
         final var positions = positionRepository.getRecordsForEquipmentAfter(truck.id, startTimestamp);
         final var payloads = payloadRepository.getRecordsForEquipmentAfter(truck.id, startTimestamp);
@@ -66,25 +67,25 @@ public class HaulCycleService {
         final var lastPayload = payloadRepository.getLastRecordForEquipmentBefore(truck.id, startTimestamp);
 
         final var shovelToPositions = Flux.concat(shovels.stream()
-                        .map(shovel -> positionRepository.getRecordsForEquipmentAfter(shovel.id, startTimestamp)
-                                .map(records -> pair(shovel, records)))
-                        .toList())
-                .collectList();
+                .map(shovel -> positionRepository.getRecordsForEquipmentAfter(shovel.id, startTimestamp)
+                    .map(records -> pair(shovel, records)))
+                .toList())
+            .collectList();
 
         final var shovelToLastPosition = Flux.concat(shovels.stream()
-                        .map(shovel -> positionRepository.getLastRecordForEquipmentBefore(shovel.id, startTimestamp)
-                                .map(record -> pair(shovel, record)))
-                        .toList())
-                .collectList();
+                .map(shovel -> positionRepository.getLastRecordForEquipmentBefore(shovel.id, startTimestamp)
+                    .map(record -> pair(shovel, record)))
+                .toList())
+            .collectList();
 
         return Mono.zip(positions, payloads, lastPosition, lastPayload, shovelToPositions, shovelToLastPosition)
-                .flatMap(__ -> computeHaulCycles(
-                        truck,
-                        mergeRecords(__.getT1(), __.getT2()),
-                        shovelToOrderedPositions(pairsToMap(__.getT5()), pairsToMap(__.getT6())),
-                        __.getT3().orElse(null),
-                        __.getT4().orElse(null),
-                        lastHaulCycle));
+            .flatMap(__ -> computeHaulCycles(
+                truck,
+                mergeRecords(__.getT1(), __.getT2()),
+                shovelToOrderedPositions(pairsToMap(__.getT5()), pairsToMap(__.getT6())),
+                __.getT3().orElse(null),
+                __.getT4().orElse(null),
+                lastHaulCycle));
     }
 
     private Map<Shovel, SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions(Map<Shovel, List<EquipmentPositionRecord>> shovelToPosition,
@@ -126,10 +127,10 @@ public class HaulCycleService {
         final var haulCycles = new ArrayList<MutableHaulCycle>();
         final var haulCycleFsm = haulCycleFsmFactory.create(shovelToOrderedPositions, haulCycles::add);
         haulCycleFsm.initialize(
-                lastHaulCycle,
-                startPosition != null ? startPosition.latitude() : null,
-                startPosition != null ? startPosition.longitude() : null,
-                startPayload != null ? startPayload.payload() : null);
+            lastHaulCycle,
+            startPosition != null ? startPosition.latitude() : null,
+            startPosition != null ? startPosition.longitude() : null,
+            startPayload != null ? startPayload.payload() : null);
 
         for (final var entry : orderedRecords.entrySet()) {
             final var records = entry.getValue();
@@ -147,29 +148,29 @@ public class HaulCycleService {
             if (haulCycle.id != null) {
                 LOG.info("Updating haul cycle " + haulCycle);
                 haulCycleRepository.update(
-                        haulCycle.id,
-                        haulCycle.shovelId,
-                        haulCycle.waitLoadTimestamp,
-                        haulCycle.startLoadTimestamp,
-                        haulCycle.startLoadLatitude,
-                        haulCycle.startLoadLongitude,
-                        haulCycle.endLoadTimestamp,
-                        haulCycle.endLoadPayload,
-                        haulCycle.startUnloadTimestamp,
-                        haulCycle.endUnloadTimestamp);
+                    haulCycle.id,
+                    haulCycle.shovelId,
+                    haulCycle.waitLoadTimestamp,
+                    haulCycle.startLoadTimestamp,
+                    haulCycle.startLoadLatitude,
+                    haulCycle.startLoadLongitude,
+                    haulCycle.endLoadTimestamp,
+                    haulCycle.endLoadPayload,
+                    haulCycle.startUnloadTimestamp,
+                    haulCycle.endUnloadTimestamp);
             } else {
                 LOG.info("Inserting haul cycle: " + haulCycle);
                 haulCycleRepository.insert(
-                        truck.id,
-                        haulCycle.shovelId,
-                        haulCycle.waitLoadTimestamp,
-                        haulCycle.startLoadTimestamp,
-                        haulCycle.startLoadLatitude,
-                        haulCycle.startLoadLongitude,
-                        haulCycle.endLoadTimestamp,
-                        haulCycle.endLoadPayload,
-                        haulCycle.startUnloadTimestamp,
-                        haulCycle.endUnloadTimestamp);
+                    truck.id,
+                    haulCycle.shovelId,
+                    haulCycle.waitLoadTimestamp,
+                    haulCycle.startLoadTimestamp,
+                    haulCycle.startLoadLatitude,
+                    haulCycle.startLoadLongitude,
+                    haulCycle.endLoadTimestamp,
+                    haulCycle.endLoadPayload,
+                    haulCycle.startUnloadTimestamp,
+                    haulCycle.endUnloadTimestamp);
             }
         }
 

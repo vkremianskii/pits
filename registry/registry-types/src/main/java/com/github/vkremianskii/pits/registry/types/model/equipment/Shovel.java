@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class Shovel extends Equipment {
+
     public final int loadRadius;
 
     public Shovel(int id,
@@ -36,12 +37,12 @@ public class Shovel extends Equipment {
     @Override
     public String toString() {
         return "Shovel{" +
-                "loadRadius=" + loadRadius +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", state=" + state +
-                ", position=" + position +
-                '}';
+            "loadRadius=" + loadRadius +
+            ", id=" + id +
+            ", name='" + name + '\'' +
+            ", type=" + type +
+            ", state=" + state +
+            ", position=" + position +
+            '}';
     }
 }

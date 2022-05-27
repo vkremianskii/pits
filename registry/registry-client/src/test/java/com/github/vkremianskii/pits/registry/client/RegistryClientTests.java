@@ -1,11 +1,9 @@
 package com.github.vkremianskii.pits.registry.client;
 
-import com.github.tomakehurst.wiremock.http.MimeType;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
-import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.equipment.*;
 import com.github.vkremianskii.pits.registry.types.model.location.Dump;
 import com.github.vkremianskii.pits.registry.types.model.location.Face;
@@ -22,41 +20,42 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 
 @WireMockTest
 class RegistryClientTests {
+
     RegistryCodecConfigurer registryCodecConfigurer = new RegistryCodecConfigurer(new Jackson2ObjectMapperBuilder());
 
     @Test
     void should_get_equipment(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
         stubFor(get(urlPathEqualTo("/equipment")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
-                .withBody("""
-                        [{
-                            "id": 1,
-                            "name": "Dozer No.1",
-                            "type": "DOZER"
-                        },{
-                            "id": 2,
-                            "name": "Drill No.1",
-                            "type": "DRILL"
-                        },{
-                            "id": 3,
-                            "name": "Shovel No.1",
-                            "type": "SHOVEL",
-                            "loadRadius": 20
-                        },{
-                            "id": 4,
-                            "name": "Truck No.1",
-                            "type": "TRUCK",
-                            "state": "HAUL",
-                            "position": {
-                                "latitude": 41.1494512,
-                                "longitude": -8.6107884,
-                                "elevation": 86
-                            },
-                            "payload": 10
-                        }]
-                        """)));
+            .withStatus(200)
+            .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
+            .withBody("""
+                [{
+                    "id": 1,
+                    "name": "Dozer No.1",
+                    "type": "DOZER"
+                },{
+                    "id": 2,
+                    "name": "Drill No.1",
+                    "type": "DRILL"
+                },{
+                    "id": 3,
+                    "name": "Shovel No.1",
+                    "type": "SHOVEL",
+                    "loadRadius": 20
+                },{
+                    "id": 4,
+                    "name": "Truck No.1",
+                    "type": "TRUCK",
+                    "state": "HAUL",
+                    "position": {
+                        "latitude": 41.1494512,
+                        "longitude": -8.6107884,
+                        "elevation": 86
+                    },
+                    "payload": 10
+                }]
+                """)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
@@ -75,14 +74,14 @@ class RegistryClientTests {
     void should_create_equipment(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
         stubFor(post(urlPathEqualTo("/equipment"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
-                        .withBody("""
-                                {
-                                    "equipmentId": 1
-                                }
-                                """)));
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
+                .withBody("""
+                    {
+                        "equipmentId": 1
+                    }
+                    """)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
@@ -90,12 +89,12 @@ class RegistryClientTests {
 
         // then
         verify(postRequestedFor(urlPathEqualTo("/equipment"))
-                .withRequestBody(equalToJson("""
-                        {
-                            "name": "Truck No.1",
-                            "type": "TRUCK"
-                        }
-                        """)));
+            .withRequestBody(equalToJson("""
+                {
+                    "name": "Truck No.1",
+                    "type": "TRUCK"
+                }
+                """)));
         assertThat(response).isEqualTo(new CreateEquipmentResponse(1));
     }
 
@@ -103,7 +102,7 @@ class RegistryClientTests {
     void should_update_equipment_state(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
         stubFor(post(urlPathEqualTo("/equipment/1/state"))
-                .willReturn(aResponse().withStatus(200)));
+            .willReturn(aResponse().withStatus(200)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
@@ -111,38 +110,38 @@ class RegistryClientTests {
 
         // then
         verify(postRequestedFor(urlPathEqualTo("/equipment/1/state"))
-                .withRequestBody(equalToJson("""
-                        {
-                            "state": "EMPTY"
-                        }
-                        """)));
+            .withRequestBody(equalToJson("""
+                {
+                    "state": "EMPTY"
+                }
+                """)));
     }
 
     @Test
     void should_get_locations(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
         stubFor(get(urlPathEqualTo("/locations")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
-                .withBody("""        
-                        [{
-                            "id": 1,
-                            "name": "Dump No.1",
-                            "type": "DUMP"
-                        },{
-                            "id": 2,
-                            "name": "Face No.1",
-                            "type": "FACE"
-                        },{
-                            "id": 3,
-                            "name": "Hole No.1",
-                            "type": "HOLE"
-                        },{
-                            "id": 4,
-                            "name": "Stockpile No.1",
-                            "type": "STOCKPILE"
-                        }]
-                        """)));
+            .withStatus(200)
+            .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
+            .withBody("""        
+                [{
+                    "id": 1,
+                    "name": "Dump No.1",
+                    "type": "DUMP"
+                },{
+                    "id": 2,
+                    "name": "Face No.1",
+                    "type": "FACE"
+                },{
+                    "id": 3,
+                    "name": "Hole No.1",
+                    "type": "HOLE"
+                },{
+                    "id": 4,
+                    "name": "Stockpile No.1",
+                    "type": "STOCKPILE"
+                }]
+                """)));
         var sut = newClient(wmRuntimeInfo);
 
         // when

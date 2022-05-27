@@ -10,6 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 @Configuration
 public class RegistryWebFluxConfigurer implements WebFluxConfigurer {
+
     private final Jackson2ObjectMapperBuilder objectMapperBuilder;
 
     public RegistryWebFluxConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder) {

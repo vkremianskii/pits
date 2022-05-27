@@ -29,35 +29,35 @@ public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
         if (tree.has("position")) {
             final var positionNode = tree.get("position");
             position = new Position(
-                    positionNode.get("latitude").asDouble(),
-                    positionNode.get("longitude").asDouble(),
-                    positionNode.get("elevation").asInt());
+                positionNode.get("latitude").asDouble(),
+                positionNode.get("longitude").asDouble(),
+                positionNode.get("elevation").asInt());
         }
 
         final var type = EquipmentType.valueOf(typeName);
         return switch (type) {
             case DOZER -> new Dozer(
-                    id,
-                    name,
-                    stateName != null ? DozerState.valueOf(stateName) : null,
-                    position);
+                id,
+                name,
+                stateName != null ? DozerState.valueOf(stateName) : null,
+                position);
             case DRILL -> new Drill(
-                    id,
-                    name,
-                    stateName != null ? DrillState.valueOf(stateName) : null,
-                    position);
+                id,
+                name,
+                stateName != null ? DrillState.valueOf(stateName) : null,
+                position);
             case SHOVEL -> new Shovel(
-                    id,
-                    name,
-                    loadRadius,
-                    stateName != null ? ShovelState.valueOf(stateName) : null,
-                    position);
+                id,
+                name,
+                loadRadius,
+                stateName != null ? ShovelState.valueOf(stateName) : null,
+                position);
             case TRUCK -> new Truck(
-                    id,
-                    name,
-                    stateName != null ? TruckState.valueOf(stateName) : null,
-                    position,
-                    payload);
+                id,
+                name,
+                stateName != null ? TruckState.valueOf(stateName) : null,
+                position,
+                payload);
         };
     }
 }

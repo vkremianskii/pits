@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.registry.types.model;
 import java.util.Objects;
 
 public abstract class EquipmentState {
+
     public final String name;
 
     protected EquipmentState(String name) {

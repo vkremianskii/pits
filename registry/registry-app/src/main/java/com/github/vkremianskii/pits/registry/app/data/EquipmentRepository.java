@@ -26,6 +26,7 @@ import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class EquipmentRepository {
+
     private static final Table<?> TABLE = table("equipment");
     private static final Field<Integer> FIELD_ID = field("id", Integer.class);
     private static final Field<String> FIELD_NAME = field("name", String.class);
@@ -40,20 +41,20 @@ public class EquipmentRepository {
     private static final int DEFAULT_SHOVEL_LOAD_RADIUS = 20;
 
     private static final Map<EquipmentType, String> TYPE_TO_VALUE = Map.of(
-            DOZER, "dozer",
-            DRILL, "drill",
-            SHOVEL, "shovel",
-            TRUCK, "truck");
+        DOZER, "dozer",
+        DRILL, "drill",
+        SHOVEL, "shovel",
+        TRUCK, "truck");
 
     private static final Map<EquipmentState, String> STATE_TO_VALUE = Map.of(
-            TruckState.EMPTY, "truck_empty",
-            TruckState.WAIT_LOAD, "truck_wait_load",
-            TruckState.LOAD, "truck_load",
-            TruckState.HAUL, "truck_haul",
-            TruckState.UNLOAD, "truck_unload");
+        TruckState.EMPTY, "truck_empty",
+        TruckState.WAIT_LOAD, "truck_wait_load",
+        TruckState.LOAD, "truck_load",
+        TruckState.HAUL, "truck_haul",
+        TruckState.UNLOAD, "truck_unload");
 
     private static final Map<String, EquipmentState> VALUE_TO_STATE = STATE_TO_VALUE.entrySet().stream()
-            .collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
+        .collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
 
     private final DSLContext dslContext;
 
@@ -63,72 +64,72 @@ public class EquipmentRepository {
 
     public Mono<Void> clear() {
         return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
-                .subscribeOn(boundedElastic());
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(String name, EquipmentType type, Short loadRadius) {
         return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                        .columns(FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                        .values(name, valueFromType(type), loadRadius)
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .columns(FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
+                .values(name, valueFromType(type), loadRadius)
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(int equipmentId, String name, EquipmentType type, Short loadRadius) {
         return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                        .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                        .values(equipmentId, name, valueFromType(type), loadRadius)
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
+                .values(equipmentId, name, valueFromType(type), loadRadius)
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<List<Equipment>> getEquipment() {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .fetch(r -> r.map(EquipmentRepository::equipmentFromRecord)))
-                .subscribeOn(boundedElastic());
+                .fetch(r -> r.map(EquipmentRepository::equipmentFromRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<Equipment>> getEquipmentById(int equipmentId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .where(FIELD_ID.eq(equipmentId))
-                        .fetchOptional(r -> r.map(EquipmentRepository::equipmentFromRecord)))
-                .subscribeOn(boundedElastic());
+                .where(FIELD_ID.eq(equipmentId))
+                .fetchOptional(r -> r.map(EquipmentRepository::equipmentFromRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Integer> createEquipment(String name, EquipmentType type) {
         return Mono.fromSupplier(() -> dslContext.insertInto(TABLE)
-                        .columns(FIELD_NAME, FIELD_TYPE)
-                        .values(name, valueFromType(type))
-                        .returning(FIELD_ID)
-                        .fetchOne()
-                        .get(FIELD_ID))
-                .subscribeOn(boundedElastic());
+                .columns(FIELD_NAME, FIELD_TYPE)
+                .values(name, valueFromType(type))
+                .returning(FIELD_ID)
+                .fetchOne()
+                .get(FIELD_ID))
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
         return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
-                        .set(FIELD_STATE, valueFromState(state))
-                        .where(FIELD_ID.eq(equipmentId))
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .set(FIELD_STATE, valueFromState(state))
+                .where(FIELD_ID.eq(equipmentId))
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
         return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
-                        .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
-                        .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
-                        .set(FIELD_ELEVATION, (short) position.elevation())
-                        .where(FIELD_ID.eq(equipmentId))
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
+                .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
+                .set(FIELD_ELEVATION, (short) position.elevation())
+                .where(FIELD_ID.eq(equipmentId))
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> updateEquipmentPayload(int equipmentId, int payload) {
         return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
-                        .set(FIELD_PAYLOAD, payload)
-                        .where(FIELD_ID.eq(equipmentId))
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .set(FIELD_PAYLOAD, payload)
+                .where(FIELD_ID.eq(equipmentId))
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     private static Equipment equipmentFromRecord(org.jooq.Record record) {
@@ -149,27 +150,27 @@ public class EquipmentRepository {
 
         return switch (type) {
             case "dozer" -> new Dozer(
-                    id,
-                    name,
-                    stateFromValue(state, DozerState.class),
-                    position);
+                id,
+                name,
+                stateFromValue(state, DozerState.class),
+                position);
             case "drill" -> new Drill(
-                    id,
-                    name,
-                    stateFromValue(state, DrillState.class),
-                    position);
+                id,
+                name,
+                stateFromValue(state, DrillState.class),
+                position);
             case "shovel" -> new Shovel(
-                    id,
-                    name,
-                    loadRadius.map(Short::intValue).orElse(DEFAULT_SHOVEL_LOAD_RADIUS),
-                    stateFromValue(state, ShovelState.class),
-                    position);
+                id,
+                name,
+                loadRadius.map(Short::intValue).orElse(DEFAULT_SHOVEL_LOAD_RADIUS),
+                stateFromValue(state, ShovelState.class),
+                position);
             case "truck" -> new Truck(
-                    id,
-                    name,
-                    stateFromValue(state, TruckState.class),
-                    position,
-                    payload);
+                id,
+                name,
+                stateFromValue(state, TruckState.class),
+                position,
+                payload);
             default -> throw new InternalServerError("Invalid equipment type: " + type);
         };
     }

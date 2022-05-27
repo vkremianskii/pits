@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "integration.registry")
 public class RegistryProperties {
+
     private String baseUrl;
 
     public String getBaseUrl() {

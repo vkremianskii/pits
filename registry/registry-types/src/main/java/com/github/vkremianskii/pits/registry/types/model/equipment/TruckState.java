@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.registry.types.model.equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 
 public class TruckState extends EquipmentState {
+
     public static final TruckState EMPTY = new TruckState("EMPTY");
     public static final TruckState WAIT_LOAD = new TruckState("WAIT_LOAD");
     public static final TruckState LOAD = new TruckState("LOAD");

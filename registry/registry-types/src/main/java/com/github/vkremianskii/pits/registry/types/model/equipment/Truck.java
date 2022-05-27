@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class Truck extends Equipment {
+
     public final Integer payload;
 
     public Truck(int id,
@@ -36,12 +37,12 @@ public class Truck extends Equipment {
     @Override
     public String toString() {
         return "Truck{" +
-                "payload=" + payload +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", state=" + state +
-                ", position=" + position +
-                '}';
+            "payload=" + payload +
+            ", id=" + id +
+            ", name='" + name + '\'' +
+            ", type=" + type +
+            ", state=" + state +
+            ", position=" + position +
+            '}';
     }
 }

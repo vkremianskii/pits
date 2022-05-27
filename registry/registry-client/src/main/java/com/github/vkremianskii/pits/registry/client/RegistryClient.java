@@ -17,51 +17,52 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 public class RegistryClient {
+
     private final WebClient webClient;
 
     public RegistryClient(String baseUrl, RegistryCodecConfigurer codecConfigurer) {
         this.webClient = WebClient.builder()
-                .baseUrl(baseUrl)
-                .codecs(codecConfigurer::configureCodecs)
-                .build();
+            .baseUrl(baseUrl)
+            .codecs(codecConfigurer::configureCodecs)
+            .build();
     }
 
     public Mono<List<Equipment>> getEquipment() {
         return webClient.get()
-                .uri("/equipment")
-                .retrieve()
-                .bodyToFlux(Equipment.class)
-                .collectList()
-                .subscribeOn(boundedElastic());
+            .uri("/equipment")
+            .retrieve()
+            .bodyToFlux(Equipment.class)
+            .collectList()
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<CreateEquipmentResponse> createEquipment(String name, EquipmentType type) {
         return webClient.post()
-                .uri("/equipment")
-                .contentType(APPLICATION_JSON)
-                .bodyValue(new CreateEquipmentRequest(name, type))
-                .retrieve()
-                .bodyToMono(CreateEquipmentResponse.class)
-                .subscribeOn(boundedElastic());
+            .uri("/equipment")
+            .contentType(APPLICATION_JSON)
+            .bodyValue(new CreateEquipmentRequest(name, type))
+            .retrieve()
+            .bodyToMono(CreateEquipmentResponse.class)
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
         return webClient.post()
-                .uri("/equipment/{id}/state", equipmentId)
-                .contentType(APPLICATION_JSON)
-                .bodyValue(new UpdateEquipmentStateRequest(state))
-                .retrieve()
-                .toBodilessEntity()
-                .then()
-                .subscribeOn(boundedElastic());
+            .uri("/equipment/{id}/state", equipmentId)
+            .contentType(APPLICATION_JSON)
+            .bodyValue(new UpdateEquipmentStateRequest(state))
+            .retrieve()
+            .toBodilessEntity()
+            .then()
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<List<Location>> getLocations() {
         return webClient.get()
-                .uri("/locations")
-                .retrieve()
-                .bodyToFlux(Location.class)
-                .collectList()
-                .subscribeOn(boundedElastic());
+            .uri("/locations")
+            .retrieve()
+            .bodyToFlux(Location.class)
+            .collectList()
+            .subscribeOn(boundedElastic());
     }
 }

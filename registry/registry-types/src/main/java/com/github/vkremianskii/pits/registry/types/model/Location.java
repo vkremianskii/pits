@@ -5,6 +5,7 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public class Location {
+
     public final int id;
     public final String name;
     public final LocationType type;
@@ -31,9 +32,9 @@ public class Location {
     @Override
     public String toString() {
         return "Location{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                '}';
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", type=" + type +
+            '}';
     }
 }

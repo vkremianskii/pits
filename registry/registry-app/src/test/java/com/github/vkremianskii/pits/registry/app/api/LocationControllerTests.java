@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 @WebFluxTest
 @Import(CoreWebAutoConfiguration.class)
 class LocationControllerTests {
+
     @MockBean
     EquipmentRepository equipmentRepository;
     @MockBean
@@ -33,35 +34,35 @@ class LocationControllerTests {
     void should_get_locations() {
         // given
         when(locationRepository.getLocations())
-                .thenReturn(Mono.just(List.of(
-                        new Dump(1, "Dump No.1"),
-                        new Face(2, "Face No.1"),
-                        new Hole(3, "Hole No.1"),
-                        new Stockpile(4, "Stockpile No.1"))));
+            .thenReturn(Mono.just(List.of(
+                new Dump(1, "Dump No.1"),
+                new Face(2, "Face No.1"),
+                new Hole(3, "Hole No.1"),
+                new Stockpile(4, "Stockpile No.1"))));
 
         // expect
         webClient.get()
-                .uri("/location")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody().json("""
-                        [{
-                            "id": 1,
-                            "name": "Dump No.1",
-                            "type": "DUMP"
-                        },{
-                            "id": 2,
-                            "name": "Face No.1",
-                            "type": "FACE"
-                        },{
-                            "id": 3,
-                            "name": "Hole No.1",
-                            "type": "HOLE"
-                        },{
-                            "id": 4,
-                            "name": "Stockpile No.1",
-                            "type": "STOCKPILE"
-                        }]
-                        """, true);
+            .uri("/location")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().json("""
+                [{
+                    "id": 1,
+                    "name": "Dump No.1",
+                    "type": "DUMP"
+                },{
+                    "id": 2,
+                    "name": "Face No.1",
+                    "type": "FACE"
+                },{
+                    "id": 3,
+                    "name": "Hole No.1",
+                    "type": "HOLE"
+                },{
+                    "id": 4,
+                    "name": "Stockpile No.1",
+                    "type": "STOCKPILE"
+                }]
+                """, true);
     }
 }

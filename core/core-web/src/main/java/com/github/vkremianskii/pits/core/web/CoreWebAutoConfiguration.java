@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({
-        CoreExceptionHandler.class,
-        RequestLoggingFilter.class})
+    CoreExceptionHandler.class,
+    RequestLoggingFilter.class})
 public class CoreWebAutoConfiguration {
+
 }

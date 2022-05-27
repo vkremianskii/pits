@@ -7,7 +7,9 @@ import com.github.vkremianskii.pits.registry.types.model.location.Dump;
 import com.github.vkremianskii.pits.registry.types.model.location.Face;
 import com.github.vkremianskii.pits.registry.types.model.location.Hole;
 import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -16,21 +18,23 @@ import java.util.Map;
 
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.*;
 import static java.util.Objects.requireNonNull;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
 import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class LocationRepository {
+
     private static final Table<?> TABLE = table("location");
     private static final Field<Integer> FIELD_ID = field("id", Integer.class);
     private static final Field<String> FIELD_NAME = field("name", String.class);
     private static final Field<String> FIELD_TYPE = field("type", String.class);
 
     private static final Map<LocationType, String> TYPE_TO_VALUE = Map.of(
-            DUMP, "dump",
-            FACE, "face",
-            HOLE, "hole",
-            STOCKPILE, "stockpile");
+        DUMP, "dump",
+        FACE, "face",
+        HOLE, "hole",
+        STOCKPILE, "stockpile");
 
     private final DSLContext dslContext;
 
@@ -40,21 +44,21 @@ public class LocationRepository {
 
     public Mono<Void> clear() {
         return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
-                .subscribeOn(boundedElastic());
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(String name, LocationType type) {
         return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                        .columns(FIELD_NAME, FIELD_TYPE)
-                        .values(name, valueFromType(type))
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .columns(FIELD_NAME, FIELD_TYPE)
+                .values(name, valueFromType(type))
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<List<Location>> getLocations() {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .fetch(r -> r.map(LocationRepository::locationFromRecord)))
-                .subscribeOn(boundedElastic());
+                .fetch(r -> r.map(LocationRepository::locationFromRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     private static Location locationFromRecord(org.jooq.Record record) {

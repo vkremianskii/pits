@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +19,7 @@ import static org.springframework.transaction.TransactionDefinition.PROPAGATION_
 
 @Component
 public class HaulCycleJob {
+
     private static final Logger LOG = LoggerFactory.getLogger(HaulCycleJob.class);
 
     private final RegistryClient registryClient;
@@ -38,30 +38,30 @@ public class HaulCycleJob {
     public void computeHaulCycles() {
         LOG.info("Haul cycle computation started");
         registryClient.getEquipment()
-                .flatMap(equipment -> {
-                    final var trucks = equipment.stream()
-                            .filter(e -> e.type == TRUCK)
-                            .map(e -> (Truck) e)
-                            .toList();
-                    final var shovels = equipment.stream()
-                            .filter(e -> e.type == SHOVEL)
-                            .map(e -> (Shovel) e)
-                            .toList();
-                    return Mono.when(trucks.stream().map(truck -> {
-                        LOG.info("Computing truck '{}' haul cycles", truck.id);
-                        final var txDefinition = new DefaultTransactionDefinition(PROPAGATION_REQUIRES_NEW);
-                        final var txStatus = transactionManager.getTransaction(txDefinition);
-                        return haulCycleService.computeHaulCycles(truck, shovels)
-                                .doOnSuccess(__ -> transactionManager.commit(txStatus))
-                                .onErrorResume(e -> {
-                                    LOG.error("Error while computing truck '" + truck.id + "' haul cycles", e);
-                                    transactionManager.rollback(txStatus);
-                                    return Mono.empty();
-                                });
-                    }).toList()).then();
-                })
-                .doOnSuccess(__ -> LOG.info("Haul cycle computation finished"))
-                .doOnError(e -> LOG.error("Haul cycle computation failed", e))
-                .block();
+            .flatMap(equipment -> {
+                final var trucks = equipment.stream()
+                    .filter(e -> e.type == TRUCK)
+                    .map(e -> (Truck) e)
+                    .toList();
+                final var shovels = equipment.stream()
+                    .filter(e -> e.type == SHOVEL)
+                    .map(e -> (Shovel) e)
+                    .toList();
+                return Mono.when(trucks.stream().map(truck -> {
+                    LOG.info("Computing truck '{}' haul cycles", truck.id);
+                    final var txDefinition = new DefaultTransactionDefinition(PROPAGATION_REQUIRES_NEW);
+                    final var txStatus = transactionManager.getTransaction(txDefinition);
+                    return haulCycleService.computeHaulCycles(truck, shovels)
+                        .doOnSuccess(__ -> transactionManager.commit(txStatus))
+                        .onErrorResume(e -> {
+                            LOG.error("Error while computing truck '" + truck.id + "' haul cycles", e);
+                            transactionManager.rollback(txStatus);
+                            return Mono.empty();
+                        });
+                }).toList()).then();
+            })
+            .doOnSuccess(__ -> LOG.info("Haul cycle computation finished"))
+            .doOnError(e -> LOG.error("Haul cycle computation failed", e))
+            .block();
     }
 }

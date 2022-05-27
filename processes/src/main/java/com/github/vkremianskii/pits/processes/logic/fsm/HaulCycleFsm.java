@@ -20,6 +20,7 @@ import static com.github.vkremianskii.pits.processes.model.MutableHaulCycle.muta
 import static java.util.Objects.requireNonNull;
 
 public class HaulCycleFsm {
+
     private static final int PAYLOAD_THRESHOLD = 10_000; // kg
     private static final int DEFAULT_SHOVEL_LOAD_RADIUS = 20; // meters
 

@@ -20,6 +20,7 @@ import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class EquipmentPositionRepository {
+
     private static final Table<?> TABLE = table("equipment_position");
     private static final Field<Long> FIELD_ID = field("id", Long.class);
     private static final Field<Integer> FIELD_EQUIPMENT_ID = field("equipment_id", Integer.class);
@@ -43,14 +44,14 @@ public class EquipmentPositionRepository {
                              double longitude,
                              int elevation) {
         return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                        .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION)
-                        .values(
-                                equipmentId,
-                                BigDecimal.valueOf(latitude),
-                                BigDecimal.valueOf(longitude),
-                                elevation)
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION)
+                .values(
+                    equipmentId,
+                    BigDecimal.valueOf(latitude),
+                    BigDecimal.valueOf(longitude),
+                    elevation)
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Void> insert(int equipmentId,
@@ -59,41 +60,41 @@ public class EquipmentPositionRepository {
                              int elevation,
                              Instant insertTimestamp) {
         return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                        .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION, FIELD_INSERT_TIMESTAMP)
-                        .values(
-                                equipmentId,
-                                BigDecimal.valueOf(latitude),
-                                BigDecimal.valueOf(longitude),
-                                elevation,
-                                Timestamp.from(insertTimestamp))
-                        .execute())
-                .subscribeOn(boundedElastic());
+                .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION, FIELD_INSERT_TIMESTAMP)
+                .values(
+                    equipmentId,
+                    BigDecimal.valueOf(latitude),
+                    BigDecimal.valueOf(longitude),
+                    elevation,
+                    Timestamp.from(insertTimestamp))
+                .execute())
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<EquipmentPositionRecord>> getLastRecordForEquipment(int equipmentId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
-                        .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                        .limit(1)
-                        .fetchOptional(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord)))
-                .subscribeOn(boundedElastic());
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                .limit(1)
+                .fetchOptional(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<Optional<EquipmentPositionRecord>> getLastRecordForEquipmentBefore(int equipmentId, Instant timestamp) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
-                        .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                        .limit(1)
-                        .fetchOptional(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord)))
-                .subscribeOn(boundedElastic());
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                .limit(1)
+                .fetchOptional(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     public Mono<List<EquipmentPositionRecord>> getRecordsForEquipmentAfter(int equipmentId, Instant timestamp) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                        .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
-                        .orderBy(FIELD_INSERT_TIMESTAMP)
-                        .fetch(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord)))
-                .subscribeOn(boundedElastic());
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
+                .orderBy(FIELD_INSERT_TIMESTAMP)
+                .fetch(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord)))
+            .subscribeOn(boundedElastic());
     }
 
     private static EquipmentPositionRecord recordFromJooqRecord(org.jooq.Record record) {
@@ -105,11 +106,11 @@ public class EquipmentPositionRepository {
         final var insertTimestamp = record.get(FIELD_INSERT_TIMESTAMP);
 
         return new EquipmentPositionRecord(
-                id,
-                equipmentId,
-                latitude.doubleValue(),
-                longitude.doubleValue(),
-                elevation,
-                insertTimestamp.toInstant());
+            id,
+            equipmentId,
+            latitude.doubleValue(),
+            longitude.doubleValue(),
+            elevation,
+            insertTimestamp.toInstant());
     }
 }

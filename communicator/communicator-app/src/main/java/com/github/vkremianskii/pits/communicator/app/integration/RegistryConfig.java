@@ -13,8 +13,8 @@ public class RegistryConfig {
     RegistryClient registryClient(RegistryProperties properties,
                                   RegistryCodecConfigurer codecConfigurer) {
         return new RegistryClient(
-                properties.getBaseUrl(),
-                codecConfigurer);
+            properties.getBaseUrl(),
+            codecConfigurer);
     }
 
     @Bean

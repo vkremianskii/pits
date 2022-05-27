@@ -15,6 +15,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ControllerAdvice
 @Order(HIGHEST_PRECEDENCE)
 public class CoreExceptionHandler {
+
     private static final Logger LOG = LoggerFactory.getLogger(CoreExceptionHandler.class);
 
     @ExceptionHandler

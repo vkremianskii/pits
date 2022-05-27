@@ -14,16 +14,17 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Component
 @Order(HIGHEST_PRECEDENCE)
 public class RequestLoggingFilter implements WebFilter {
+
     private static final Logger LOG = LoggerFactory.getLogger(RequestLoggingFilter.class);
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         return chain.filter(exchange)
-                .doOnTerminate(() -> {
-                    final var request = exchange.getRequest();
-                    final var response = exchange.getResponse();
-                    LOG.info("Request: " + request.getMethod() + " " + request.getURI() + " -> " + response.getStatusCode());
-                    LOG.debug("Headers: " + request.getHeaders());
-                });
+            .doOnTerminate(() -> {
+                final var request = exchange.getRequest();
+                final var response = exchange.getResponse();
+                LOG.info("Request: " + request.getMethod() + " " + request.getURI() + " -> " + response.getStatusCode());
+                LOG.debug("Headers: " + request.getHeaders());
+            });
     }
 }

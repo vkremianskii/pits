@@ -7,6 +7,7 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public class Equipment {
+
     public final int id;
     public final String name;
     public final EquipmentType type;
@@ -41,11 +42,11 @@ public class Equipment {
     @Override
     public String toString() {
         return "Equipment{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", state=" + state +
-                ", position=" + position +
-                '}';
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", type=" + type +
+            ", state=" + state +
+            ", position=" + position +
+            '}';
     }
 }
