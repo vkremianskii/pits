@@ -156,9 +156,9 @@ public class MainView {
             }
         });
 
-        fleetListBox.addListSelectionListener(e -> {
-            final var equipmentRef = fleetListModel.getElementAt(e.getLastIndex());
-            final var equipment = equipmentById.get(equipmentRef.id);
+        fleetListBox.addListSelectionListener(ignored -> {
+            final var element = fleetListBox.getSelectedValue();
+            final var equipment = equipmentById.get(element.id);
             final var position = Optional.ofNullable(equipment.position);
             final var state = Optional.ofNullable(equipment.state);
 
@@ -256,7 +256,6 @@ public class MainView {
         final var equipmentPanel = new JPanel();
         final var equipmentLayout = new BoxLayout(equipmentPanel, Y_AXIS);
         equipmentPanel.setLayout(equipmentLayout);
-        equipmentPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
         equipmentPanel.add(autoWidthComponent(nameLabel));
         equipmentPanel.add(nameTextField);
         equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
