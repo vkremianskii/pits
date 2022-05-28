@@ -28,12 +28,16 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
@@ -58,6 +62,7 @@ import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DR
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static java.awt.Color.WHITE;
+import static java.awt.Component.CENTER_ALIGNMENT;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
@@ -93,7 +98,8 @@ public class MainView {
     private final GrpcClient grpcClient;
     private final TreeMap<Integer, Equipment> equipmentById = new TreeMap<>();
 
-    private JButton initializeDataButton;
+    private JList<String> fleetListBox;
+    private JButton fleetInitializeButton;
     private JComboBox<Integer> equipmentIdComboBox;
     private JTextField nameTextField;
     private JTextField typeTextField;
@@ -112,21 +118,27 @@ public class MainView {
     }
 
     public void initialize() {
+        final var fleetPanel = bootstrapFleetPanel();
+        fleetPanel.setPreferredSize(new Dimension(175, fleetPanel.getPreferredSize().height));
+
         final var equipmentPanel = bootstrapEquipmentPanel();
+        equipmentPanel.setPreferredSize(new Dimension(175, equipmentPanel.getPreferredSize().height));
+
         final var mapPanel = bootstrapMapPanel();
 
         final var mainPanel = new JPanel();
         final var mainLayout = new BoxLayout(mainPanel, X_AXIS);
         mainPanel.setLayout(mainLayout);
+        mainPanel.add(fleetPanel);
         mainPanel.add(equipmentPanel);
         mainPanel.add(mapPanel);
 
         final var frame = new JFrame("Frontends");
+        frame.add(mainPanel);
+        frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationByPlatform(true);
         frame.setResizable(false);
-        frame.add(mainPanel);
-        frame.pack();
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -190,10 +202,13 @@ public class MainView {
             .subscribe();
     }
 
-    private JPanel bootstrapEquipmentPanel() {
-        initializeDataButton = new JButton("Initialize data");
-        initializeDataButton.setEnabled(false);
-        initializeDataButton.addActionListener(ignored -> Flux.fromStream(Stream.of(
+    private JPanel bootstrapFleetPanel() {
+        fleetListBox = new JList<>();
+        fleetListBox.setEnabled(false);
+
+        fleetInitializeButton = new JButton("Initialize");
+        fleetInitializeButton.setEnabled(false);
+        fleetInitializeButton.addActionListener(ignored -> Flux.fromStream(Stream.of(
                 tuple("Dozer No.1", DOZER, new Position(65.305376, 41.026554, DEFAULT_ELEVATION)),
                 tuple("Drill No.1", DRILL, new Position(65.299853, 41.019001, DEFAULT_ELEVATION)),
                 tuple("Shovel No.1", SHOVEL, new Position(65.303583, 41.019173, DEFAULT_ELEVATION)),
@@ -206,12 +221,21 @@ public class MainView {
                 pair.right().longitude(),
                 pair.right().elevation()))
             .onErrorResume(e -> {
-                LOG.error("Error while initializing data", e);
+                LOG.error("Error while initializing fleet", e);
                 return Mono.empty();
             })
             .then()
             .block());
 
+        final var fleetPanel = new JPanel(new BorderLayout());
+        fleetPanel.setBorder(createCompoundBorder(createTitledBorder("Fleet"), createEmptyBorder(3, 3, 3, 3)));
+        fleetPanel.add(new JScrollPane(fleetListBox), BorderLayout.CENTER);
+        fleetPanel.add(fleetInitializeButton, BorderLayout.PAGE_END);
+
+        return fleetPanel;
+    }
+
+    private JPanel bootstrapEquipmentPanel() {
         final var equipmentIdLabel = new JLabel("Equipment ID");
         equipmentIdComboBox = new JComboBox<>();
         equipmentIdComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, equipmentIdComboBox.getPreferredSize().height));
@@ -234,17 +258,16 @@ public class MainView {
         final var equipmentLayout = new BoxLayout(equipmentPanel, Y_AXIS);
         equipmentPanel.setLayout(equipmentLayout);
         equipmentPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
-        equipmentPanel.add(initializeDataButton);
-        equipmentPanel.add(equipmentIdLabel);
+        equipmentPanel.add(autoWidthComponent(equipmentIdLabel));
         equipmentPanel.add(equipmentIdComboBox);
         equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
-        equipmentPanel.add(nameLabel);
+        equipmentPanel.add(autoWidthComponent(nameLabel));
         equipmentPanel.add(nameTextField);
         equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
-        equipmentPanel.add(typeLabel);
+        equipmentPanel.add(autoWidthComponent(typeLabel));
         equipmentPanel.add(typeTextField);
         equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
-        equipmentPanel.add(stateLabel);
+        equipmentPanel.add(autoWidthComponent(stateLabel));
         equipmentPanel.add(stateTextField);
         equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
         equipmentPanel.add(simulationPanel);
@@ -285,21 +308,21 @@ public class MainView {
         final var simulationLayout = new BoxLayout(simulationPanel, Y_AXIS);
         simulationPanel.setLayout(simulationLayout);
         simulationPanel.setBorder(createCompoundBorder(createTitledBorder("Simulation"), createEmptyBorder(3, 3, 3, 3)));
-        simulationPanel.add(latitudeLabel);
+        simulationPanel.add(autoWidthComponent(latitudeLabel));
         simulationPanel.add(latitudeSpinner);
         simulationPanel.add(createRigidArea(new Dimension(0, 3)));
-        simulationPanel.add(longitudeLabel);
+        simulationPanel.add(autoWidthComponent(longitudeLabel));
         simulationPanel.add(longitudeSpinner);
         simulationPanel.add(createRigidArea(new Dimension(0, 3)));
-        simulationPanel.add(elevationLabel);
+        simulationPanel.add(autoWidthComponent(elevationLabel));
         simulationPanel.add(elevationSpinner);
         simulationPanel.add(createRigidArea(new Dimension(0, 3)));
-        simulationPanel.add(payloadLabel);
+        simulationPanel.add(autoWidthComponent(payloadLabel));
         simulationPanel.add(payloadSpinner);
         simulationPanel.add(createRigidArea(new Dimension(0, 3)));
-        simulationPanel.add(sendPositionButton);
+        simulationPanel.add(autoWidthComponent(sendPositionButton));
         simulationPanel.add(createRigidArea(new Dimension(0, 3)));
-        simulationPanel.add(sendPayloadButton);
+        simulationPanel.add(autoWidthComponent(sendPayloadButton));
 
         return simulationPanel;
     }
@@ -360,7 +383,7 @@ public class MainView {
     private Mono<Void> refreshEquipment() {
         return registryClient.getEquipment()
             .doOnSuccess(equipment -> {
-                SwingUtilities.invokeLater(() -> initializeDataButton.setEnabled(equipment.isEmpty()));
+                SwingUtilities.invokeLater(() -> fleetInitializeButton.setEnabled(equipment.isEmpty()));
                 final var newEquipmentById = equipment.stream().collect(toMap(e -> e.id, identity()));
                 if (newEquipmentById.equals(equipmentById)) {
                     return;
@@ -377,6 +400,8 @@ public class MainView {
     }
 
     private void refreshEquipmentControls() {
+        final var fleetData = new ArrayList<String>();
+
         final var selectedItem = (Integer) equipmentIdComboBox.getSelectedItem();
         equipmentIdComboBox.removeAllItems();
 
@@ -384,6 +409,7 @@ public class MainView {
         mapViewer.removeAllMapPolygons();
 
         for (final var e : equipmentById.values()) {
+            fleetData.add(e.name + " (" + e.id + ")");
             equipmentIdComboBox.addItem(e.id);
             mapMarkerFromEquipment(e).ifPresent(mapViewer::addMapMarker);
             if (e.type == EquipmentType.SHOVEL) {
@@ -391,9 +417,17 @@ public class MainView {
             }
         }
 
+        fleetListBox.setListData(fleetData.toArray(new String[0]));
+
         if (selectedItem != null && equipmentById.containsKey(selectedItem)) {
             equipmentIdComboBox.setSelectedItem(selectedItem);
         }
+    }
+
+    private static Component autoWidthComponent(Component component) {
+        final var panel = new JPanel(new BorderLayout());
+        panel.add(component);
+        return panel;
     }
 
     private static Optional<MapMarkerDot> mapMarkerFromEquipment(Equipment equipment) {
