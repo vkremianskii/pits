@@ -11,6 +11,7 @@ import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
+import org.jetbrains.annotations.NotNull;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
@@ -24,8 +25,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -39,7 +40,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -62,7 +62,6 @@ import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DR
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static java.awt.Color.WHITE;
-import static java.awt.Component.CENTER_ALIGNMENT;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
@@ -73,6 +72,7 @@ import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.Box.createRigidArea;
 import static javax.swing.BoxLayout.X_AXIS;
 import static javax.swing.BoxLayout.Y_AXIS;
+import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 
 public class MainView {
 
@@ -97,10 +97,10 @@ public class MainView {
     private final RegistryClient registryClient;
     private final GrpcClient grpcClient;
     private final TreeMap<Integer, Equipment> equipmentById = new TreeMap<>();
+    private final DefaultListModel<EquipmentListElement> fleetListModel = new DefaultListModel<>();
 
-    private JList<String> fleetListBox;
+    private JList<EquipmentListElement> fleetListBox;
     private JButton fleetInitializeButton;
-    private JComboBox<Integer> equipmentIdComboBox;
     private JTextField nameTextField;
     private JTextField typeTextField;
     private JTextField stateTextField;
@@ -150,12 +150,9 @@ public class MainView {
             }
         });
 
-        equipmentIdComboBox.addItemListener(e -> {
-            if (e.getStateChange() != ItemEvent.SELECTED) {
-                return;
-            }
-            final var equipmentId = (int) e.getItem();
-            final var equipment = equipmentById.get(equipmentId);
+        fleetListBox.addListSelectionListener(e -> {
+            final var equipmentRef = fleetListModel.getElementAt(e.getLastIndex());
+            final var equipment = equipmentById.get(equipmentRef.id);
             final var position = Optional.ofNullable(equipment.position);
             final var state = Optional.ofNullable(equipment.state);
 
@@ -183,13 +180,13 @@ public class MainView {
         });
 
         sendPositionButton.addActionListener(e -> grpcClient.sendPositionChanged(
-            (int) equipmentIdComboBox.getSelectedItem(),
+            fleetListBox.getSelectedValue().id,
             (double) latitudeSpinner.getValue(),
             (double) longitudeSpinner.getValue(),
             (int) elevationSpinner.getValue()));
 
         sendPayloadButton.addActionListener(e -> grpcClient.sendPayloadChanged(
-            (int) equipmentIdComboBox.getSelectedItem(),
+            fleetListBox.getSelectedValue().id,
             (int) payloadSpinner.getValue()));
 
         mapViewer.setDisplayPosition(
@@ -203,8 +200,8 @@ public class MainView {
     }
 
     private JPanel bootstrapFleetPanel() {
-        fleetListBox = new JList<>();
-        fleetListBox.setEnabled(false);
+        fleetListBox = new JList<>(fleetListModel);
+        fleetListBox.setSelectionMode(SINGLE_SELECTION);
 
         fleetInitializeButton = new JButton("Initialize");
         fleetInitializeButton.setEnabled(false);
@@ -236,10 +233,6 @@ public class MainView {
     }
 
     private JPanel bootstrapEquipmentPanel() {
-        final var equipmentIdLabel = new JLabel("Equipment ID");
-        equipmentIdComboBox = new JComboBox<>();
-        equipmentIdComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, equipmentIdComboBox.getPreferredSize().height));
-
         final var nameLabel = new JLabel("Name");
         nameTextField = new JTextField("");
         nameTextField.setEnabled(false);
@@ -258,9 +251,6 @@ public class MainView {
         final var equipmentLayout = new BoxLayout(equipmentPanel, Y_AXIS);
         equipmentPanel.setLayout(equipmentLayout);
         equipmentPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
-        equipmentPanel.add(autoWidthComponent(equipmentIdLabel));
-        equipmentPanel.add(equipmentIdComboBox);
-        equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
         equipmentPanel.add(autoWidthComponent(nameLabel));
         equipmentPanel.add(nameTextField);
         equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
@@ -400,27 +390,22 @@ public class MainView {
     }
 
     private void refreshEquipmentControls() {
-        final var fleetData = new ArrayList<String>();
-
-        final var selectedItem = (Integer) equipmentIdComboBox.getSelectedItem();
-        equipmentIdComboBox.removeAllItems();
+        final var selectedEquipment = fleetListBox.getSelectedValue();
+        fleetListModel.clear();
 
         mapViewer.removeAllMapMarkers();
         mapViewer.removeAllMapPolygons();
 
         for (final var e : equipmentById.values()) {
-            fleetData.add(e.name + " (" + e.id + ")");
-            equipmentIdComboBox.addItem(e.id);
+            fleetListModel.addElement(new EquipmentListElement(e.id, e.name));
             mapMarkerFromEquipment(e).ifPresent(mapViewer::addMapMarker);
             if (e.type == EquipmentType.SHOVEL) {
                 loadZoneFromShovel((Shovel) e).ifPresent(mapViewer::addMapPolygon);
             }
         }
 
-        fleetListBox.setListData(fleetData.toArray(new String[0]));
-
-        if (selectedItem != null && equipmentById.containsKey(selectedItem)) {
-            equipmentIdComboBox.setSelectedItem(selectedItem);
+        if (selectedEquipment != null && equipmentById.containsKey(selectedEquipment.id)) {
+            fleetListBox.setSelectedValue(selectedEquipment, true);
         }
     }
 
@@ -434,7 +419,7 @@ public class MainView {
         return Optional.ofNullable(equipment.position)
             .map(position -> {
                 final var marker = new MapMarkerDot(position.latitude(), position.longitude());
-                marker.setName(equipment.name + " (" + equipment.id + ")");
+                marker.setName(equipment.name);
                 marker.setBackColor(colorFromState(equipment.state));
                 return marker;
             });
@@ -466,5 +451,20 @@ public class MainView {
             return WHITE;
         }
         return COLOR_FROM_STATE.getOrDefault(state, WHITE);
+    }
+
+    private static class EquipmentListElement {
+        public final int id;
+        public final String name;
+
+        public EquipmentListElement(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }
