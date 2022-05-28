@@ -150,43 +150,42 @@ public class HaulCycleService {
             }
         }
 
-        for (final var haulCycle : haulCycles) {
-            if (haulCycle.id != null) {
-                LOG.info("Updating haul cycle " + haulCycle);
-                haulCycleRepository.update(
-                    haulCycle.id,
-                    haulCycle.shovelId,
-                    haulCycle.waitLoadTimestamp,
-                    haulCycle.startLoadTimestamp,
-                    haulCycle.startLoadLatitude,
-                    haulCycle.startLoadLongitude,
-                    haulCycle.endLoadTimestamp,
-                    haulCycle.endLoadPayload,
-                    haulCycle.startUnloadTimestamp,
-                    haulCycle.endUnloadTimestamp);
-            } else {
-                LOG.info("Inserting haul cycle: " + haulCycle);
-                haulCycleRepository.insert(
-                    truck.id,
-                    haulCycle.shovelId,
-                    haulCycle.waitLoadTimestamp,
-                    haulCycle.startLoadTimestamp,
-                    haulCycle.startLoadLatitude,
-                    haulCycle.startLoadLongitude,
-                    haulCycle.endLoadTimestamp,
-                    haulCycle.endLoadPayload,
-                    haulCycle.startUnloadTimestamp,
-                    haulCycle.endUnloadTimestamp);
-            }
-        }
-
-        final var state = haulCycleFsm.getState();
-        if (state == null) {
-            return Mono.empty();
-        }
-
-        LOG.info("Updating truck '{}' state in registry: {}", truck.id, state);
-        return registryClient.updateEquipmentState(truck.id, state);
+        return Flux.fromIterable(haulCycles)
+            .flatMap(hc -> {
+                if (hc.id != null) {
+                    LOG.info("Updating haul cycle " + hc);
+                    return haulCycleRepository.update(
+                        hc.id,
+                        hc.shovelId,
+                        hc.waitLoadTimestamp,
+                        hc.startLoadTimestamp,
+                        hc.startLoadLatitude,
+                        hc.startLoadLongitude,
+                        hc.endLoadTimestamp,
+                        hc.endLoadPayload,
+                        hc.startUnloadTimestamp,
+                        hc.endUnloadTimestamp);
+                } else {
+                    LOG.info("Inserting haul cycle: " + hc);
+                    return haulCycleRepository.insert(
+                        truck.id,
+                        hc.shovelId,
+                        hc.waitLoadTimestamp,
+                        hc.startLoadTimestamp,
+                        hc.startLoadLatitude,
+                        hc.startLoadLongitude,
+                        hc.endLoadTimestamp,
+                        hc.endLoadPayload,
+                        hc.startUnloadTimestamp,
+                        hc.endUnloadTimestamp);
+                }
+            })
+            .then(Mono.defer(() -> Mono.justOrEmpty(haulCycleFsm.getState())))
+            .flatMap(state -> {
+                LOG.info("Updating truck '{}' state in registry: {}", truck.id, state);
+                return registryClient.updateEquipmentState(truck.id, state);
+            })
+            .then();
     }
 
     private static SortedMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> mergeRecords(List<EquipmentPositionRecord> positions,

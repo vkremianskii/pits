@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -47,32 +48,34 @@ public class HaulCycleTests {
     @Test
     void should_compute_haul_cycles() {
         // given
+        var truckId = UUID.randomUUID();
+        var shovelId = UUID.randomUUID();
         stubFor(get(urlPathEqualTo("/equipment")).willReturn(aResponse()
             .withStatus(200)
             .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
-            .withBody("""
+            .withBody(String.format("""
                 {
                     "equipment": [{
-                        "id": 1,
+                        "id": "%s",
                         "name": "Shovel No.1",
                         "type": "SHOVEL",
                         "loadRadius": 20
                     },{
-                        "id": 2,
+                        "id": "%s",
                         "name": "Truck No.1",
                         "type": "TRUCK"
                     }]
                 }
-                """)));
-        stubFor(post(urlPathEqualTo("/equipment/2/state")).willReturn(aResponse()
+                """, shovelId, truckId))));
+        stubFor(post(urlPathEqualTo("/equipment/" + truckId + "/state")).willReturn(aResponse()
             .withStatus(200)));
-        haulCycleRepository.insert(2, 1, Instant.now(), null, null, null, null, null, null, null).block();
+        haulCycleRepository.insert(truckId, shovelId, Instant.now(), null, null, null, null, null, null, null).block();
 
         // when
         haulCycleJob.computeHaulCycles();
 
         // then
-        verify(postRequestedFor(urlPathEqualTo("/equipment/2/state"))
+        verify(postRequestedFor(urlPathEqualTo("/equipment/" + truckId + "/state"))
             .withRequestBody(equalToJson("""
                 {
                     "state": "WAIT_LOAD"
@@ -83,38 +86,40 @@ public class HaulCycleTests {
     @Test
     void should_compute_haul_cycles__rollback_on_error() {
         // given
+        var truckId = UUID.randomUUID();
+        var shovelId = UUID.randomUUID();
         stubFor(get(urlPathEqualTo("/equipment")).willReturn(aResponse()
             .withStatus(200)
             .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
-            .withBody("""
+            .withBody(String.format("""
                 {
                     "equipment": [{
-                        "id": 1,
+                        "id": "%s",
                         "name": "Shovel No.1",
                         "type": "SHOVEL",
                         "loadRadius": 20
                     },{
-                        "id": 2,
+                        "id": "%s",
                         "name": "Truck No.1",
                         "type": "TRUCK"
                     }]
                 }
-                """)));
-        stubFor(post(urlPathEqualTo("/equipment/2/state")).willReturn(aResponse()
+                """, shovelId, truckId))));
+        stubFor(post(urlPathEqualTo("/equipment/" + truckId + "/state")).willReturn(aResponse()
             .withStatus(500)));
-        payloadRepository.insert(2, 20_000, Instant.ofEpochSecond(1)).block();
+        payloadRepository.insert(truckId, 20_000, Instant.ofEpochSecond(1)).block();
 
         // when
         haulCycleJob.computeHaulCycles();
 
         // then
-        verify(postRequestedFor(urlPathEqualTo("/equipment/2/state"))
+        verify(postRequestedFor(urlPathEqualTo("/equipment/" + truckId + "/state"))
             .withRequestBody(equalToJson("""
                 {
                     "state": "LOAD"
                 }
                 """)));
-        var haulCycles = haulCycleRepository.getLastHaulCycleForTruck(2).block();
+        var haulCycles = haulCycleRepository.getLastHaulCycleForTruck(truckId).block();
         assertThat(haulCycles).isEmpty();
     }
 }

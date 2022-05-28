@@ -1,7 +1,7 @@
 CREATE TABLE location_point
 (
     id serial NOT NULL PRIMARY KEY,
-    location_id int NOT NULL,
+    location_id uuid NOT NULL,
     point_order smallint NOT NULL,
     latitude numeric(10, 8) NOT NULL,
     longitude numeric(11, 8) NOT NULL,

@@ -5,10 +5,11 @@ import com.github.vkremianskii.pits.registry.types.model.Location;
 
 import java.util.List;
 import java.util.SortedMap;
+import java.util.UUID;
 
 public interface MainView {
 
-    void refreshFleet(SortedMap<Integer, Equipment> equipmentById);
+    void refreshFleet(SortedMap<UUID, Equipment> equipmentById);
     void refreshEquipment(Equipment equipment);
     void refreshLocations(List<Location> locations);
 

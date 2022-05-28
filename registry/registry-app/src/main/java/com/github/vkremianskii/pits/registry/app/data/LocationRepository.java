@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
@@ -18,14 +19,14 @@ import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOL
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.max;
 import static org.jooq.impl.DSL.table;
-import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class LocationRepository {
 
     private static final Table<?> TABLE = table("location");
-    private static final Field<Integer> FIELD_ID = field("id", Integer.class);
+    private static final Field<UUID> FIELD_ID = field("id", UUID.class);
     private static final Field<String> FIELD_NAME = field("name", String.class);
     private static final Field<String> FIELD_TYPE = field("type", String.class);
 
@@ -42,24 +43,19 @@ public class LocationRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
-            .subscribeOn(boundedElastic());
-    }
-
-    public Mono<Integer> insert(String name, LocationType type) {
-        return Mono.fromSupplier(() -> dslContext.insertInto(TABLE)
-                .columns(FIELD_NAME, FIELD_TYPE)
-                .values(name, valueFromType(type))
-                .returning(FIELD_ID)
-                .fetchOne()
-                .get(FIELD_ID))
-            .subscribeOn(boundedElastic());
+        return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
     }
 
     public Mono<List<LocationDeclaration>> getLocations() {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                .fetch(r -> r.map(LocationRepository::locationDeclarationFromRecord)))
-            .subscribeOn(boundedElastic());
+            .fetch(r -> r.map(LocationRepository::locationDeclarationFromRecord)));
+    }
+
+    public Mono<Void> createLocation(UUID id, String name, LocationType type) {
+        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
+            .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE)
+            .values(id, name, valueFromType(type))
+            .execute());
     }
 
     private static LocationDeclaration locationDeclarationFromRecord(org.jooq.Record record) {

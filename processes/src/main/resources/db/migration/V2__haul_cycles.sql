@@ -1,8 +1,8 @@
 CREATE TABLE haul_cycle
 (
     id bigserial NOT NULL PRIMARY KEY,
-    truck_id int NOT NULL,
-    shovel_id int,
+    truck_id uuid NOT NULL,
+    shovel_id uuid,
     wait_load_timestamp timestamp,
     start_load_timestamp timestamp,
     start_load_latitude numeric(10, 8),

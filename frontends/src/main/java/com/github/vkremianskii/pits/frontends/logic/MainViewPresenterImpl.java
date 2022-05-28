@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.github.vkremianskii.pits.core.types.Pair.pair;
@@ -44,7 +45,7 @@ public class MainViewPresenterImpl implements MainViewPresenter {
 
     private final RegistryClient registryClient;
     private final GrpcClient grpcClient;
-    private final TreeMap<Integer, Equipment> equipmentById = new TreeMap<>();
+    private final TreeMap<UUID, Equipment> equipmentById = new TreeMap<>();
     private final List<Location> locations = new ArrayList<>();
 
     private MainView view;
@@ -74,7 +75,8 @@ public class MainViewPresenterImpl implements MainViewPresenter {
         return registryClient.getEquipment()
             .doOnSuccess(response -> {
                 uiThread(() -> view.setInitializeFleetEnabled(response.equipment().isEmpty()));
-                final var newEquipmentById = response.equipment().stream().collect(toMap(e -> e.id, identity()));
+                final var newEquipmentById = new TreeMap<>(response.equipment().stream()
+                    .collect(toMap(e -> e.id, identity())));
                 if (newEquipmentById.equals(equipmentById)) {
                     return;
                 }
@@ -108,12 +110,12 @@ public class MainViewPresenterImpl implements MainViewPresenter {
     }
 
     @Override
-    public void sendEquipmentPosition(int equipmentId, double latitude, double longitude, int elevation) {
+    public void sendEquipmentPosition(UUID equipmentId, double latitude, double longitude, int elevation) {
         grpcClient.sendPositionChanged(equipmentId, latitude, longitude, elevation);
     }
 
     @Override
-    public void sendEquipmentPayload(int equipmentId, int payload) {
+    public void sendEquipmentPayload(UUID equipmentId, int payload) {
         grpcClient.sendPayloadChanged(equipmentId, payload);
     }
 
@@ -175,7 +177,7 @@ public class MainViewPresenterImpl implements MainViewPresenter {
     }
 
     @Override
-    public void onEquipmentSelected(int equipmentId) {
+    public void onEquipmentSelected(UUID equipmentId) {
         final var equipment = equipmentById.get(equipmentId);
         view.refreshEquipment(equipment);
     }

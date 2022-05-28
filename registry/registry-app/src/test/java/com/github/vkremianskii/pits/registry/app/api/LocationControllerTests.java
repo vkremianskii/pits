@@ -14,9 +14,11 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.transaction.PlatformTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
@@ -24,7 +26,10 @@ import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOL
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -38,25 +43,31 @@ class LocationControllerTests {
     LocationRepository locationRepository;
     @MockBean
     LocationPointRepository locationPointRepository;
+    @MockBean
+    PlatformTransactionManager transactionManager;
     @Autowired
     WebTestClient webClient;
 
     @Test
     void should_get_locations() {
         // given
+        var dumpId = UUID.randomUUID();
+        var faceId = UUID.randomUUID();
+        var holeId = UUID.randomUUID();
+        var stockpileId = UUID.randomUUID();
         when(locationRepository.getLocations())
             .thenReturn(Mono.just(List.of(
-                new LocationDeclaration(1, "Dump No.1", DUMP),
-                new LocationDeclaration(2, "Face No.1", FACE),
-                new LocationDeclaration(3, "Hole No.1", HOLE),
-                new LocationDeclaration(4, "Stockpile No.1", STOCKPILE))));
-        when(locationPointRepository.getPointsByLocationId(1))
-            .thenReturn(Mono.just(List.of(new LocationPoint(1, 1, 0, 41.1494512, -8.6107884))));
-        when(locationPointRepository.getPointsByLocationId(2))
+                new LocationDeclaration(dumpId, "Dump No.1", DUMP),
+                new LocationDeclaration(faceId, "Face No.1", FACE),
+                new LocationDeclaration(holeId, "Hole No.1", HOLE),
+                new LocationDeclaration(stockpileId, "Stockpile No.1", STOCKPILE))));
+        when(locationPointRepository.getPointsByLocationId(dumpId))
+            .thenReturn(Mono.just(List.of(new LocationPoint(1, dumpId, 0, 41.1494512, -8.6107884))));
+        when(locationPointRepository.getPointsByLocationId(faceId))
             .thenReturn(Mono.empty());
-        when(locationPointRepository.getPointsByLocationId(3))
+        when(locationPointRepository.getPointsByLocationId(holeId))
             .thenReturn(Mono.empty());
-        when(locationPointRepository.getPointsByLocationId(4))
+        when(locationPointRepository.getPointsByLocationId(stockpileId))
             .thenReturn(Mono.empty());
 
         // expect
@@ -67,7 +78,6 @@ class LocationControllerTests {
             .expectBody().json("""
                 {
                     "locations": [{
-                        "id": 1,
                         "name": "Dump No.1",
                         "type": "DUMP",
                         "geometry": [{
@@ -75,40 +85,37 @@ class LocationControllerTests {
                             "longitude": -8.6107884
                         }]
                     },{
-                        "id": 2,
                         "name": "Face No.1",
                         "type": "FACE",
                         "geometry": []
                     },{
-                        "id": 3,
                         "name": "Hole No.1",
                         "type": "HOLE",
                         "geometry": []
                     },{
-                        "id": 4,
                         "name": "Stockpile No.1",
                         "type": "STOCKPILE",
                         "geometry": []
                     }]
                 }
-                """, true);
+                """);
     }
 
     @Test
     void should_create_locations() {
         // given
-        when(locationRepository.insert(any(), same(DUMP)))
-            .thenReturn(Mono.just(1));
-        when(locationPointRepository.insert(1, 0, 41.1494512, -8.6107884))
+        when(locationRepository.createLocation(any(), any(), same(DUMP)))
             .thenReturn(Mono.empty());
-        when(locationPointRepository.insert(1, 1, 41.1494512, -8.6107884))
+        when(locationPointRepository.createLocationPoint(any(), eq(0), eq(41.1494512), eq(-8.6107884)))
             .thenReturn(Mono.empty());
-        when(locationRepository.insert(any(), same(FACE)))
-            .thenReturn(Mono.just(2));
-        when(locationRepository.insert(any(), same(HOLE)))
-            .thenReturn(Mono.just(3));
-        when(locationRepository.insert(any(), same(STOCKPILE)))
-            .thenReturn(Mono.just(4));
+        when(locationPointRepository.createLocationPoint(any(), eq(1), eq(41.1494512), eq(-8.6107884)))
+            .thenReturn(Mono.empty());
+        when(locationRepository.createLocation(any(), any(), same(FACE)))
+            .thenReturn(Mono.empty());
+        when(locationRepository.createLocation(any(), any(), same(HOLE)))
+            .thenReturn(Mono.empty());
+        when(locationRepository.createLocation(any(), any(), same(STOCKPILE)))
+            .thenReturn(Mono.empty());
 
         // expect
         webClient.post()
@@ -120,43 +127,28 @@ class LocationControllerTests {
             )))
             .exchange()
             .expectStatus().isOk()
-            .expectBody().json("""
-                {
-                    "locationId": 1
-                }
-                """);
+            .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Face No.1", FACE, emptyList()))
             .exchange()
             .expectStatus().isOk()
-            .expectBody().json("""
-                {
-                    "locationId": 2
-                }
-                """);
+            .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Hole No.1", HOLE, emptyList()))
             .exchange()
             .expectStatus().isOk()
-            .expectBody().json("""
-                {
-                    "locationId": 3
-                }
-                """);
+            .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Stockpile No.1", STOCKPILE, emptyList()))
             .exchange()
             .expectStatus().isOk()
-            .expectBody().json("""
-                {
-                    "locationId": 4
-                }
-                """);
+            .expectBody().jsonPath("$.locationId").isNotEmpty();
+        verify(transactionManager, times(4)).commit(any());
     }
 }

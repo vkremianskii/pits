@@ -6,17 +6,20 @@ import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.UUID;
+
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
 
 public class Shovel extends Equipment {
 
     public final int loadRadius;
 
-    public Shovel(int id,
+    public Shovel(UUID id,
                   String name,
                   int loadRadius,
                   @Nullable ShovelState state,
                   @Nullable Position position) {
-        super(id, name, EquipmentType.SHOVEL, state, position);
+        super(id, name, SHOVEL, state, position);
         this.loadRadius = loadRadius;
     }
 

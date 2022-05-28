@@ -6,7 +6,6 @@ import com.github.vkremianskii.pits.frontends.logic.MainViewPresenter;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
-import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.registry.types.model.Location;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
@@ -46,8 +45,10 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
+import java.util.UUID;
 
 import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
@@ -153,7 +154,9 @@ public class MainViewImpl implements MainView {
 
         fleetListBox.addListSelectionListener(ignored -> {
             final var element = fleetListBox.getSelectedValue();
-            presenter.onEquipmentSelected(element.id);
+            if (element != null) {
+                presenter.onEquipmentSelected(element.id);
+            }
         });
 
         sendPositionButton.addActionListener(e -> presenter.sendEquipmentPosition(
@@ -401,7 +404,7 @@ public class MainViewImpl implements MainView {
     }
 
     @Override
-    public void refreshFleet(SortedMap<Integer, Equipment> equipmentById) {
+    public void refreshFleet(SortedMap<UUID, Equipment> equipmentById) {
         final var selectedEquipment = fleetListBox.getSelectedValue();
         fleetListModel.clear();
 
@@ -482,12 +485,25 @@ public class MainViewImpl implements MainView {
 
     private static class EquipmentListElement {
 
-        public final int id;
+        public final UUID id;
         public final String name;
 
-        public EquipmentListElement(int id, String name) {
+        public EquipmentListElement(UUID id, String name) {
             this.id = id;
             this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            EquipmentListElement that = (EquipmentListElement) o;
+            return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, name);
         }
 
         @Override

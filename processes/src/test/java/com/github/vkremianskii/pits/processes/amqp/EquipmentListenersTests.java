@@ -7,6 +7,8 @@ import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,26 +22,28 @@ class EquipmentListenersTests {
     @Test
     void should_listen_to_position_changed_and_insert_into_db() {
         // given
-        when(positionRepository.insert(1, 41.1494512, -8.6107884, 86))
+        var truckId = UUID.randomUUID();
+        when(positionRepository.insert(truckId, 41.1494512, -8.6107884, 86))
             .thenReturn(Mono.empty());
 
         // when
-        sut.handlePositionChanged(new EquipmentPositionChanged(1, 41.1494512, -8.6107884, 86));
+        sut.handlePositionChanged(new EquipmentPositionChanged(truckId, 41.1494512, -8.6107884, 86));
 
         // then
-        verify(positionRepository).insert(1, 41.1494512, -8.6107884, 86);
+        verify(positionRepository).insert(truckId, 41.1494512, -8.6107884, 86);
     }
 
     @Test
     void should_listen_to_payload_changed_and_insert_into_db() {
         // given
-        when(payloadRepository.insert(1, 10))
+        var truckId = UUID.randomUUID();
+        when(payloadRepository.insert(truckId, 10))
             .thenReturn(Mono.empty());
 
         // when
-        sut.handlePayloadChanged(new EquipmentPayloadChanged(1, 10));
+        sut.handlePayloadChanged(new EquipmentPayloadChanged(truckId, 10));
 
         // then
-        verify(payloadRepository).insert(1, 10);
+        verify(payloadRepository).insert(truckId, 10);
     }
 }

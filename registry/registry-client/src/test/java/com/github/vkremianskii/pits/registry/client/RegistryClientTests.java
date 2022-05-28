@@ -4,10 +4,11 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
-import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+
+import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -50,20 +51,20 @@ class RegistryClientTests {
                 .withBody("""
                     {
                         "equipment": [{
-                            "id": 1,
+                            "id": "4e4b900a-49fa-4c6e-8d4f-8ed602b0ac32",
                             "name": "Dozer No.1",
                             "type": "DOZER"
                         },{
-                            "id": 2,
+                            "id": "06316905-4af5-4e1e-99ac-0df606575056",
                             "name": "Drill No.1",
                             "type": "DRILL"
                         },{
-                            "id": 3,
+                            "id": "9e5666e7-a5a5-4961-a30d-d5e18b92f774",
                             "name": "Shovel No.1",
                             "type": "SHOVEL",
                             "loadRadius": 20
                         },{
-                            "id": 4,
+                            "id": "5566e936-0b6c-47e3-9963-4f2b07abfb34",
                             "name": "Truck No.1",
                             "type": "TRUCK",
                             "state": "HAUL",
@@ -104,7 +105,7 @@ class RegistryClientTests {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
                 .withBody("""
                     {
-                        "equipmentId": 1
+                        "equipmentId": "84bb4805-48ab-4ba9-a83f-1019d1ed646f"
                     }
                     """)));
         var sut = newClient(wmRuntimeInfo);
@@ -120,21 +121,22 @@ class RegistryClientTests {
                     "type": "TRUCK"
                 }
                 """)));
-        assertThat(response).isEqualTo(new CreateEquipmentResponse(1));
+        assertThat(response).isEqualTo(new CreateEquipmentResponse(UUID.fromString("84bb4805-48ab-4ba9-a83f-1019d1ed646f")));
     }
 
     @Test
     void should_update_equipment_state(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
-        stubFor(post(urlPathEqualTo("/equipment/1/state"))
+        var truckId = UUID.randomUUID();
+        stubFor(post(urlPathEqualTo("/equipment/" + truckId + "/state"))
             .willReturn(aResponse().withStatus(200)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
-        sut.updateEquipmentState(1, TruckState.EMPTY).block();
+        sut.updateEquipmentState(truckId, TruckState.EMPTY).block();
 
         // then
-        verify(postRequestedFor(urlPathEqualTo("/equipment/1/state"))
+        verify(postRequestedFor(urlPathEqualTo("/equipment/" + truckId + "/state"))
             .withRequestBody(equalToJson("""
                 {
                     "state": "EMPTY"
@@ -151,7 +153,7 @@ class RegistryClientTests {
             .withBody("""
                 {
                     "locations": [{
-                        "id": 1,
+                        "id": "64b7331e-6238-4563-8239-4e73c2d127eb",
                         "name": "Dump No.1",
                         "type": "DUMP",
                         "geometry": [{
@@ -159,17 +161,17 @@ class RegistryClientTests {
                             "longitude": -8.6107884
                         }]
                     },{
-                        "id": 2,
+                        "id": "39c757fe-4736-4560-b8c5-93afe92e76e2",
                         "name": "Face No.1",
                         "type": "FACE",
                         "geometry": []
                     },{
-                        "id": 3,
+                        "id": "c06aacdc-61d1-4352-a689-805daabc480e",
                         "name": "Hole No.1",
                         "type": "HOLE",
                         "geometry": []
                     },{
-                        "id": 4,
+                        "id": "c2ad57db-a499-402d-b38c-f67cf2cdcfae",
                         "name": "Stockpile No.1",
                         "type": "STOCKPILE",
                         "geometry": []

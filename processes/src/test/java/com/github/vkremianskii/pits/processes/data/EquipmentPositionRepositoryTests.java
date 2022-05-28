@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,12 +20,13 @@ class EquipmentPositionRepositoryTests {
     @Test
     void should_insert_and_get_last_record() {
         // when
-        sut.insert(1, 41.1494512, -8.6107884, 86).block();
-        var record = sut.getLastRecordForEquipment(1).block();
+        var equipmentId = UUID.randomUUID();
+        sut.insert(equipmentId, 41.1494512, -8.6107884, 86).block();
+        var record = sut.getLastRecordForEquipment(equipmentId).block();
 
         // then
         assertThat(record).hasValueSatisfying(r -> {
-            assertThat(r.equipmentId()).isEqualTo(1);
+            assertThat(r.equipmentId()).isEqualTo(equipmentId);
             assertThat(r.latitude()).isEqualTo(41.1494512);
             assertThat(r.longitude()).isEqualTo(-8.6107884);
             assertThat(r.elevation()).isEqualTo(86);
@@ -34,10 +36,11 @@ class EquipmentPositionRepositoryTests {
     @Test
     void should_insert_and_get_last_record_before() {
         // when
-        sut.insert(1, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(1)).block();
-        sut.insert(1, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(2)).block();
-        sut.insert(1, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(3)).block();
-        var record = sut.getLastRecordForEquipmentBefore(1, Instant.ofEpochSecond(2)).block();
+        var equipmentId = UUID.randomUUID();
+        sut.insert(equipmentId, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(1)).block();
+        sut.insert(equipmentId, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(2)).block();
+        sut.insert(equipmentId, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(3)).block();
+        var record = sut.getLastRecordForEquipmentBefore(equipmentId, Instant.ofEpochSecond(2)).block();
 
         // then
         assertThat(record).hasValueSatisfying(r -> {
@@ -48,10 +51,11 @@ class EquipmentPositionRepositoryTests {
     @Test
     void should_insert_and_get_last_record_after() {
         // when
-        sut.insert(1, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(1)).block();
-        sut.insert(1, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(2)).block();
-        sut.insert(1, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(3)).block();
-        var records = sut.getRecordsForEquipmentAfter(1, Instant.ofEpochSecond(1)).block();
+        var equipmentId = UUID.randomUUID();
+        sut.insert(equipmentId, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(1)).block();
+        sut.insert(equipmentId, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(2)).block();
+        sut.insert(equipmentId, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(3)).block();
+        var records = sut.getRecordsForEquipmentAfter(equipmentId, Instant.ofEpochSecond(1)).block();
 
         // then
         assertThat(records).hasSize(2);

@@ -4,11 +4,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 public class MutableHaulCycle {
 
     public Long id;
-    public Integer shovelId;
+    public UUID shovelId;
     public Instant waitLoadTimestamp;
     public Instant startLoadTimestamp;
     public Double startLoadLatitude;
@@ -22,7 +23,7 @@ public class MutableHaulCycle {
     }
 
     public MutableHaulCycle(@Nullable Long id,
-                            @Nullable Integer shovelId,
+                            @Nullable UUID shovelId,
                             @Nullable Instant waitLoadTimestamp,
                             @Nullable Instant startLoadTimestamp,
                             @Nullable Double startLoadLatitude,

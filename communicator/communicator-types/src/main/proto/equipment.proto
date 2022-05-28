@@ -6,7 +6,7 @@ option java_generic_services = true;
 package com.github.vkremianskii.pits.communicator.grpc;
 
 message PositionChanged {
-  int32 equipment_id = 1;
+  string equipment_id = 1;
   double latitude = 2;
   double longitude = 3;
   int32 elevation = 4;
@@ -16,7 +16,7 @@ message PositionChangedResponse {
 };
 
 message PayloadChanged {
-  int32 equipment_id = 1;
+  string equipment_id = 1;
   int32 payload = 2;
 };
 

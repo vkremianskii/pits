@@ -6,17 +6,20 @@ import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.UUID;
+
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 
 public class Truck extends Equipment {
 
     public final Integer payload;
 
-    public Truck(int id,
+    public Truck(UUID id,
                  String name,
                  @Nullable TruckState state,
                  @Nullable Position position,
                  @Nullable Integer payload) {
-        super(id, name, EquipmentType.TRUCK, state, position);
+        super(id, name, TRUCK, state, position);
         this.payload = payload;
     }
 

@@ -1,6 +1,8 @@
 package com.github.vkremianskii.pits.core.types.dto;
 
-public record EquipmentPositionChanged(int equipmentId,
+import java.util.UUID;
+
+public record EquipmentPositionChanged(UUID equipmentId,
                                        double latitude,
                                        double longitude,
                                        int elevation) {

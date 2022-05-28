@@ -17,6 +17,7 @@ import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
 
@@ -25,7 +26,7 @@ public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
         final var codec = p.getCodec();
         final JsonNode tree = codec.readTree(p);
 
-        final var id = tree.get("id").intValue();
+        final var id = UUID.fromString(tree.get("id").textValue());
         final var name = tree.get("name").textValue();
         final var typeName = tree.get("type").textValue();
         final var stateName = tree.has("state") ? tree.get("state").textValue() : null;

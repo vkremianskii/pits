@@ -1,5 +1,7 @@
 package com.github.vkremianskii.pits.registry.types.dto;
 
-public record CreateLocationResponse(int locationId) {
+import java.util.UUID;
+
+public record CreateLocationResponse(UUID locationId) {
 
 }

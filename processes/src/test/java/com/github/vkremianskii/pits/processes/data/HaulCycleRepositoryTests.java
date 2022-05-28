@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
@@ -20,12 +21,13 @@ class HaulCycleRepositoryTests {
     @Test
     void should_insert_and_get_last_minimal_haul_cycle() {
         // when
-        sut.insert(1, null, null, null, null, null, null, null, null, null).block();
-        var haulCycle = sut.getLastHaulCycleForTruck(1).block();
+        var truckId = UUID.randomUUID();
+        sut.insert(truckId, null, null, null, null, null, null, null, null, null).block();
+        var haulCycle = sut.getLastHaulCycleForTruck(truckId).block();
 
         // then
         assertThat(haulCycle).hasValueSatisfying(c -> {
-            assertThat(c.truckId()).isEqualTo(1);
+            assertThat(c.truckId()).isEqualTo(truckId);
             assertThat(c.insertTimestamp()).isNotNull();
         });
     }
@@ -33,14 +35,16 @@ class HaulCycleRepositoryTests {
     @Test
     void should_insert_and_get_last_complete_haul_cycle() {
         // when
-        sut.insert(1, 2, Instant.now(), Instant.now(), 41.1494512, -8.6107884, Instant.now(), 10, Instant.now(), Instant.now()).block();
-        var haulCycle = sut.getLastHaulCycleForTruck(1).block();
+        var truckId = UUID.randomUUID();
+        var shovelId = UUID.randomUUID();
+        sut.insert(truckId, shovelId, Instant.now(), Instant.now(), 41.1494512, -8.6107884, Instant.now(), 10, Instant.now(), Instant.now()).block();
+        var haulCycle = sut.getLastHaulCycleForTruck(truckId).block();
 
         // then
         assertThat(haulCycle).hasValueSatisfying(c -> {
-            assertThat(c.truckId()).isEqualTo(1);
+            assertThat(c.truckId()).isEqualTo(truckId);
             assertThat(c.insertTimestamp()).isNotNull();
-            assertThat(c.shovelId()).isEqualTo(2);
+            assertThat(c.shovelId()).isEqualTo(shovelId);
             assertThat(c.waitLoadTimestamp()).isNotNull();
             assertThat(c.startLoadTimestamp()).isNotNull();
             assertThat(c.startLoadLatitude()).isCloseTo(41.1494512, offset(1e-6));

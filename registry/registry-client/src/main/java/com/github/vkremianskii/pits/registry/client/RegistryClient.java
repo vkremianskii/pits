@@ -16,11 +16,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 public class RegistryClient {
 
@@ -38,8 +38,7 @@ public class RegistryClient {
             .uri("/equipment")
             .header(API_VERSION, EQUIPMENT_RESPONSE_OBJECT.toString())
             .retrieve()
-            .bodyToMono(EquipmentResponse.class)
-            .subscribeOn(boundedElastic());
+            .bodyToMono(EquipmentResponse.class);
     }
 
     public Mono<CreateEquipmentResponse> createEquipment(String name, EquipmentType type) {
@@ -48,27 +47,24 @@ public class RegistryClient {
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateEquipmentRequest(name, type))
             .retrieve()
-            .bodyToMono(CreateEquipmentResponse.class)
-            .subscribeOn(boundedElastic());
+            .bodyToMono(CreateEquipmentResponse.class);
     }
 
-    public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
+    public Mono<Void> updateEquipmentState(UUID equipmentId, EquipmentState state) {
         return webClient.post()
             .uri("/equipment/{id}/state", equipmentId)
             .contentType(APPLICATION_JSON)
             .bodyValue(new UpdateEquipmentStateRequest(state))
             .retrieve()
             .toBodilessEntity()
-            .then()
-            .subscribeOn(boundedElastic());
+            .then();
     }
 
     public Mono<LocationsResponse> getLocations() {
         return webClient.get()
             .uri("/location")
             .retrieve()
-            .bodyToMono(LocationsResponse.class)
-            .subscribeOn(boundedElastic());
+            .bodyToMono(LocationsResponse.class);
     }
 
     public Mono<CreateLocationResponse> createLocation(String name,
@@ -79,7 +75,6 @@ public class RegistryClient {
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest(name, type, geometry))
             .retrieve()
-            .bodyToMono(CreateLocationResponse.class)
-            .subscribeOn(boundedElastic());
+            .bodyToMono(CreateLocationResponse.class);
     }
 }

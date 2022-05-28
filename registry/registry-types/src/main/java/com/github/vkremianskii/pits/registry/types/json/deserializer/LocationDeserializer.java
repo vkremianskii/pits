@@ -14,6 +14,7 @@ import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.StreamSupport.stream;
@@ -25,7 +26,7 @@ public class LocationDeserializer extends JsonDeserializer<Location> {
         final var codec = p.getCodec();
         final JsonNode tree = codec.readTree(p);
 
-        final var id = tree.get("id").intValue();
+        final var id = UUID.fromString(tree.get("id").textValue());
         final var name = tree.get("name").textValue();
         final var typeName = tree.get("type").textValue();
 

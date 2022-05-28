@@ -3,7 +3,7 @@
 CREATE TABLE equipment_position
 (
     id bigserial NOT NULL PRIMARY KEY,
-    equipment_id int NOT NULL,
+    equipment_id uuid NOT NULL,
     latitude numeric(10, 8) NOT NULL,
     longitude numeric(11, 8) NOT NULL,
     elevation integer NOT NULL,
@@ -17,7 +17,7 @@ CREATE INDEX equ_pos_equ_id_ins_tim_idx ON equipment_position (equipment_id, ins
 CREATE TABLE equipment_payload
 (
     id bigserial NOT NULL PRIMARY KEY,
-    equipment_id int NOT NULL,
+    equipment_id uuid NOT NULL,
     payload integer NOT NULL,
     insert_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

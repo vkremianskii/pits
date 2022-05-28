@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_PAYLOAD;
 import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_POSITION;
@@ -53,14 +54,15 @@ class EquipmentServiceImplTests {
     @Test
     void should_listen_to_position_changed_and_forward_to_rabbitmq() {
         // given
+        var equipmentId = UUID.randomUUID();
         var request = PositionChanged.newBuilder()
-            .setEquipmentId(1)
+            .setEquipmentId(equipmentId.toString())
             .setLatitude(41.1494512)
             .setLongitude(-8.6107884)
             .setElevation(86)
             .build();
         var expectedMessage = new EquipmentPositionChanged(
-            1,
+            equipmentId,
             41.1494512,
             -8.6107884,
             86);
@@ -76,11 +78,12 @@ class EquipmentServiceImplTests {
     @Test
     void should_listen_to_payload_changed_and_forward_to_rabbitmq() {
         // given
+        var equipmentId = UUID.randomUUID();
         var request = PayloadChanged.newBuilder()
-            .setEquipmentId(1)
+            .setEquipmentId(equipmentId.toString())
             .setPayload(10)
             .build();
-        var expectedMessage = new EquipmentPayloadChanged(1, 10);
+        var expectedMessage = new EquipmentPayloadChanged(equipmentId, 10);
 
         // when
         var response = sut.payloadChanged(request);

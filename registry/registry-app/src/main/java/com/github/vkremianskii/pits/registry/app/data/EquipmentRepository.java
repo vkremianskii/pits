@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
@@ -31,14 +32,14 @@ import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TR
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.max;
 import static org.jooq.impl.DSL.table;
-import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class EquipmentRepository {
 
     private static final Table<?> TABLE = table("equipment");
-    private static final Field<Integer> FIELD_ID = field("id", Integer.class);
+    private static final Field<UUID> FIELD_ID = field("id", UUID.class);
     private static final Field<String> FIELD_NAME = field("name", String.class);
     private static final Field<String> FIELD_TYPE = field("type", String.class);
     private static final Field<String> FIELD_STATE = field("state", String.class);
@@ -73,73 +74,48 @@ public class EquipmentRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
-            .subscribeOn(boundedElastic());
-    }
-
-    public Mono<Void> insert(String name, EquipmentType type, Short loadRadius) {
-        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                .columns(FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                .values(name, valueFromType(type), loadRadius)
-                .execute())
-            .subscribeOn(boundedElastic());
-    }
-
-    public Mono<Void> insert(int equipmentId, String name, EquipmentType type, Short loadRadius) {
-        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                .values(equipmentId, name, valueFromType(type), loadRadius)
-                .execute())
-            .subscribeOn(boundedElastic());
+        return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
     }
 
     public Mono<List<Equipment>> getEquipment() {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                .fetch(r -> r.map(EquipmentRepository::equipmentFromRecord)))
-            .subscribeOn(boundedElastic());
+            .fetch(r -> r.map(EquipmentRepository::equipmentFromRecord)));
     }
 
-    public Mono<Optional<Equipment>> getEquipmentById(int equipmentId) {
+    public Mono<Optional<Equipment>> getEquipmentById(UUID equipmentId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                .where(FIELD_ID.eq(equipmentId))
-                .fetchOptional(r -> r.map(EquipmentRepository::equipmentFromRecord)))
-            .subscribeOn(boundedElastic());
+            .where(FIELD_ID.eq(equipmentId))
+            .fetchOptional(r -> r.map(EquipmentRepository::equipmentFromRecord)));
     }
 
-    public Mono<Integer> createEquipment(String name, EquipmentType type) {
-        return Mono.fromSupplier(() -> dslContext.insertInto(TABLE)
-                .columns(FIELD_NAME, FIELD_TYPE)
-                .values(name, valueFromType(type))
-                .returning(FIELD_ID)
-                .fetchOne()
-                .get(FIELD_ID))
-            .subscribeOn(boundedElastic());
+    public Mono<Void> createEquipment(UUID id, String name, EquipmentType type, Short loadRadius) {
+        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
+            .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
+            .values(id, name, valueFromType(type), loadRadius)
+            .execute());
     }
 
-    public Mono<Void> updateEquipmentState(int equipmentId, EquipmentState state) {
-        return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
-                .set(FIELD_STATE, valueFromState(state))
-                .where(FIELD_ID.eq(equipmentId))
-                .execute())
-            .subscribeOn(boundedElastic());
+    public Mono<Void> updateEquipmentState(UUID equipmentId, EquipmentState state) {
+        return Mono.fromRunnable(() -> dslContext.update(TABLE)
+            .set(FIELD_STATE, valueFromState(state))
+            .where(FIELD_ID.eq(equipmentId))
+            .execute());
     }
 
-    public Mono<Void> updateEquipmentPosition(int equipmentId, Position position) {
-        return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
-                .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
-                .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
-                .set(FIELD_ELEVATION, (short) position.elevation())
-                .where(FIELD_ID.eq(equipmentId))
-                .execute())
-            .subscribeOn(boundedElastic());
+    public Mono<Void> updateEquipmentPosition(UUID equipmentId, Position position) {
+        return Mono.fromRunnable(() -> dslContext.update(TABLE)
+            .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
+            .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
+            .set(FIELD_ELEVATION, (short) position.elevation())
+            .where(FIELD_ID.eq(equipmentId))
+            .execute());
     }
 
-    public Mono<Void> updateEquipmentPayload(int equipmentId, int payload) {
-        return Mono.<Void>fromRunnable(() -> dslContext.update(TABLE)
-                .set(FIELD_PAYLOAD, payload)
-                .where(FIELD_ID.eq(equipmentId))
-                .execute())
-            .subscribeOn(boundedElastic());
+    public Mono<Void> updateEquipmentPayload(UUID equipmentId, int payload) {
+        return Mono.fromRunnable(() -> dslContext.update(TABLE)
+            .set(FIELD_PAYLOAD, payload)
+            .where(FIELD_ID.eq(equipmentId))
+            .execute());
     }
 
     private static Equipment equipmentFromRecord(org.jooq.Record record) {

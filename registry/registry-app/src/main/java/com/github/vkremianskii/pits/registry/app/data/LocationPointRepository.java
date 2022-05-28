@@ -9,18 +9,18 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
-import static reactor.core.scheduler.Schedulers.boundedElastic;
 
 @Repository
 public class LocationPointRepository {
 
     private static final Table<?> TABLE = table("location_point");
     private static final Field<Integer> FIELD_ID = field("id", Integer.class);
-    private static final Field<Integer> FIELD_LOCATION_ID = field("location_id", Integer.class);
+    private static final Field<UUID> FIELD_LOCATION_ID = field("location_id", UUID.class);
     private static final Field<Short> FIELD_POINT_ORDER = field("point_order", Short.class);
     private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
     private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
@@ -31,24 +31,24 @@ public class LocationPointRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.<Void>fromRunnable(() -> dslContext.deleteFrom(TABLE).execute())
-            .subscribeOn(boundedElastic());
+        return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
     }
 
-    public Mono<Void> insert(int locationId, int order, double latitude, double longitude) {
-        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
-                .columns(FIELD_LOCATION_ID, FIELD_POINT_ORDER, FIELD_LATITUDE, FIELD_LONGITUDE)
-                .values(locationId, (short) order, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude))
-                .execute())
-            .subscribeOn(boundedElastic());
-    }
-
-    public Mono<List<LocationPoint>> getPointsByLocationId(int locationId) {
+    public Mono<List<LocationPoint>> getPointsByLocationId(UUID locationId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
                 .where(FIELD_LOCATION_ID.eq(locationId))
                 .orderBy(FIELD_POINT_ORDER)
-                .fetch(r -> r.map(LocationPointRepository::locationPointFromRecord)))
-            .subscribeOn(boundedElastic());
+                .fetch(r -> r.map(LocationPointRepository::locationPointFromRecord)));
+    }
+
+    public Mono<Void> createLocationPoint(UUID locationId,
+                                          int order,
+                                          double latitude,
+                                          double longitude) {
+        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
+                .columns(FIELD_LOCATION_ID, FIELD_POINT_ORDER, FIELD_LATITUDE, FIELD_LONGITUDE)
+                .values(locationId, (short) order, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude))
+                .execute());
     }
 
     private static LocationPoint locationPointFromRecord(org.jooq.Record record) {

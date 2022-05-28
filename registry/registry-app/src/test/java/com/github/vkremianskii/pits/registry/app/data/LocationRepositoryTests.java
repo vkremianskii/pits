@@ -1,15 +1,19 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
+import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.UUID;
 
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -19,25 +23,32 @@ class LocationRepositoryTests {
     LocationRepository sut;
 
     @Test
-    @Disabled("id returns null using H2 database")
-    void should_insert_and_get_locations() {
+    void should_create_and_get_locations() {
         // when
-        sut.insert("Dump No.1", DUMP).block();
-        sut.insert("Face No.1", FACE).block();
-        sut.insert("Hole No.1", HOLE).block();
-        sut.insert("Stockpile No.1", STOCKPILE).block();
+        var dumpId = UUID.randomUUID();
+        sut.createLocation(dumpId, "Dump No.1", DUMP).block();
+        var faceId = UUID.randomUUID();
+        sut.createLocation(faceId, "Face No.1", FACE).block();
+        var holeId = UUID.randomUUID();
+        sut.createLocation(holeId, "Hole No.1", HOLE).block();
+        var stockpileId = UUID.randomUUID();
+        sut.createLocation(stockpileId, "Stockpile No.1", STOCKPILE).block();
         var locations = sut.getLocations().block();
 
         // then
-        assertThat(locations).hasSize(4);
-        var location1 = locations.get(0);
-        assertThat(location1.type()).isEqualTo(DUMP);
-        var location2 = locations.get(1);
-        assertThat(location2.type()).isEqualTo(FACE);
-        var location3 = locations.get(2);
-        assertThat(location3.type()).isEqualTo(HOLE);
-        var location4 = locations.get(3);
-        assertThat(location4.type()).isEqualTo(STOCKPILE);
+        var locationById = locations.stream().collect(toMap(LocationDeclaration::id, identity()));
+        var dump = locationById.get(dumpId);
+        assertThat(dump.name()).isEqualTo("Dump No.1");
+        assertThat(dump.type()).isEqualTo(DUMP);
+        var face = locationById.get(faceId);
+        assertThat(face.name()).isEqualTo("Face No.1");
+        assertThat(face.type()).isEqualTo(FACE);
+        var hole = locationById.get(holeId);
+        assertThat(hole.name()).isEqualTo("Hole No.1");
+        assertThat(hole.type()).isEqualTo(HOLE);
+        var stockpile = locationById.get(stockpileId);
+        assertThat(stockpile.name()).isEqualTo("Stockpile No.1");
+        assertThat(stockpile.type()).isEqualTo(STOCKPILE);
     }
 
     @AfterEach
