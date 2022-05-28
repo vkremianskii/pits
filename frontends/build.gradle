@@ -3,15 +3,13 @@ plugins {
     id 'application'
 }
 
-version '1.0-SNAPSHOT'
-
 dependencies {
     implementation project(':core:core-types')
     implementation project(':registry:registry-client')
     implementation project(':communicator:communicator-types')
 
-    implementation "io.projectreactor:reactor-core:${reactorVersion}"
-    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+    implementation 'io.projectreactor:reactor-core'
+    implementation 'ch.qos.logback:logback-classic'
 
     implementation files('libs/jmapviewer-2.8.jar')
 }

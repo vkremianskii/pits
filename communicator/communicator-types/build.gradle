@@ -9,11 +9,8 @@ plugins {
     id 'com.google.protobuf' version "${protobufPluginVersion}"
 }
 
-version '1.0-SNAPSHOT'
-
 dependencies {
-    api "javax.annotation:javax.annotation-api:${javaxAnnotationsVersion}"
-    api "org.apache.tomcat:tomcat-annotations-api:${tomcatAnnotationsVersion}"
+    api 'javax.annotation:javax.annotation-api'
     api "io.grpc:grpc-netty-shaded:${grpcVersion}"
     api "io.grpc:grpc-protobuf:${grpcVersion}"
     api "io.grpc:grpc-stub:${grpcVersion}"
