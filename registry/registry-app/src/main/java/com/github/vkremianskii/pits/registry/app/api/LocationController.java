@@ -2,6 +2,8 @@ package com.github.vkremianskii.pits.registry.app.api;
 
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
+import com.github.vkremianskii.pits.registry.types.dto.CreateLocationRequest;
+import com.github.vkremianskii.pits.registry.types.dto.CreateLocationResponse;
 import com.github.vkremianskii.pits.registry.types.dto.LocationsResponse;
 import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.registry.types.model.Location;
@@ -12,12 +14,15 @@ import com.github.vkremianskii.pits.registry.types.model.location.Face;
 import com.github.vkremianskii.pits.registry.types.model.location.Hole;
 import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.github.vkremianskii.pits.core.types.Pair.pair;
 import static java.util.Collections.emptyList;
@@ -47,6 +52,24 @@ public class LocationController {
                 .map(pairs -> new LocationsResponse(pairs.stream()
                     .map(pair -> location(pair.left(), pair.right()))
                     .toList())));
+    }
+
+    @PostMapping
+    public Mono<CreateLocationResponse> createLocation(@RequestBody CreateLocationRequest request) {
+        return locationRepository.insert(request.name(), request.type())
+            .flatMap(locationId -> {
+                final var indexedPoints = IntStream.range(0, request.geometry().size())
+                    .mapToObj(i -> pair(i, request.geometry().get(i)))
+                    .toList();
+                return Flux.fromIterable(indexedPoints)
+                    .flatMap(pair -> locationPointRepository.insert(
+                        locationId,
+                        pair.left(),
+                        pair.right().latitude(),
+                        pair.right().longitude()))
+                    .then(Mono.just(locationId));
+            })
+            .map(CreateLocationResponse::new);
     }
 
     private static Location location(LocationDeclaration declaration, List<LocationPoint> points) {

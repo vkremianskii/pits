@@ -6,6 +6,7 @@ import com.github.vkremianskii.pits.frontends.logic.MainViewPresenter;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
+import com.github.vkremianskii.pits.registry.types.model.Location;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
@@ -41,6 +42,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
@@ -84,7 +86,6 @@ public class MainViewImpl implements MainView {
     private final DefaultListModel<EquipmentListElement> fleetListModel = new DefaultListModel<>();
 
     private JList<EquipmentListElement> fleetListBox;
-    private JButton fleetInitializeButton;
     private JTextField nameTextField;
     private JTextField typeTextField;
     private JTextField stateTextField;
@@ -95,16 +96,14 @@ public class MainViewImpl implements MainView {
     private JButton sendPositionButton;
     private JButton sendPayloadButton;
     private JMapViewer mapViewer;
+    private JButton initializeFleetButton;
+    private JButton initializeLocationsButton;
 
     public MainViewImpl(MainViewPresenter presenter) {
         this.presenter = requireNonNull(presenter);
     }
 
     public void initialize() {
-        final var testCommandsPanel = bootstrapTestCommandsPanel();
-        testCommandsPanel.setMaximumSize(new Dimension(175, testCommandsPanel.getMaximumSize().height));
-        testCommandsPanel.setPreferredSize(new Dimension(175, testCommandsPanel.getPreferredSize().height));
-
         final var fleetListPanel = bootstrapFleetListPanel();
         fleetListPanel.setMaximumSize(new Dimension(175, fleetListPanel.getMaximumSize().height));
         fleetListPanel.setPreferredSize(new Dimension(175, fleetListPanel.getPreferredSize().height));
@@ -121,6 +120,10 @@ public class MainViewImpl implements MainView {
         fleetPanel.add(equipmentPanel);
 
         final var mapPanel = bootstrapMapPanel();
+
+        final var testCommandsPanel = bootstrapTestCommandsPanel();
+        testCommandsPanel.setMaximumSize(new Dimension(175, testCommandsPanel.getMaximumSize().height));
+        testCommandsPanel.setPreferredSize(new Dimension(175, testCommandsPanel.getPreferredSize().height));
 
         final var mainPanel = new JPanel();
         final var mainLayout = new BoxLayout(mainPanel, X_AXIS);
@@ -164,14 +167,20 @@ public class MainViewImpl implements MainView {
     }
 
     private JPanel bootstrapTestCommandsPanel() {
-        fleetInitializeButton = new JButton("Initialize fleet");
-        fleetInitializeButton.setEnabled(false);
-        fleetInitializeButton.addActionListener(ignored -> presenter.initializeFleet());
+        initializeFleetButton = new JButton("Initialize fleet");
+        initializeFleetButton.setEnabled(false);
+        initializeFleetButton.addActionListener(ignored -> presenter.initializeFleet());
+
+        initializeLocationsButton = new JButton("Initialize locations");
+        initializeLocationsButton.setEnabled(false);
+        initializeLocationsButton.addActionListener(ignored -> presenter.initializeLocations());
 
         final var buttonsPanel = new JPanel();
         final var buttonsLayout = new BoxLayout(buttonsPanel, Y_AXIS);
         buttonsPanel.setLayout(buttonsLayout);
-        buttonsPanel.add(autoWidthComponent(fleetInitializeButton));
+        buttonsPanel.add(autoWidthComponent(initializeFleetButton));
+        buttonsPanel.add(createRigidArea(new Dimension(0, 3)));
+        buttonsPanel.add(autoWidthComponent(initializeLocationsButton));
 
         final var testCommandsPanel = new JPanel(new BorderLayout());
         testCommandsPanel.setBorder(createCompoundBorder(createTitledBorder("Test Commands"), createEmptyBorder(3, 3, 3, 3)));
@@ -377,7 +386,7 @@ public class MainViewImpl implements MainView {
     }
 
     @Override
-    public void refreshFleetControls(SortedMap<Integer, Equipment> equipmentById) {
+    public void refreshFleet(SortedMap<Integer, Equipment> equipmentById) {
         final var selectedEquipment = fleetListBox.getSelectedValue();
         fleetListModel.clear();
 
@@ -398,7 +407,7 @@ public class MainViewImpl implements MainView {
     }
 
     @Override
-    public void refreshEquipmentControls(Equipment equipment) {
+    public void refreshEquipment(Equipment equipment) {
         final var position = Optional.ofNullable(equipment.position);
         final var state = Optional.ofNullable(equipment.state);
 
@@ -426,8 +435,17 @@ public class MainViewImpl implements MainView {
     }
 
     @Override
+    public void refreshLocations(List<Location> locations) {
+    }
+
+    @Override
     public void setInitializeFleetEnabled(boolean enabled) {
-        fleetInitializeButton.setEnabled(enabled);
+        initializeFleetButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setInitializeLocationsEnabled(boolean enabled) {
+        initializeLocationsButton.setEnabled(enabled);
     }
 
     private static class EquipmentListElement {

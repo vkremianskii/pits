@@ -46,11 +46,13 @@ public class LocationRepository {
             .subscribeOn(boundedElastic());
     }
 
-    public Mono<Void> insert(String name, LocationType type) {
-        return Mono.<Void>fromRunnable(() -> dslContext.insertInto(TABLE)
+    public Mono<Integer> insert(String name, LocationType type) {
+        return Mono.fromSupplier(() -> dslContext.insertInto(TABLE)
                 .columns(FIELD_NAME, FIELD_TYPE)
                 .values(name, valueFromType(type))
-                .execute())
+                .returning(FIELD_ID)
+                .fetchOne()
+                .get(FIELD_ID))
             .subscribeOn(boundedElastic());
     }
 

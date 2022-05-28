@@ -145,7 +145,7 @@ class RegistryClientTests {
     @Test
     void should_get_locations(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
-        stubFor(get(urlPathEqualTo("/locations")).willReturn(aResponse()
+        stubFor(get(urlPathEqualTo("/location")).willReturn(aResponse()
             .withStatus(200)
             .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
             .withBody("""
@@ -197,7 +197,7 @@ class RegistryClientTests {
         var location4 = locations.get(3);
         assertThat(location4.type).isEqualTo(STOCKPILE);
         assertThat(location4.geometry).isEmpty();
-        verify(getRequestedFor(urlPathEqualTo("/locations")));
+        verify(getRequestedFor(urlPathEqualTo("/location")));
     }
 
     RegistryClient newClient(WireMockRuntimeInfo wmRuntimeInfo) {
