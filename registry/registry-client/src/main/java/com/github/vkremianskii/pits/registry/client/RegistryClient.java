@@ -2,12 +2,12 @@ package com.github.vkremianskii.pits.registry.client;
 
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
+import com.github.vkremianskii.pits.registry.types.dto.LocationsResponse;
 import com.github.vkremianskii.pits.registry.types.dto.UpdateEquipmentStateRequest;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
-import com.github.vkremianskii.pits.registry.types.model.Location;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -57,12 +57,11 @@ public class RegistryClient {
             .subscribeOn(boundedElastic());
     }
 
-    public Mono<List<Location>> getLocations() {
+    public Mono<LocationsResponse> getLocations() {
         return webClient.get()
             .uri("/locations")
             .retrieve()
-            .bodyToFlux(Location.class)
-            .collectList()
+            .bodyToMono(LocationsResponse.class)
             .subscribeOn(boundedElastic());
     }
 }

@@ -2,6 +2,7 @@ package com.github.vkremianskii.pits.registry.app.api;
 
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
+import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
@@ -37,6 +38,8 @@ class EquipmentControllerTests {
     EquipmentRepository equipmentRepository;
     @MockBean
     LocationRepository locationRepository;
+    @MockBean
+    LocationPointRepository locationPointRepository;
     @Autowired
     WebTestClient webClient;
 

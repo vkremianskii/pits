@@ -9,10 +9,6 @@ import com.github.vkremianskii.pits.registry.types.model.equipment.Drill;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
-import com.github.vkremianskii.pits.registry.types.model.location.Dump;
-import com.github.vkremianskii.pits.registry.types.model.location.Face;
-import com.github.vkremianskii.pits.registry.types.model.location.Hole;
-import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -26,6 +22,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
@@ -135,36 +135,50 @@ class RegistryClientTests {
         stubFor(get(urlPathEqualTo("/locations")).willReturn(aResponse()
             .withStatus(200)
             .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
-            .withBody("""        
-                [{
-                    "id": 1,
-                    "name": "Dump No.1",
-                    "type": "DUMP"
-                },{
-                    "id": 2,
-                    "name": "Face No.1",
-                    "type": "FACE"
-                },{
-                    "id": 3,
-                    "name": "Hole No.1",
-                    "type": "HOLE"
-                },{
-                    "id": 4,
-                    "name": "Stockpile No.1",
-                    "type": "STOCKPILE"
-                }]
+            .withBody("""
+                {
+                    "locations": [{
+                        "id": 1,
+                        "name": "Dump No.1",
+                        "type": "DUMP",
+                        "points": [{
+                            "latitude": 41.1494512,
+                            "longitude": -8.6107884
+                        }]
+                    },{
+                        "id": 2,
+                        "name": "Face No.1",
+                        "type": "FACE",
+                        "points": []
+                    },{
+                        "id": 3,
+                        "name": "Hole No.1",
+                        "type": "HOLE",
+                        "points": []
+                    },{
+                        "id": 4,
+                        "name": "Stockpile No.1",
+                        "type": "STOCKPILE",
+                        "points": []
+                    }]
+                }
                 """)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
-        var locations = sut.getLocations().block();
+        var response = sut.getLocations().block();
 
         // then
+        var locations = response.locations();
         assertThat(locations).hasSize(4);
-        assertThat(locations).hasAtLeastOneElementOfType(Dump.class);
-        assertThat(locations).hasAtLeastOneElementOfType(Face.class);
-        assertThat(locations).hasAtLeastOneElementOfType(Hole.class);
-        assertThat(locations).hasAtLeastOneElementOfType(Stockpile.class);
+        var location1 = locations.get(0);
+        assertThat(location1.type()).isEqualTo(DUMP);
+        var location2 = locations.get(1);
+        assertThat(location2.type()).isEqualTo(FACE);
+        var location3 = locations.get(2);
+        assertThat(location3.type()).isEqualTo(HOLE);
+        var location4 = locations.get(3);
+        assertThat(location4.type()).isEqualTo(STOCKPILE);
         verify(getRequestedFor(urlPathEqualTo("/locations")));
     }
 
