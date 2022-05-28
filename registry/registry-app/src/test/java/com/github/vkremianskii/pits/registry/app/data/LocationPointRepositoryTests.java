@@ -19,12 +19,12 @@ class LocationPointRepositoryTests {
 
     @BeforeEach
     void cleanup() {
-        locationRepository.clear().block();
         sut.clear().block();
+        locationRepository.clear().block();
     }
 
     @Test
-    void should_insert_and_get_locations() {
+    void should_insert_and_get_location_points() {
         // given
         locationRepository.insert("Dump No.1", DUMP).block();
         var locations = locationRepository.getLocations().block();
