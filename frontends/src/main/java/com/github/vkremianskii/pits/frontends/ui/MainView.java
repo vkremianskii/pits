@@ -124,13 +124,19 @@ public class MainView {
         final var equipmentPanel = bootstrapEquipmentPanel();
         equipmentPanel.setPreferredSize(new Dimension(175, equipmentPanel.getPreferredSize().height));
 
+        final var fleetFrame = new JPanel();
+        final var fleetFrameLayout = new BoxLayout(fleetFrame, X_AXIS);
+        fleetFrame.setLayout(fleetFrameLayout);
+        fleetFrame.setBorder(createCompoundBorder(createTitledBorder("Fleet"), createEmptyBorder(3, 3, 3, 3)));
+        fleetFrame.add(fleetPanel);
+        fleetFrame.add(equipmentPanel);
+
         final var mapPanel = bootstrapMapPanel();
 
         final var mainPanel = new JPanel();
         final var mainLayout = new BoxLayout(mainPanel, X_AXIS);
         mainPanel.setLayout(mainLayout);
-        mainPanel.add(fleetPanel);
-        mainPanel.add(equipmentPanel);
+        mainPanel.add(fleetFrame);
         mainPanel.add(mapPanel);
 
         final var frame = new JFrame("Frontends");
@@ -225,7 +231,7 @@ public class MainView {
             .block());
 
         final var fleetPanel = new JPanel(new BorderLayout());
-        fleetPanel.setBorder(createCompoundBorder(createTitledBorder("Fleet"), createEmptyBorder(3, 3, 3, 3)));
+        fleetPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
         fleetPanel.add(new JScrollPane(fleetListBox), BorderLayout.CENTER);
         fleetPanel.add(fleetInitializeButton, BorderLayout.PAGE_END);
 
