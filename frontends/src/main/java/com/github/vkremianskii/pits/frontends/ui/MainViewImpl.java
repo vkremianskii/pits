@@ -6,6 +6,7 @@ import com.github.vkremianskii.pits.frontends.logic.MainViewPresenter;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
+import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.registry.types.model.Location;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
@@ -17,6 +18,7 @@ import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
 import org.openstreetmap.gui.jmapviewer.OsmTileLoader;
+import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapPolygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +56,7 @@ import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TR
 import static java.awt.BorderLayout.PAGE_START;
 import static java.awt.Color.WHITE;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.empty;
 import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BorderFactory.createTitledBorder;
@@ -84,6 +87,9 @@ public class MainViewImpl implements MainView {
 
     private final MainViewPresenter presenter;
     private final DefaultListModel<EquipmentListElement> fleetListModel = new DefaultListModel<>();
+    private final List<MapMarker> fleetMarkers = new ArrayList<>();
+    private final List<MapPolygon> fleetPolygons = new ArrayList<>();
+    private final List<MapPolygon> locationPolygons = new ArrayList<>();
 
     private JList<EquipmentListElement> fleetListBox;
     private JTextField nameTextField;
@@ -359,10 +365,19 @@ public class MainViewImpl implements MainView {
 
     private static Optional<MapPolygon> loadZoneFromShovel(Shovel shovel) {
         return Optional.ofNullable(shovel.position)
-            .map(position -> newMapPolygon(position.latitude(), position.longitude(), shovel.loadRadius));
+            .map(position -> mapPolygonCircle(position.latitude(), position.longitude(), shovel.loadRadius));
     }
 
-    private static MapPolygon newMapPolygon(double latitude, double longitude, double radius) {
+    private static Optional<MapPolygon> mapPolygonFromLocation(Location location) {
+        if (location.geometry.isEmpty()) {
+            return empty();
+        }
+        return Optional.of(new MapPolygonImpl(location.geometry.stream()
+            .map(point -> new Coordinate(point.latitude(), point.longitude()))
+            .toList()));
+    }
+
+    private static MapPolygon mapPolygonCircle(double latitude, double longitude, double radius) {
         final var centerLL = new LatLonPoint.Double(latitude, longitude);
         final var centerUTM = LLtoUTM(centerLL);
 
@@ -390,14 +405,22 @@ public class MainViewImpl implements MainView {
         final var selectedEquipment = fleetListBox.getSelectedValue();
         fleetListModel.clear();
 
-        mapViewer.removeAllMapMarkers();
-        mapViewer.removeAllMapPolygons();
+        fleetMarkers.forEach(mapViewer::removeMapMarker);
+        fleetMarkers.clear();
+        fleetPolygons.forEach(mapViewer::removeMapPolygon);
+        fleetPolygons.clear();
 
         for (final var equipment : equipmentById.values()) {
             fleetListModel.addElement(new EquipmentListElement(equipment.id, equipment.name));
-            mapMarkerFromEquipment(equipment).ifPresent(mapViewer::addMapMarker);
+            mapMarkerFromEquipment(equipment).ifPresent(marker -> {
+                mapViewer.addMapMarker(marker);
+                fleetMarkers.add(marker);
+            });
             if (equipment.type == EquipmentType.SHOVEL) {
-                loadZoneFromShovel((Shovel) equipment).ifPresent(mapViewer::addMapPolygon);
+                loadZoneFromShovel((Shovel) equipment).ifPresent(polygon -> {
+                    mapViewer.addMapPolygon(polygon);
+                    fleetPolygons.add(polygon);
+                });
             }
         }
 
@@ -436,6 +459,15 @@ public class MainViewImpl implements MainView {
 
     @Override
     public void refreshLocations(List<Location> locations) {
+        locationPolygons.forEach(polygon -> mapViewer.removeMapPolygon(polygon));
+        locationPolygons.clear();
+
+        for (final var location : locations) {
+            mapPolygonFromLocation(location).ifPresent(polygon -> {
+                mapViewer.addMapPolygon(polygon);
+                locationPolygons.add(polygon);
+            });
+        }
     }
 
     @Override
