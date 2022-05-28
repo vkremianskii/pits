@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.processes.data;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,6 @@ class EquipmentPositionRepositoryTests {
 
     @Autowired
     EquipmentPositionRepository sut;
-
-    @BeforeEach
-    void cleanup() {
-        sut.clear().block();
-    }
 
     @Test
     void should_insert_and_get_last_record() {
@@ -61,5 +57,10 @@ class EquipmentPositionRepositoryTests {
         assertThat(records).hasSize(2);
         assertThat(records.get(0).insertTimestamp()).isEqualTo(Instant.ofEpochSecond(2));
         assertThat(records.get(1).insertTimestamp()).isEqualTo(Instant.ofEpochSecond(3));
+    }
+
+    @AfterEach
+    void cleanup() {
+        sut.clear().block();
     }
 }

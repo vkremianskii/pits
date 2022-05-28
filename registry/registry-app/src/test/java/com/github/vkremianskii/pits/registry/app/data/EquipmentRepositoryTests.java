@@ -6,6 +6,7 @@ import com.github.vkremianskii.pits.registry.types.model.equipment.Drill;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -24,11 +25,6 @@ class EquipmentRepositoryTests {
 
     @Autowired
     EquipmentRepository sut;
-
-    @BeforeEach
-    void cleanup() {
-        sut.clear().block();
-    }
 
     @Test
     void should_insert_and_get_equipment() {
@@ -130,5 +126,10 @@ class EquipmentRepositoryTests {
             assertThat(t).isInstanceOf(Truck.class);
             assertThat(((Truck) t).payload).isEqualTo(10);
         });
+    }
+
+    @AfterEach
+    void cleanup() {
+        sut.clear().block();
     }
 }

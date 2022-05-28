@@ -51,16 +51,18 @@ public class HaulCycleTests {
             .withStatus(200)
             .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
             .withBody("""
-                [{
-                    "id": 1,
-                    "name": "Shovel No.1",
-                    "type": "SHOVEL",
-                    "loadRadius": 20
-                },{
-                    "id": 2,
-                    "name": "Truck No.1",
-                    "type": "TRUCK"
-                }]
+                {
+                    "equipment": [{
+                        "id": 1,
+                        "name": "Shovel No.1",
+                        "type": "SHOVEL",
+                        "loadRadius": 20
+                    },{
+                        "id": 2,
+                        "name": "Truck No.1",
+                        "type": "TRUCK"
+                    }]
+                }
                 """)));
         stubFor(post(urlPathEqualTo("/equipment/2/state")).willReturn(aResponse()
             .withStatus(200)));
@@ -85,16 +87,18 @@ public class HaulCycleTests {
             .withStatus(200)
             .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
             .withBody("""
-                [{
-                    "id": 1,
-                    "name": "Shovel No.1",
-                    "type": "SHOVEL",
-                    "loadRadius": 20
-                },{
-                    "id": 2,
-                    "name": "Truck No.1",
-                    "type": "TRUCK"
-                }]
+                {
+                    "equipment": [{
+                        "id": 1,
+                        "name": "Shovel No.1",
+                        "type": "SHOVEL",
+                        "loadRadius": 20
+                    },{
+                        "id": 2,
+                        "name": "Truck No.1",
+                        "type": "TRUCK"
+                    }]
+                }
                 """)));
         stubFor(post(urlPathEqualTo("/equipment/2/state")).willReturn(aResponse()
             .withStatus(500)));

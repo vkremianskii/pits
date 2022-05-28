@@ -4,7 +4,7 @@ import com.github.vkremianskii.pits.registry.types.model.location.Dump;
 import com.github.vkremianskii.pits.registry.types.model.location.Face;
 import com.github.vkremianskii.pits.registry.types.model.location.Hole;
 import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,11 +21,6 @@ class LocationRepositoryTests {
     @Autowired
     LocationRepository sut;
 
-    @BeforeEach
-    void cleanup() {
-        sut.clear().block();
-    }
-
     @Test
     void should_insert_and_get_locations() {
         // when
@@ -41,5 +36,10 @@ class LocationRepositoryTests {
         assertThat(locations).hasAtLeastOneElementOfType(Face.class);
         assertThat(locations).hasAtLeastOneElementOfType(Hole.class);
         assertThat(locations).hasAtLeastOneElementOfType(Stockpile.class);
+    }
+
+    @AfterEach
+    void cleanup() {
+        sut.clear().block();
     }
 }

@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.frontends.logic;
 import com.github.vkremianskii.pits.frontends.grpc.GrpcClient;
 import com.github.vkremianskii.pits.frontends.ui.MainView;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.slf4j.Logger;
@@ -56,9 +57,9 @@ public class MainViewPresenterImpl implements MainViewPresenter {
 
     private Mono<Void> refreshFleet() {
         return registryClient.getEquipment()
-            .doOnSuccess(equipment -> {
-                uiThread(() -> view.setInitializeFleetEnabled(equipment.isEmpty()));
-                final var newEquipmentById = equipment.stream().collect(toMap(e -> e.id, identity()));
+            .doOnSuccess(response -> {
+                uiThread(() -> view.setInitializeFleetEnabled(response.equipment().isEmpty()));
+                final var newEquipmentById = response.equipment().stream().collect(toMap(e -> e.id, identity()));
                 if (newEquipmentById.equals(equipmentById)) {
                     return;
                 }
@@ -68,7 +69,7 @@ public class MainViewPresenterImpl implements MainViewPresenter {
             })
             .onErrorResume(e -> {
                 LOG.error("Error while fetching equipment from registry", e);
-                return Mono.just(emptyList());
+                return Mono.just(new EquipmentResponse(emptyList()));
             })
             .then();
     }

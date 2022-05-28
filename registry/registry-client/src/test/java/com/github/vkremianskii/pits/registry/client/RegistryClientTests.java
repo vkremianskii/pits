@@ -4,15 +4,12 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Drill;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
@@ -21,6 +18,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
+import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
@@ -38,47 +40,56 @@ class RegistryClientTests {
     @Test
     void should_get_equipment(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
-        stubFor(get(urlPathEqualTo("/equipment")).willReturn(aResponse()
-            .withStatus(200)
-            .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
-            .withBody("""
-                [{
-                    "id": 1,
-                    "name": "Dozer No.1",
-                    "type": "DOZER"
-                },{
-                    "id": 2,
-                    "name": "Drill No.1",
-                    "type": "DRILL"
-                },{
-                    "id": 3,
-                    "name": "Shovel No.1",
-                    "type": "SHOVEL",
-                    "loadRadius": 20
-                },{
-                    "id": 4,
-                    "name": "Truck No.1",
-                    "type": "TRUCK",
-                    "state": "HAUL",
-                    "position": {
-                        "latitude": 41.1494512,
-                        "longitude": -8.6107884,
-                        "elevation": 86
-                    },
-                    "payload": 10
-                }]
-                """)));
+        stubFor(get(urlPathEqualTo("/equipment"))
+            .withHeader(API_VERSION, equalTo(EQUIPMENT_RESPONSE_OBJECT.toString()))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
+                .withBody("""
+                    {
+                        "equipment": [{
+                            "id": 1,
+                            "name": "Dozer No.1",
+                            "type": "DOZER"
+                        },{
+                            "id": 2,
+                            "name": "Drill No.1",
+                            "type": "DRILL"
+                        },{
+                            "id": 3,
+                            "name": "Shovel No.1",
+                            "type": "SHOVEL",
+                            "loadRadius": 20
+                        },{
+                            "id": 4,
+                            "name": "Truck No.1",
+                            "type": "TRUCK",
+                            "state": "HAUL",
+                            "position": {
+                                "latitude": 41.1494512,
+                                "longitude": -8.6107884,
+                                "elevation": 86
+                            },
+                            "payload": 10
+                        }]
+                    }
+                    """)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
-        var equipment = sut.getEquipment().block();
+        var response = sut.getEquipment().block();
 
         // then
+        var equipment = response.equipment();
         assertThat(equipment).hasSize(4);
-        assertThat(equipment).hasAtLeastOneElementOfType(Dozer.class);
-        assertThat(equipment).hasAtLeastOneElementOfType(Drill.class);
-        assertThat(equipment).hasAtLeastOneElementOfType(Shovel.class);
-        assertThat(equipment).hasAtLeastOneElementOfType(Truck.class);
+        var equipment1 = equipment.get(0);
+        assertThat(equipment1.type).isEqualTo(DOZER);
+        var equipment2 = equipment.get(1);
+        assertThat(equipment2.type).isEqualTo(DRILL);
+        var equipment3 = equipment.get(2);
+        assertThat(equipment3.type).isEqualTo(SHOVEL);
+        var equipment4 = equipment.get(3);
+        assertThat(equipment4.type).isEqualTo(TRUCK);
         verify(getRequestedFor(urlPathEqualTo("/equipment")));
     }
 

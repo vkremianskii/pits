@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,12 +16,6 @@ class LocationPointRepositoryTests {
     LocationRepository locationRepository;
     @Autowired
     LocationPointRepository sut;
-
-    @BeforeEach
-    void cleanup() {
-        sut.clear().block();
-        locationRepository.clear().block();
-    }
 
     @Test
     void should_insert_and_get_location_points() {
@@ -47,5 +41,11 @@ class LocationPointRepositoryTests {
         assertThat(point2.order()).isEqualTo(1);
         assertThat(point2.latitude()).isCloseTo(41.149320, offset(1e-6));
         assertThat(point2.longitude()).isCloseTo(-8.610143, offset(1e-6));
+    }
+
+    @AfterEach
+    void cleanup() {
+        sut.clear().block();
+        locationRepository.clear().block();
     }
 }

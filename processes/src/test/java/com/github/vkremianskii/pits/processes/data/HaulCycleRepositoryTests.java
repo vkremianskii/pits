@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.processes.data;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,6 @@ class HaulCycleRepositoryTests {
 
     @Autowired
     HaulCycleRepository sut;
-
-    @BeforeEach
-    void cleanup() {
-        sut.clear().block();
-    }
 
     @Test
     void should_insert_and_get_last_minimal_haul_cycle() {
@@ -54,5 +50,10 @@ class HaulCycleRepositoryTests {
             assertThat(c.startUnloadTimestamp()).isNotNull();
             assertThat(c.endUnloadTimestamp()).isNotNull();
         });
+    }
+
+    @AfterEach
+    void cleanup() {
+        sut.clear().block();
     }
 }

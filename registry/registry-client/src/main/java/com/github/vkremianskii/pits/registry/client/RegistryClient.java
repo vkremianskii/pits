@@ -2,17 +2,17 @@ package com.github.vkremianskii.pits.registry.client;
 
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.dto.LocationsResponse;
 import com.github.vkremianskii.pits.registry.types.dto.UpdateEquipmentStateRequest;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
-import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
+import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
+import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static reactor.core.scheduler.Schedulers.boundedElastic;
 
@@ -27,12 +27,12 @@ public class RegistryClient {
             .build();
     }
 
-    public Mono<List<Equipment>> getEquipment() {
+    public Mono<EquipmentResponse> getEquipment() {
         return webClient.get()
             .uri("/equipment")
+            .header(API_VERSION, EQUIPMENT_RESPONSE_OBJECT.toString())
             .retrieve()
-            .bodyToFlux(Equipment.class)
-            .collectList()
+            .bodyToMono(EquipmentResponse.class)
             .subscribeOn(boundedElastic());
     }
 

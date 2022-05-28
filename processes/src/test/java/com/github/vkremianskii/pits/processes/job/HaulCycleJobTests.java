@@ -2,6 +2,7 @@ package com.github.vkremianskii.pits.processes.job;
 
 import com.github.vkremianskii.pits.processes.logic.HaulCycleService;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
+import com.github.vkremianskii.pits.registry.types.dto.EquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
@@ -37,7 +38,7 @@ class HaulCycleJobTests {
         var shovel = new Shovel(2, "Shovel No.1", 20, null, null);
         var truck1 = new Truck(3, "Truck No.1", null, null, null);
         var truck2 = new Truck(4, "Truck No.2", null, null, null);
-        when(registryClient.getEquipment()).thenReturn(Mono.just(List.of(dozer, shovel, truck1, truck2)));
+        when(registryClient.getEquipment()).thenReturn(Mono.just(new EquipmentResponse(List.of(dozer, shovel, truck1, truck2))));
         when(haulCycleService.computeHaulCycles(any(), any())).thenReturn(Mono.empty());
 
         // when
@@ -58,7 +59,7 @@ class HaulCycleJobTests {
         // given
         var truck1 = new Truck(1, "Truck No.1", null, null, null);
         var truck2 = new Truck(2, "Truck No.2", null, null, null);
-        when(registryClient.getEquipment()).thenReturn(Mono.just(List.of(truck1, truck2)));
+        when(registryClient.getEquipment()).thenReturn(Mono.just(new EquipmentResponse(List.of(truck1, truck2))));
         when(haulCycleService.computeHaulCycles(truck1, List.of())).thenReturn(Mono.error(new RuntimeException()));
         when(haulCycleService.computeHaulCycles(truck2, List.of())).thenReturn(Mono.empty());
 

@@ -38,12 +38,12 @@ public class HaulCycleJob {
     public void computeHaulCycles() {
         LOG.info("Haul cycle computation started");
         registryClient.getEquipment()
-            .flatMap(equipment -> {
-                final var trucks = equipment.stream()
+            .flatMap(response -> {
+                final var trucks = response.equipment().stream()
                     .filter(e -> e.type == TRUCK)
                     .map(e -> (Truck) e)
                     .toList();
-                final var shovels = equipment.stream()
+                final var shovels = response.equipment().stream()
                     .filter(e -> e.type == SHOVEL)
                     .map(e -> (Shovel) e)
                     .toList();

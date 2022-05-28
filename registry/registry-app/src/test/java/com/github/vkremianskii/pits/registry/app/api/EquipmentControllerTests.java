@@ -21,6 +21,8 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Optional;
 
+import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
+import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 import static com.github.vkremianskii.pits.registry.types.model.equipment.TruckState.HAUL;
 import static org.mockito.Mockito.verify;
@@ -44,7 +46,7 @@ class EquipmentControllerTests {
     WebTestClient webClient;
 
     @Test
-    void should_get_equipment() {
+    void should_get_equipment__v1() {
         // given
         when(equipmentRepository.getEquipment())
             .thenReturn(Mono.just(List.of(
@@ -84,6 +86,53 @@ class EquipmentControllerTests {
                     },
                     "payload": 10
                 }]
+                """, true);
+    }
+
+    @Test
+    void should_get_equipment__v2() {
+        // given
+        when(equipmentRepository.getEquipment())
+            .thenReturn(Mono.just(List.of(
+                new Dozer(1, "Dozer No.1", null, null),
+                new Drill(2, "Drill No.1", null, null),
+                new Shovel(3, "Shovel No.1", 20, null, null),
+                new Truck(4, "Truck No.1", HAUL, new Position(41.1494512, -8.6107884, 86), 10))));
+
+        // expect
+        webClient.get()
+            .uri("/equipment")
+            .header(API_VERSION, EQUIPMENT_RESPONSE_OBJECT.toString())
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().json("""
+                {
+                    "equipment": [{
+                        "id": 1,
+                        "name": "Dozer No.1",
+                        "type": "DOZER"
+                    },{
+                        "id": 2,
+                        "name": "Drill No.1",
+                        "type": "DRILL"
+                    },{
+                        "id": 3,
+                        "name": "Shovel No.1",
+                        "type": "SHOVEL",
+                        "loadRadius": 20
+                    },{
+                        "id": 4,
+                        "name": "Truck No.1",
+                        "type": "TRUCK",
+                        "state": "HAUL",
+                        "position": {
+                            "latitude": 41.1494512,
+                            "longitude": -8.6107884,
+                            "elevation": 86
+                        },
+                        "payload": 10
+                    }]
+                }
                 """, true);
     }
 
