@@ -1,11 +1,17 @@
 package com.github.vkremianskii.pits.registry.types.model.location;
 
+import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.registry.types.model.Location;
-import com.github.vkremianskii.pits.registry.types.model.LocationType;
+
+import java.util.List;
+
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 
 public class Stockpile extends Location {
 
-    public Stockpile(int id, String name) {
-        super(id, name, LocationType.STOCKPILE);
+    public Stockpile(int id,
+                     String name,
+                     List<LatLngPoint> geometry) {
+        super(id, name, STOCKPILE, geometry);
     }
 }

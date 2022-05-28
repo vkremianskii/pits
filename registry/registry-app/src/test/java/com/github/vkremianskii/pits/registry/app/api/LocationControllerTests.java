@@ -4,11 +4,8 @@ import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
+import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
 import com.github.vkremianskii.pits.registry.types.model.LocationPoint;
-import com.github.vkremianskii.pits.registry.types.model.location.Dump;
-import com.github.vkremianskii.pits.registry.types.model.location.Face;
-import com.github.vkremianskii.pits.registry.types.model.location.Hole;
-import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -19,6 +16,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static org.mockito.Mockito.when;
 
 @WebFluxTest
@@ -39,10 +40,10 @@ class LocationControllerTests {
         // given
         when(locationRepository.getLocations())
             .thenReturn(Mono.just(List.of(
-                new Dump(1, "Dump No.1"),
-                new Face(2, "Face No.1"),
-                new Hole(3, "Hole No.1"),
-                new Stockpile(4, "Stockpile No.1"))));
+                new LocationDeclaration(1, "Dump No.1", DUMP),
+                new LocationDeclaration(2, "Face No.1", FACE),
+                new LocationDeclaration(3, "Hole No.1", HOLE),
+                new LocationDeclaration(4, "Stockpile No.1", STOCKPILE))));
         when(locationPointRepository.getPointsByLocationId(1))
             .thenReturn(Mono.just(List.of(new LocationPoint(1, 1, 0, 41.1494512, -8.6107884))));
         when(locationPointRepository.getPointsByLocationId(2))
@@ -63,7 +64,7 @@ class LocationControllerTests {
                         "id": 1,
                         "name": "Dump No.1",
                         "type": "DUMP",
-                        "points": [{
+                        "geometry": [{
                             "latitude": 41.1494512,
                             "longitude": -8.6107884
                         }]
@@ -71,17 +72,17 @@ class LocationControllerTests {
                         "id": 2,
                         "name": "Face No.1",
                         "type": "FACE",
-                        "points": []
+                        "geometry": []
                     },{
                         "id": 3,
                         "name": "Hole No.1",
                         "type": "HOLE",
-                        "points": []
+                        "geometry": []
                     },{
                         "id": 4,
                         "name": "Stockpile No.1",
                         "type": "STOCKPILE",
-                        "points": []
+                        "geometry": []
                     }]
                 }
                 """, true);

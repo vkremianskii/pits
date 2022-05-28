@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.registry.types.model;
 
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
@@ -9,11 +10,16 @@ public class Location {
     public final int id;
     public final String name;
     public final LocationType type;
+    public final List<LatLngPoint> geometry;
 
-    protected Location(int id, String name, LocationType type) {
+    protected Location(int id,
+                       String name,
+                       LocationType type,
+                       List<LatLngPoint> geometry) {
         this.id = id;
         this.name = requireNonNull(name);
         this.type = requireNonNull(type);
+        this.geometry = requireNonNull(geometry);
     }
 
     @Override
@@ -21,12 +27,12 @@ public class Location {
         if (this == o) return true;
         if (!(o instanceof Location)) return false;
         Location location = (Location) o;
-        return id == location.id && Objects.equals(name, location.name) && type == location.type;
+        return id == location.id && Objects.equals(name, location.name) && type == location.type && Objects.equals(geometry, location.geometry);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type);
+        return Objects.hash(id, name, type, geometry);
     }
 
     @Override
@@ -35,6 +41,7 @@ public class Location {
             "id=" + id +
             ", name='" + name + '\'' +
             ", type=" + type +
+            ", geometry=" + geometry +
             '}';
     }
 }

@@ -1,9 +1,5 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.types.model.location.Dump;
-import com.github.vkremianskii.pits.registry.types.model.location.Face;
-import com.github.vkremianskii.pits.registry.types.model.location.Hole;
-import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +28,14 @@ class LocationRepositoryTests {
 
         // then
         assertThat(locations).hasSize(4);
-        assertThat(locations).hasAtLeastOneElementOfType(Dump.class);
-        assertThat(locations).hasAtLeastOneElementOfType(Face.class);
-        assertThat(locations).hasAtLeastOneElementOfType(Hole.class);
-        assertThat(locations).hasAtLeastOneElementOfType(Stockpile.class);
+        var location1 = locations.get(0);
+        assertThat(location1.type()).isEqualTo(DUMP);
+        var location2 = locations.get(1);
+        assertThat(location2.type()).isEqualTo(FACE);
+        var location3 = locations.get(2);
+        assertThat(location3.type()).isEqualTo(HOLE);
+        var location4 = locations.get(3);
+        assertThat(location4.type()).isEqualTo(STOCKPILE);
     }
 
     @AfterEach

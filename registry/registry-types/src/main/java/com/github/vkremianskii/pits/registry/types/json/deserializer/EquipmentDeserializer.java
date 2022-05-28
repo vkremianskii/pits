@@ -25,20 +25,20 @@ public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
         final var codec = p.getCodec();
         final JsonNode tree = codec.readTree(p);
 
-        final var id = tree.get("id").asInt();
+        final var id = tree.get("id").intValue();
         final var name = tree.get("name").textValue();
         final var typeName = tree.get("type").textValue();
         final var stateName = tree.has("state") ? tree.get("state").textValue() : null;
-        final var payload = tree.has("payload") ? tree.get("payload").asInt() : null;
-        final var loadRadius = tree.has("loadRadius") ? tree.get("loadRadius").asInt() : 0;
+        final var payload = tree.has("payload") ? tree.get("payload").intValue() : null;
+        final var loadRadius = tree.has("loadRadius") ? tree.get("loadRadius").intValue() : 0;
 
         Position position = null;
         if (tree.has("position")) {
             final var positionNode = tree.get("position");
             position = new Position(
-                positionNode.get("latitude").asDouble(),
-                positionNode.get("longitude").asDouble(),
-                positionNode.get("elevation").asInt());
+                positionNode.get("latitude").doubleValue(),
+                positionNode.get("longitude").doubleValue(),
+                positionNode.get("elevation").intValue());
         }
 
         final var type = EquipmentType.valueOf(typeName);

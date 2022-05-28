@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
+import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -30,6 +31,7 @@ import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOL
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 
 @WireMockTest
@@ -152,7 +154,7 @@ class RegistryClientTests {
                         "id": 1,
                         "name": "Dump No.1",
                         "type": "DUMP",
-                        "points": [{
+                        "geometry": [{
                             "latitude": 41.1494512,
                             "longitude": -8.6107884
                         }]
@@ -160,17 +162,17 @@ class RegistryClientTests {
                         "id": 2,
                         "name": "Face No.1",
                         "type": "FACE",
-                        "points": []
+                        "geometry": []
                     },{
                         "id": 3,
                         "name": "Hole No.1",
                         "type": "HOLE",
-                        "points": []
+                        "geometry": []
                     },{
                         "id": 4,
                         "name": "Stockpile No.1",
                         "type": "STOCKPILE",
-                        "points": []
+                        "geometry": []
                     }]
                 }
                 """)));
@@ -183,13 +185,18 @@ class RegistryClientTests {
         var locations = response.locations();
         assertThat(locations).hasSize(4);
         var location1 = locations.get(0);
-        assertThat(location1.type()).isEqualTo(DUMP);
+        assertThat(location1.type).isEqualTo(DUMP);
+        assertThat(location1.geometry).hasSize(1);
+        assertThat(location1.geometry.get(0).latitude()).isCloseTo(41.1494512, offset(1e-6));
         var location2 = locations.get(1);
-        assertThat(location2.type()).isEqualTo(FACE);
+        assertThat(location2.type).isEqualTo(FACE);
+        assertThat(location2.geometry).isEmpty();
         var location3 = locations.get(2);
-        assertThat(location3.type()).isEqualTo(HOLE);
+        assertThat(location3.type).isEqualTo(HOLE);
+        assertThat(location3.geometry).isEmpty();
         var location4 = locations.get(3);
-        assertThat(location4.type()).isEqualTo(STOCKPILE);
+        assertThat(location4.type).isEqualTo(STOCKPILE);
+        assertThat(location4.geometry).isEmpty();
         verify(getRequestedFor(urlPathEqualTo("/locations")));
     }
 

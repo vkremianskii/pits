@@ -3,8 +3,14 @@ package com.github.vkremianskii.pits.registry.app.api;
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.types.dto.LocationsResponse;
+import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.registry.types.model.Location;
+import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
 import com.github.vkremianskii.pits.registry.types.model.LocationPoint;
+import com.github.vkremianskii.pits.registry.types.model.location.Dump;
+import com.github.vkremianskii.pits.registry.types.model.location.Face;
+import com.github.vkremianskii.pits.registry.types.model.location.Hole;
+import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,24 +40,24 @@ public class LocationController {
     public Mono<LocationsResponse> getLocations() {
         return locationRepository.getLocations()
             .flatMap(locations -> Flux.fromIterable(locations)
-                .flatMap(location -> locationPointRepository.getPointsByLocationId(location.id)
+                .flatMap(location -> locationPointRepository.getPointsByLocationId(location.id())
                     .switchIfEmpty(Mono.just(emptyList()))
                     .map(points -> pair(location, points)))
                 .collectList()
                 .map(pairs -> new LocationsResponse(pairs.stream()
-                    .map(pair -> responseLocation(pair.left(), pair.right()))
+                    .map(pair -> location(pair.left(), pair.right()))
                     .toList())));
     }
 
-    private static LocationsResponse.Location responseLocation(Location location, List<LocationPoint> points) {
-        return new LocationsResponse.Location(
-            location.id,
-            location.name,
-            location.type,
-            points.stream().map(LocationController::responseLocationPoint).toList());
-    }
-
-    private static LocationsResponse.LocationPoint responseLocationPoint(LocationPoint point) {
-        return new LocationsResponse.LocationPoint(point.latitude(), point.longitude());
+    private static Location location(LocationDeclaration declaration, List<LocationPoint> points) {
+        final var geometry = points.stream()
+            .map(point -> new LatLngPoint(point.latitude(), point.longitude()))
+            .toList();
+        return switch (declaration.type()) {
+            case DUMP -> new Dump(declaration.id(), declaration.name(), geometry);
+            case FACE -> new Face(declaration.id(), declaration.name(), geometry);
+            case HOLE -> new Hole(declaration.id(), declaration.name(), geometry);
+            case STOCKPILE -> new Stockpile(declaration.id(), declaration.name(), geometry);
+        };
     }
 }

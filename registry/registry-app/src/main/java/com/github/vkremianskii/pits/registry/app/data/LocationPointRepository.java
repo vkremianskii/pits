@@ -46,6 +46,7 @@ public class LocationPointRepository {
     public Mono<List<LocationPoint>> getPointsByLocationId(int locationId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
                 .where(FIELD_LOCATION_ID.eq(locationId))
+                .orderBy(FIELD_POINT_ORDER)
                 .fetch(r -> r.map(LocationPointRepository::locationPointFromRecord)))
             .subscribeOn(boundedElastic());
     }

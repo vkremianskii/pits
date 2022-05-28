@@ -1,12 +1,8 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
-import com.github.vkremianskii.pits.registry.types.model.Location;
+import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
 import com.github.vkremianskii.pits.registry.types.model.LocationType;
-import com.github.vkremianskii.pits.registry.types.model.location.Dump;
-import com.github.vkremianskii.pits.registry.types.model.location.Face;
-import com.github.vkremianskii.pits.registry.types.model.location.Hole;
-import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
@@ -58,24 +54,26 @@ public class LocationRepository {
             .subscribeOn(boundedElastic());
     }
 
-    public Mono<List<Location>> getLocations() {
+    public Mono<List<LocationDeclaration>> getLocations() {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                .fetch(r -> r.map(LocationRepository::locationFromRecord)))
+                .fetch(r -> r.map(LocationRepository::locationDeclarationFromRecord)))
             .subscribeOn(boundedElastic());
     }
 
-    private static Location locationFromRecord(org.jooq.Record record) {
+    private static LocationDeclaration locationDeclarationFromRecord(org.jooq.Record record) {
         final var id = record.get(FIELD_ID);
         final var name = record.get(FIELD_NAME);
-        final var type = record.get(FIELD_TYPE);
+        final var typeName = record.get(FIELD_TYPE);
 
-        return switch (type) {
-            case "dump" -> new Dump(id, name);
-            case "hole" -> new Hole(id, name);
-            case "face" -> new Face(id, name);
-            case "stockpile" -> new Stockpile(id, name);
-            default -> throw new InternalServerError("Invalid location type: " + type);
+        final var type = switch (typeName) {
+            case "dump" -> DUMP;
+            case "face" -> FACE;
+            case "hole" -> HOLE;
+            case "stockpile" -> STOCKPILE;
+            default -> throw new IllegalArgumentException("Unsupported location type: " + typeName);
         };
+
+        return new LocationDeclaration(id, name, type);
     }
 
     private static String valueFromType(LocationType type) {
