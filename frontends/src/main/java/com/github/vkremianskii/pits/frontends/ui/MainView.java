@@ -11,7 +11,6 @@ import com.github.vkremianskii.pits.registry.types.model.Position;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
-import org.jetbrains.annotations.NotNull;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.JMapViewerTree;
@@ -344,6 +343,7 @@ public class MainView {
                 final var position = mapViewer.getPosition(e.getPoint());
                 latitudeSpinner.setValue(position.getLat());
                 longitudeSpinner.setValue(position.getLon());
+                LOG.debug(String.format("Map mouse click: lat=%.06f lon=%.06f", position.getLat(), position.getLon()));
             }
 
             @Override
@@ -459,6 +459,7 @@ public class MainView {
     }
 
     private static class EquipmentListElement {
+
         public final int id;
         public final String name;
 
