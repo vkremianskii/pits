@@ -49,6 +49,7 @@ import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
 import static com.bbn.openmap.proj.coords.UTMPoint.UTMtoLL;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
+import static java.awt.BorderLayout.PAGE_START;
 import static java.awt.Color.WHITE;
 import static java.util.Objects.requireNonNull;
 import static javax.swing.BorderFactory.createCompoundBorder;
@@ -100,33 +101,39 @@ public class MainViewImpl implements MainView {
     }
 
     public void initialize() {
-        final var fleetPanel = bootstrapFleetPanel();
-        fleetPanel.setPreferredSize(new Dimension(175, fleetPanel.getPreferredSize().height));
+        final var testCommandsPanel = bootstrapTestCommandsPanel();
+        testCommandsPanel.setMaximumSize(new Dimension(175, testCommandsPanel.getMaximumSize().height));
+        testCommandsPanel.setPreferredSize(new Dimension(175, testCommandsPanel.getPreferredSize().height));
+
+        final var fleetListPanel = bootstrapFleetListPanel();
+        fleetListPanel.setMaximumSize(new Dimension(175, fleetListPanel.getMaximumSize().height));
+        fleetListPanel.setPreferredSize(new Dimension(175, fleetListPanel.getPreferredSize().height));
 
         final var equipmentPanel = bootstrapEquipmentPanel();
+        equipmentPanel.setMaximumSize(new Dimension(175, equipmentPanel.getMaximumSize().height));
         equipmentPanel.setPreferredSize(new Dimension(175, equipmentPanel.getPreferredSize().height));
 
-        final var fleetFrame = new JPanel();
-        final var fleetFrameLayout = new BoxLayout(fleetFrame, X_AXIS);
-        fleetFrame.setLayout(fleetFrameLayout);
-        fleetFrame.setBorder(createCompoundBorder(createTitledBorder("Fleet"), createEmptyBorder(3, 3, 3, 3)));
-        fleetFrame.add(fleetPanel);
-        fleetFrame.add(equipmentPanel);
+        final var fleetPanel = new JPanel();
+        final var fleetLayout = new BoxLayout(fleetPanel, X_AXIS);
+        fleetPanel.setLayout(fleetLayout);
+        fleetPanel.setBorder(createCompoundBorder(createTitledBorder("Fleet"), createEmptyBorder(3, 3, 3, 3)));
+        fleetPanel.add(fleetListPanel);
+        fleetPanel.add(equipmentPanel);
 
         final var mapPanel = bootstrapMapPanel();
 
         final var mainPanel = new JPanel();
         final var mainLayout = new BoxLayout(mainPanel, X_AXIS);
         mainPanel.setLayout(mainLayout);
-        mainPanel.add(fleetFrame);
+        mainPanel.add(fleetPanel);
         mainPanel.add(mapPanel);
+        mainPanel.add(testCommandsPanel);
 
         final var frame = new JFrame("Frontends");
         frame.add(mainPanel);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationByPlatform(true);
-        frame.setResizable(false);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -156,18 +163,30 @@ public class MainViewImpl implements MainView {
             DEFAULT_MAP_ZOOM);
     }
 
-    private JPanel bootstrapFleetPanel() {
-        fleetListBox = new JList<>(fleetListModel);
-        fleetListBox.setSelectionMode(SINGLE_SELECTION);
-
-        fleetInitializeButton = new JButton("Initialize");
+    private JPanel bootstrapTestCommandsPanel() {
+        fleetInitializeButton = new JButton("Initialize fleet");
         fleetInitializeButton.setEnabled(false);
         fleetInitializeButton.addActionListener(ignored -> presenter.initializeFleet());
+
+        final var buttonsPanel = new JPanel();
+        final var buttonsLayout = new BoxLayout(buttonsPanel, Y_AXIS);
+        buttonsPanel.setLayout(buttonsLayout);
+        buttonsPanel.add(autoWidthComponent(fleetInitializeButton));
+
+        final var testCommandsPanel = new JPanel(new BorderLayout());
+        testCommandsPanel.setBorder(createCompoundBorder(createTitledBorder("Test Commands"), createEmptyBorder(3, 3, 3, 3)));
+        testCommandsPanel.add(buttonsPanel, PAGE_START);
+
+        return testCommandsPanel;
+    }
+
+    private JPanel bootstrapFleetListPanel() {
+        fleetListBox = new JList<>(fleetListModel);
+        fleetListBox.setSelectionMode(SINGLE_SELECTION);
 
         final var fleetPanel = new JPanel(new BorderLayout());
         fleetPanel.setBorder(createEmptyBorder(3, 3, 3, 3));
         fleetPanel.add(new JScrollPane(fleetListBox), BorderLayout.CENTER);
-        fleetPanel.add(fleetInitializeButton, BorderLayout.PAGE_END);
 
         return fleetPanel;
     }
@@ -187,19 +206,22 @@ public class MainViewImpl implements MainView {
 
         final var simulationPanel = bootstrapSimulationPanel();
 
-        final var equipmentPanel = new JPanel();
-        final var equipmentLayout = new BoxLayout(equipmentPanel, Y_AXIS);
-        equipmentPanel.setLayout(equipmentLayout);
-        equipmentPanel.add(autoWidthComponent(nameLabel));
-        equipmentPanel.add(nameTextField);
-        equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
-        equipmentPanel.add(autoWidthComponent(typeLabel));
-        equipmentPanel.add(typeTextField);
-        equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
-        equipmentPanel.add(autoWidthComponent(stateLabel));
-        equipmentPanel.add(stateTextField);
-        equipmentPanel.add(createRigidArea(new Dimension(0, 3)));
-        equipmentPanel.add(simulationPanel);
+        final var controlsPanel = new JPanel();
+        final var controlsLayout = new BoxLayout(controlsPanel, Y_AXIS);
+        controlsPanel.setLayout(controlsLayout);
+        controlsPanel.add(autoWidthComponent(nameLabel));
+        controlsPanel.add(nameTextField);
+        controlsPanel.add(createRigidArea(new Dimension(0, 3)));
+        controlsPanel.add(autoWidthComponent(typeLabel));
+        controlsPanel.add(typeTextField);
+        controlsPanel.add(createRigidArea(new Dimension(0, 3)));
+        controlsPanel.add(autoWidthComponent(stateLabel));
+        controlsPanel.add(stateTextField);
+        controlsPanel.add(createRigidArea(new Dimension(0, 3)));
+        controlsPanel.add(simulationPanel);
+
+        final var equipmentPanel = new JPanel(new BorderLayout());
+        equipmentPanel.add(controlsPanel, PAGE_START);
 
         return equipmentPanel;
     }
