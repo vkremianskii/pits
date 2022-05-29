@@ -163,29 +163,6 @@ class EquipmentControllerTests {
             .expectStatus().isOk()
             .expectBody().jsonPath("$.equipmentId").isNotEmpty();
         verify(equipmentRepository).createEquipment(any(), eq("Truck No.1"), eq(TRUCK), isNull());
-        verify(transactionManager).commit(any());
-    }
-
-    @Test
-    void should_create_equipment__rollback_on_error() {
-        // given
-        when(equipmentRepository.createEquipment(any(), eq("Truck No.1"), eq(TRUCK), isNull()))
-            .thenReturn(Mono.error(new RuntimeException()));
-
-        // expect
-        webClient.post()
-            .uri("/equipment")
-            .contentType(APPLICATION_JSON)
-            .bodyValue("""
-                {
-                    "name": "Truck No.1",
-                    "type": "TRUCK"
-                }
-                """)
-            .exchange()
-            .expectStatus().isEqualTo(500);
-        verify(equipmentRepository).createEquipment(any(), eq("Truck No.1"), eq(TRUCK), isNull());
-        verify(transactionManager).rollback(any());
     }
 
     @Test

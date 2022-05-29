@@ -19,8 +19,6 @@ import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +34,6 @@ import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmen
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static java.util.Objects.requireNonNull;
-import static org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW;
 
 @RestController
 @RequestMapping("/equipment")
@@ -44,14 +41,11 @@ public class EquipmentController {
 
     private final EquipmentRepository equipmentRepository;
     private final ObjectMapper objectMapper;
-    private final PlatformTransactionManager transactionManager;
 
     public EquipmentController(EquipmentRepository equipmentRepository,
-                               ObjectMapper objectMapper,
-                               PlatformTransactionManager transactionManager) {
+                               ObjectMapper objectMapper) {
         this.equipmentRepository = requireNonNull(equipmentRepository);
         this.objectMapper = requireNonNull(objectMapper);
-        this.transactionManager = requireNonNull(transactionManager);
     }
 
     @GetMapping
@@ -69,13 +63,8 @@ public class EquipmentController {
     @PostMapping
     public Mono<CreateEquipmentResponse> createEquipment(@RequestBody CreateEquipmentRequest request) {
         final var equipmentId = equipmentId(UUID.randomUUID());
-        final var txDefiniton = new DefaultTransactionDefinition(PROPAGATION_REQUIRES_NEW);
-        final var txStatus = transactionManager.getTransaction(txDefiniton);
-
         return equipmentRepository.createEquipment(equipmentId, request.name(), request.type(), null)
-            .thenReturn(new CreateEquipmentResponse(equipmentId))
-            .doOnSuccess(__ -> transactionManager.commit(txStatus))
-            .doOnError(__ -> transactionManager.rollback(txStatus));
+            .thenReturn(new CreateEquipmentResponse(equipmentId));
     }
 
     @PostMapping("/{id}/state")
