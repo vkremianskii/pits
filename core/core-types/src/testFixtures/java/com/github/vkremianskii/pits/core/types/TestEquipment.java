@@ -1,12 +1,12 @@
 package com.github.vkremianskii.pits.core.types;
 
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
+import com.github.vkremianskii.pits.core.types.model.EquipmentState;
 import com.github.vkremianskii.pits.core.types.model.Position;
 import com.github.vkremianskii.pits.core.types.model.equipment.Dozer;
 import com.github.vkremianskii.pits.core.types.model.equipment.Drill;
 import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -31,7 +31,7 @@ public class TestEquipment {
         return new Truck(randomEquipmentId(), "Some truck", null, null, null);
     }
 
-    public static Truck aTruck(@Nullable TruckState state, @Nullable Position position, @Nullable Integer payload) {
+    public static Truck aTruck(@Nullable EquipmentState state, @Nullable Position position, @Nullable Integer payload) {
         return new Truck(randomEquipmentId(), "Some truck", state, position, payload);
     }
 

@@ -6,16 +6,13 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.vkremianskii.pits.core.types.model.Equipment;
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
+import com.github.vkremianskii.pits.core.types.model.EquipmentState;
 import com.github.vkremianskii.pits.core.types.model.EquipmentType;
 import com.github.vkremianskii.pits.core.types.model.Position;
 import com.github.vkremianskii.pits.core.types.model.equipment.Dozer;
-import com.github.vkremianskii.pits.core.types.model.equipment.DozerState;
 import com.github.vkremianskii.pits.core.types.model.equipment.Drill;
-import com.github.vkremianskii.pits.core.types.model.equipment.DrillState;
 import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.types.model.equipment.ShovelState;
 import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 
 import java.io.IOException;
 
@@ -43,29 +40,13 @@ public class EquipmentDeserializer extends JsonDeserializer<Equipment> {
         }
 
         final var type = EquipmentType.valueOf(typeName);
+        final var state = stateName != null ? EquipmentState.valueOf(stateName) : null;
+
         return switch (type) {
-            case DOZER -> new Dozer(
-                id,
-                name,
-                stateName != null ? DozerState.valueOf(stateName) : null,
-                position);
-            case DRILL -> new Drill(
-                id,
-                name,
-                stateName != null ? DrillState.valueOf(stateName) : null,
-                position);
-            case SHOVEL -> new Shovel(
-                id,
-                name,
-                loadRadius,
-                stateName != null ? ShovelState.valueOf(stateName) : null,
-                position);
-            case TRUCK -> new Truck(
-                id,
-                name,
-                stateName != null ? TruckState.valueOf(stateName) : null,
-                position,
-                payload);
+            case DOZER -> new Dozer(id, name, state, position);
+            case DRILL -> new Drill(id, name, state, position);
+            case SHOVEL -> new Shovel(id, name, loadRadius, state, position);
+            case TRUCK -> new Truck(id, name, state, position, payload);
         };
     }
 }

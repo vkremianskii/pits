@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.processes.logic;
 
 import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
+import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.logic.fsm.HaulCycleFsm;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
@@ -34,7 +34,7 @@ class HaulCycleFsmTests {
 
         // then
         assertThat(haulCycles).isEmpty();
-        var state = haulCycleFsm.getState();
+        var state = haulCycleFsm.getTruckState();
         assertThat(state).isNull();
     }
 
@@ -68,8 +68,8 @@ class HaulCycleFsmTests {
             30_000,
             Instant.ofEpochSecond(6),
             Instant.ofEpochSecond(7)));
-        var state = haulCycleFsm.getState();
-        assertThat(state).isEqualTo(TruckState.EMPTY);
+        var state = haulCycleFsm.getTruckState();
+        assertThat(state).isEqualTo(Truck.STATE_EMPTY);
     }
 
     @Test
@@ -128,8 +128,8 @@ class HaulCycleFsmTests {
                 30_000,
                 Instant.ofEpochSecond(10),
                 null));
-        var state = haulCycleFsm.getState();
-        assertThat(state).isEqualTo(TruckState.UNLOAD);
+        var state = haulCycleFsm.getTruckState();
+        assertThat(state).isEqualTo(Truck.STATE_UNLOAD);
     }
 
     @Test
@@ -184,7 +184,7 @@ class HaulCycleFsmTests {
                 null,
                 null,
                 null));
-        var state = haulCycleFsm.getState();
-        assertThat(state).isEqualTo(TruckState.WAIT_LOAD);
+        var state = haulCycleFsm.getTruckState();
+        assertThat(state).isEqualTo(Truck.STATE_WAIT_LOAD);
     }
 }

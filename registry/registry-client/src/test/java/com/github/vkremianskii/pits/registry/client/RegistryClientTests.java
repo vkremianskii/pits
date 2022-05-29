@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.core.types.json.CoreTypesModule;
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
+import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.infra.RegistryCodecConfigurer;
 import org.junit.jupiter.api.Test;
@@ -140,7 +140,7 @@ class RegistryClientTests {
         var sut = newClient(wmRuntimeInfo);
 
         // when
-        sut.updateEquipmentState(truckId, TruckState.EMPTY).block();
+        sut.updateEquipmentState(truckId, Truck.STATE_EMPTY).block();
 
         // then
         verify(postRequestedFor(urlPathEqualTo("/equipment/" + truckId + "/state"))

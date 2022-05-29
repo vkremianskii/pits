@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
 import com.github.vkremianskii.pits.core.types.model.Position;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
+import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
@@ -24,7 +24,6 @@ import static com.github.vkremianskii.pits.core.types.TestEquipment.aShovel;
 import static com.github.vkremianskii.pits.core.types.TestEquipment.aTruck;
 import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
 import static com.github.vkremianskii.pits.core.types.model.EquipmentType.TRUCK;
-import static com.github.vkremianskii.pits.core.types.model.equipment.TruckState.HAUL;
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,7 +57,7 @@ class EquipmentControllerTests {
         var dozer = aDozer();
         var drill = aDrill();
         var shovel = aShovel();
-        var truck = aTruck(HAUL, new Position(41.1494512, -8.6107884, 86), 10);
+        var truck = aTruck(Truck.STATE_HAUL, new Position(41.1494512, -8.6107884, 86), 10);
         when(equipmentRepository.getEquipment())
             .thenReturn(Mono.just(List.of(dozer, drill, shovel, truck)));
 
@@ -102,7 +101,7 @@ class EquipmentControllerTests {
         var dozer = aDozer();
         var drill = aDrill();
         var shovel = aShovel();
-        var truck = aTruck(HAUL, new Position(41.1494512, -8.6107884, 86), 10);
+        var truck = aTruck(Truck.STATE_HAUL, new Position(41.1494512, -8.6107884, 86), 10);
         when(equipmentRepository.getEquipment())
             .thenReturn(Mono.just(List.of(dozer, drill, shovel, truck)));
 
@@ -171,7 +170,7 @@ class EquipmentControllerTests {
         var truck = aTruck();
         when(equipmentRepository.getEquipmentById(truck.id))
             .thenReturn(Mono.just(Optional.of(truck)));
-        when(equipmentRepository.updateEquipmentState(truck.id, TruckState.EMPTY))
+        when(equipmentRepository.updateEquipmentState(truck.id, Truck.STATE_EMPTY))
             .thenReturn(Mono.empty());
 
         // expect
@@ -185,7 +184,7 @@ class EquipmentControllerTests {
                 """)
             .exchange()
             .expectStatus().isOk();
-        verify(equipmentRepository).updateEquipmentState(truck.id, TruckState.EMPTY);
+        verify(equipmentRepository).updateEquipmentState(truck.id, Truck.STATE_EMPTY);
     }
 
     @Test

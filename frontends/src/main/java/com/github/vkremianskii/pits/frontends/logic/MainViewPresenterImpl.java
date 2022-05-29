@@ -32,7 +32,7 @@ import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.core.types.model.LocationType.FACE;
 import static com.github.vkremianskii.pits.core.types.model.LocationType.HOLE;
 import static com.github.vkremianskii.pits.core.types.model.LocationType.STOCKPILE;
-import static com.github.vkremianskii.pits.frontends.ui.ViewUtil.uiThread;
+import static com.github.vkremianskii.pits.frontends.ui.ViewUtils.uiThread;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;

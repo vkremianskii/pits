@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
-public class Equipment {
+public abstract class Equipment {
 
     public final EquipmentId id;
     public final String name;

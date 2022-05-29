@@ -1,42 +1,18 @@
 package com.github.vkremianskii.pits.core.types.model;
 
-import java.util.Objects;
+import com.github.vkremianskii.pits.core.types.Microtype;
 
-public abstract class EquipmentState {
+public class EquipmentState extends Microtype<String> {
 
-    public final String name;
-
-    protected EquipmentState(String name) {
-        this.name = name;
+    private EquipmentState(String value) {
+        super(value);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof EquipmentState)) return false;
-        EquipmentState that = (EquipmentState) o;
-        return Objects.equals(name, that.name);
+    public static EquipmentState equipmentState(String value) {
+        return new EquipmentState(value);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    protected static <T extends EquipmentState> T valueOf(String name, T[] values) {
-        if (name == null) {
-            throw new NullPointerException("name must not be null");
-        }
-        for (final var value : values) {
-            if (value.name.equals(name)) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException("No equipment state with name '" + name + "'");
+    public static EquipmentState valueOf(String value) {
+        return equipmentState(value);
     }
 }

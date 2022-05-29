@@ -10,7 +10,6 @@ import com.github.vkremianskii.pits.core.types.model.Location;
 import com.github.vkremianskii.pits.core.types.model.Position;
 import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import com.github.vkremianskii.pits.frontends.logic.MainViewPresenter;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
@@ -80,11 +79,11 @@ public class MainViewImpl implements MainView {
     private static final String OSM_USER_AGENT = "pits.frontends/1.0-SNAPSHOT";
 
     private static final Map<EquipmentState, Color> COLOR_FROM_STATE = Map.of(
-        TruckState.EMPTY, new Color(0x90ee90),
-        TruckState.WAIT_LOAD, new Color(0xadd8e6),
-        TruckState.LOAD, new Color(0x00008b),
-        TruckState.HAUL, new Color(0x006400),
-        TruckState.UNLOAD, new Color(0x00008b));
+        Truck.STATE_EMPTY, new Color(0x90ee90),
+        Truck.STATE_WAIT_LOAD, new Color(0xadd8e6),
+        Truck.STATE_LOAD, new Color(0x00008b),
+        Truck.STATE_HAUL, new Color(0x006400),
+        Truck.STATE_UNLOAD, new Color(0x00008b));
 
     private final MainViewPresenter presenter;
     private final DefaultListModel<EquipmentListElement> fleetListModel = new DefaultListModel<>();
@@ -447,7 +446,7 @@ public class MainViewImpl implements MainView {
 
         nameTextField.setText(equipment.name);
         typeTextField.setText(equipment.type.name());
-        stateTextField.setText(state.map(s -> s.name).orElse(""));
+        stateTextField.setText(state.map(s -> s.value).orElse(""));
         latitudeSpinner.setValue(position.map(Position::latitude).orElse(DEFAULT_LATITIUDE));
         latitudeSpinner.setEnabled(true);
         longitudeSpinner.setValue(position.map(Position::longitude).orElse(DEFAULT_LONGITUDE));

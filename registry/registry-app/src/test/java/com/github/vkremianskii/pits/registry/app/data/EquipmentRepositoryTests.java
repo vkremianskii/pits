@@ -5,7 +5,6 @@ import com.github.vkremianskii.pits.core.types.model.equipment.Dozer;
 import com.github.vkremianskii.pits.core.types.model.equipment.Drill;
 import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,10 +90,10 @@ class EquipmentRepositoryTests {
         sut.createEquipment(truck4Id, "Truck No.4", TRUCK, null).block();
 
         // when
-        sut.updateEquipmentState(truck1Id, TruckState.EMPTY).block();
-        sut.updateEquipmentState(truck2Id, TruckState.LOAD).block();
-        sut.updateEquipmentState(truck3Id, TruckState.HAUL).block();
-        sut.updateEquipmentState(truck4Id, TruckState.UNLOAD).block();
+        sut.updateEquipmentState(truck1Id, Truck.STATE_EMPTY).block();
+        sut.updateEquipmentState(truck2Id, Truck.STATE_LOAD).block();
+        sut.updateEquipmentState(truck3Id, Truck.STATE_HAUL).block();
+        sut.updateEquipmentState(truck4Id, Truck.STATE_UNLOAD).block();
 
         // then
         var equipment = sut.getEquipment().block();
@@ -103,10 +102,10 @@ class EquipmentRepositoryTests {
         var truck2 = equipmentById.get(truck2Id);
         var truck3 = equipmentById.get(truck3Id);
         var truck4 = equipmentById.get(truck4Id);
-        assertThat(truck1.state).isEqualTo(TruckState.EMPTY);
-        assertThat(truck2.state).isEqualTo(TruckState.LOAD);
-        assertThat(truck3.state).isEqualTo(TruckState.HAUL);
-        assertThat(truck4.state).isEqualTo(TruckState.UNLOAD);
+        assertThat(truck1.state).isEqualTo(Truck.STATE_EMPTY);
+        assertThat(truck2.state).isEqualTo(Truck.STATE_LOAD);
+        assertThat(truck3.state).isEqualTo(Truck.STATE_HAUL);
+        assertThat(truck4.state).isEqualTo(Truck.STATE_UNLOAD);
     }
 
     @Test

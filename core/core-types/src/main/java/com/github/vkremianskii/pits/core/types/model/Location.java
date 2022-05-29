@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
-public class Location {
+public abstract class Location {
 
     public final LocationId id;
     public final String name;

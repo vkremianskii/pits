@@ -180,7 +180,7 @@ public class HaulCycleService {
                         hc.endUnloadTimestamp);
                 }
             })
-            .then(Mono.defer(() -> Mono.justOrEmpty(haulCycleFsm.getState())))
+            .then(Mono.defer(() -> Mono.justOrEmpty(haulCycleFsm.getTruckState())))
             .flatMap(state -> {
                 LOG.info("Updating truck '{}' state in registry: {}", truck.id, state);
                 return registryClient.updateEquipmentState(truck.id, state);

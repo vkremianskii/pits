@@ -6,13 +6,9 @@ import com.github.vkremianskii.pits.core.types.model.EquipmentState;
 import com.github.vkremianskii.pits.core.types.model.EquipmentType;
 import com.github.vkremianskii.pits.core.types.model.Position;
 import com.github.vkremianskii.pits.core.types.model.equipment.Dozer;
-import com.github.vkremianskii.pits.core.types.model.equipment.DozerState;
 import com.github.vkremianskii.pits.core.types.model.equipment.Drill;
-import com.github.vkremianskii.pits.core.types.model.equipment.DrillState;
 import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.types.model.equipment.ShovelState;
 import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -59,11 +55,11 @@ public class EquipmentRepository {
         TRUCK, "truck");
 
     private static final Map<EquipmentState, String> STATE_TO_VALUE = Map.of(
-        TruckState.EMPTY, "truck_empty",
-        TruckState.WAIT_LOAD, "truck_wait_load",
-        TruckState.LOAD, "truck_load",
-        TruckState.HAUL, "truck_haul",
-        TruckState.UNLOAD, "truck_unload");
+        Truck.STATE_EMPTY, "truck_empty",
+        Truck.STATE_WAIT_LOAD, "truck_wait_load",
+        Truck.STATE_LOAD, "truck_load",
+        Truck.STATE_HAUL, "truck_haul",
+        Truck.STATE_UNLOAD, "truck_unload");
 
     private static final Map<String, EquipmentState> VALUE_TO_STATE = STATE_TO_VALUE.entrySet().stream()
         .collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
@@ -136,28 +132,15 @@ public class EquipmentRepository {
         }
 
         return switch (type) {
-            case "dozer" -> new Dozer(
-                id,
-                name,
-                stateFromValue(state, DozerState.class),
-                position);
-            case "drill" -> new Drill(
-                id,
-                name,
-                stateFromValue(state, DrillState.class),
-                position);
+            case "dozer" -> new Dozer(id, name, stateFromValue(state), position);
+            case "drill" -> new Drill(id, name, stateFromValue(state), position);
             case "shovel" -> new Shovel(
                 id,
                 name,
                 loadRadius.map(Short::intValue).orElse(DEFAULT_SHOVEL_LOAD_RADIUS),
-                stateFromValue(state, ShovelState.class),
+                stateFromValue(state),
                 position);
-            case "truck" -> new Truck(
-                id,
-                name,
-                stateFromValue(state, TruckState.class),
-                position,
-                payload);
+            case "truck" -> new Truck(id, name, stateFromValue(state), position, payload);
             default -> throw new InternalServerError("Invalid equipment type: " + type);
         };
     }
@@ -176,13 +159,13 @@ public class EquipmentRepository {
         return STATE_TO_VALUE.get(state);
     }
 
-    private static <T> T stateFromValue(String value, Class<T> cls) {
+    private static EquipmentState stateFromValue(String value) {
         if (value == null) {
             return null;
         }
         if (!VALUE_TO_STATE.containsKey(value)) {
             throw new InternalServerError("Invalid equipment state: " + value);
         }
-        return cls.cast(VALUE_TO_STATE.get(value));
+        return VALUE_TO_STATE.get(value);
     }
 }

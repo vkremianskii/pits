@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.processes.logic;
 
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
+import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
@@ -76,7 +76,7 @@ class HaulCycleServiceTests {
         verify(haulCycleRepository).getLastHaulCycleForTruck(truck.id);
         verify(haulCycleFsmFactory).create(eq(emptyMap()), any());
         verify(haulCycleFsm).initialize(null, null, null, null);
-        verify(haulCycleFsm).getState();
+        verify(haulCycleFsm).getTruckState();
         verifyNoMoreInteractions(haulCycleRepository);
         verifyNoMoreInteractions(haulCycleFsmFactory);
         verifyNoMoreInteractions(haulCycleFsm);
@@ -154,8 +154,8 @@ class HaulCycleServiceTests {
             .thenReturn(Mono.empty());
         when(haulCycleRepository.insert(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
             .thenReturn(Mono.empty());
-        when(haulCycleFsm.getState()).thenReturn(TruckState.LOAD);
-        when(registryClient.updateEquipmentState(truck.id, TruckState.LOAD)).thenReturn(Mono.empty());
+        when(haulCycleFsm.getTruckState()).thenReturn(Truck.STATE_LOAD);
+        when(registryClient.updateEquipmentState(truck.id, Truck.STATE_LOAD)).thenReturn(Mono.empty());
 
         // when
         sut.computeHaulCycles(truck, List.of(shovel)).block();
@@ -174,7 +174,7 @@ class HaulCycleServiceTests {
         verify(haulCycleFsm).consume(new EquipmentPayloadRecord(2, truck.id, 10_000, Instant.ofEpochSecond(3)));
         verify(haulCycleFsm).consume(new EquipmentPositionRecord(3, truck.id, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(4)));
         verify(haulCycleFsm).consume(new EquipmentPayloadRecord(3, truck.id, 20_000, Instant.ofEpochSecond(4)));
-        verify(haulCycleFsm).getState();
+        verify(haulCycleFsm).getTruckState();
         verify(haulCycleRepository).update(
             1,
             null,
@@ -197,7 +197,7 @@ class HaulCycleServiceTests {
             null,
             null,
             null);
-        verify(registryClient).updateEquipmentState(truck.id, TruckState.LOAD);
+        verify(registryClient).updateEquipmentState(truck.id, Truck.STATE_LOAD);
         verifyNoMoreInteractions(haulCycleRepository);
         verifyNoMoreInteractions(haulCycleFsmFactory);
         verifyNoMoreInteractions(haulCycleFsm);

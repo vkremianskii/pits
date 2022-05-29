@@ -2,8 +2,9 @@ package com.github.vkremianskii.pits.processes.logic.fsm;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
+import com.github.vkremianskii.pits.core.types.model.EquipmentState;
 import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
+import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
@@ -28,7 +29,7 @@ public class HaulCycleFsm {
     private final HaulCycleFsmSink haulCycleSink;
 
     private MutableHaulCycle haulCycle;
-    private TruckState state;
+    private EquipmentState truckState;
     private Double latitude;
     private Double longitude;
     private Integer payload;
@@ -46,10 +47,10 @@ public class HaulCycleFsm {
         if (haulCycle != null) {
             this.haulCycle = mutableHaulCycle(haulCycle);
             this.haulCycleSink.append(this.haulCycle);
-            this.state = truckStateFromHaulCycle(haulCycle);
+            this.truckState = truckStateFromHaulCycle(haulCycle);
         } else {
             this.haulCycle = null;
-            this.state = null;
+            this.truckState = null;
         }
         this.latitude = latitude;
         this.longitude = longitude;
@@ -60,7 +61,7 @@ public class HaulCycleFsm {
         final var timestamp = record.insertTimestamp();
         latitude = record.latitude();
         longitude = record.longitude();
-        if (state == null || state == TruckState.EMPTY) {
+        if (truckState == null || truckState == Truck.STATE_EMPTY) {
             for (final var shovelEntry : shovelToOrderedPositions.entrySet()) {
                 final var shovel = shovelEntry.getKey();
                 final var shovelPositions = shovelEntry.getValue();
@@ -71,7 +72,7 @@ public class HaulCycleFsm {
                     final var shovelLL = new LatLonPoint.Double(shovelPosition.latitude(), shovelPosition.longitude());
                     final var distance = distance(pointLL, shovelLL);
                     if (distance <= shovel.loadRadius) {
-                        state = TruckState.WAIT_LOAD;
+                        truckState = Truck.STATE_WAIT_LOAD;
                         if (haulCycle == null) {
                             haulCycle = new MutableHaulCycle();
                             haulCycleSink.append(haulCycle);
@@ -81,12 +82,12 @@ public class HaulCycleFsm {
                     }
                 }
             }
-        } else if (state == TruckState.LOAD) {
+        } else if (truckState == Truck.STATE_LOAD) {
             if (haulCycle != null) {
                 final var startLoadLL = new LatLonPoint.Double(haulCycle.startLoadLatitude, haulCycle.startLoadLongitude);
                 final var pointLL = new LatLonPoint.Double(latitude, longitude);
                 if (distance(startLoadLL, pointLL) > DEFAULT_SHOVEL_LOAD_RADIUS) {
-                    state = TruckState.HAUL;
+                    truckState = Truck.STATE_HAUL;
                     haulCycle.endLoadTimestamp = timestamp;
                     haulCycle.endLoadPayload = payload;
                 }
@@ -97,9 +98,9 @@ public class HaulCycleFsm {
     public void consume(EquipmentPayloadRecord record) {
         final var timestamp = record.insertTimestamp();
         payload = record.payload();
-        if (state == null || state == TruckState.EMPTY || state == TruckState.WAIT_LOAD) {
+        if (truckState == null || truckState == Truck.STATE_EMPTY || truckState == Truck.STATE_WAIT_LOAD) {
             if (payload > PAYLOAD_THRESHOLD) {
-                state = TruckState.LOAD;
+                truckState = Truck.STATE_LOAD;
                 if (haulCycle == null) {
                     haulCycle = new MutableHaulCycle();
                     haulCycleSink.append(haulCycle);
@@ -108,40 +109,40 @@ public class HaulCycleFsm {
                 haulCycle.startLoadLatitude = latitude;
                 haulCycle.startLoadLongitude = longitude;
             }
-        } else if (state == TruckState.HAUL) {
+        } else if (truckState == Truck.STATE_HAUL) {
             if (haulCycle != null && haulCycle.endLoadPayload - payload > PAYLOAD_THRESHOLD) {
-                state = TruckState.UNLOAD;
+                truckState = Truck.STATE_UNLOAD;
                 haulCycle.startUnloadTimestamp = timestamp;
             }
-        } else if (state == TruckState.UNLOAD) {
+        } else if (truckState == Truck.STATE_UNLOAD) {
             if (haulCycle != null && payload < PAYLOAD_THRESHOLD) {
-                state = TruckState.EMPTY;
+                truckState = Truck.STATE_EMPTY;
                 haulCycle.endUnloadTimestamp = timestamp;
                 haulCycle = null;
             }
         }
     }
 
-    public TruckState getState() {
-        return state;
+    public EquipmentState getTruckState() {
+        return truckState;
     }
 
     @Nullable
-    private static TruckState truckStateFromHaulCycle(HaulCycle haulCycle) {
+    private static EquipmentState truckStateFromHaulCycle(HaulCycle haulCycle) {
         if (haulCycle.endUnloadTimestamp() != null) {
-            return TruckState.EMPTY;
+            return Truck.STATE_EMPTY;
         }
         if (haulCycle.startUnloadTimestamp() != null) {
-            return TruckState.UNLOAD;
+            return Truck.STATE_UNLOAD;
         }
         if (haulCycle.endLoadTimestamp() != null) {
-            return TruckState.HAUL;
+            return Truck.STATE_HAUL;
         }
         if (haulCycle.startLoadTimestamp() != null) {
-            return TruckState.LOAD;
+            return Truck.STATE_LOAD;
         }
         if (haulCycle.waitLoadTimestamp() != null) {
-            return TruckState.WAIT_LOAD;
+            return Truck.STATE_WAIT_LOAD;
         }
         return null;
     }
