@@ -8,6 +8,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -44,19 +45,20 @@ public class LocationRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
+        return Mono.from(dslContext.deleteFrom(TABLE)).then();
     }
 
     public Mono<List<LocationDeclaration>> getLocations() {
-        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .fetch(r -> r.map(LocationRepository::locationDeclarationFromRecord)));
+        return Flux.from(dslContext.selectFrom(TABLE))
+            .map(r -> r.map(LocationRepository::locationDeclarationFromRecord))
+            .collectList();
     }
 
     public Mono<Void> createLocation(LocationId id, String name, LocationType type) {
-        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
-            .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE)
-            .values(id.value, name, valueFromType(type))
-            .execute());
+        return Mono.from(dslContext.insertInto(TABLE)
+                .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE)
+                .values(id.value, name, valueFromType(type)))
+            .then();
     }
 
     private static LocationDeclaration locationDeclarationFromRecord(org.jooq.Record record) {

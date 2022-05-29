@@ -1,9 +1,9 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:test;MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE
+  flyway:
+    url: jdbc:h2:mem:test;DATABASE_TO_UPPER=FALSE;DB_CLOSE_DELAY=-1
+  r2dbc:
+    url: r2dbc:h2:mem:///test
   rabbitmq:
     listener:
       simple:
         auto-startup: false
-
-debug: true

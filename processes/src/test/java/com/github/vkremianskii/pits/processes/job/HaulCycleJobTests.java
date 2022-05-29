@@ -3,8 +3,10 @@ package com.github.vkremianskii.pits.processes.job;
 import com.github.vkremianskii.pits.processes.logic.HaulCycleService;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import com.github.vkremianskii.pits.registry.types.dto.EquipmentResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.ReactiveTransaction;
+import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -24,8 +26,18 @@ class HaulCycleJobTests {
 
     RegistryClient registryClient = mock(RegistryClient.class);
     HaulCycleService haulCycleService = mock(HaulCycleService.class);
-    PlatformTransactionManager transactionManager = mock(PlatformTransactionManager.class);
+    ReactiveTransactionManager transactionManager = mock(ReactiveTransactionManager.class);
     HaulCycleJob sut = new HaulCycleJob(registryClient, haulCycleService, transactionManager);
+
+    @BeforeEach
+    void setup() {
+        when(transactionManager.getReactiveTransaction(any()))
+            .thenReturn(Mono.just(mock(ReactiveTransaction.class)));
+        when(transactionManager.commit(any()))
+            .thenReturn(Mono.empty());
+        when(transactionManager.rollback(any()))
+            .thenReturn(Mono.empty());
+    }
 
     @Test
     void should_compute_haul_cycles_for_all_trucks() {

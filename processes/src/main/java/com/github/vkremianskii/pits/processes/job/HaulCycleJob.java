@@ -8,15 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.github.vkremianskii.pits.core.types.model.EquipmentType.SHOVEL;
 import static com.github.vkremianskii.pits.core.types.model.EquipmentType.TRUCK;
 import static java.util.Objects.requireNonNull;
-import static org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW;
 
 @Component
 public class HaulCycleJob {
@@ -25,11 +23,11 @@ public class HaulCycleJob {
 
     private final RegistryClient registryClient;
     private final HaulCycleService haulCycleService;
-    private final PlatformTransactionManager transactionManager;
+    private final ReactiveTransactionManager transactionManager;
 
     public HaulCycleJob(RegistryClient registryClient,
                         HaulCycleService haulCycleService,
-                        PlatformTransactionManager transactionManager) {
+                        ReactiveTransactionManager transactionManager) {
         this.registryClient = requireNonNull(registryClient);
         this.haulCycleService = requireNonNull(haulCycleService);
         this.transactionManager = requireNonNull(transactionManager);
@@ -51,13 +49,9 @@ public class HaulCycleJob {
                 return Flux.fromIterable(trucks)
                     .flatMap(truck -> {
                         LOG.info("Computing truck '{}' haul cycles", truck.id);
-                        final var txDefinition = new DefaultTransactionDefinition(PROPAGATION_REQUIRES_NEW);
-                        final var txStatus = transactionManager.getTransaction(txDefinition);
                         return haulCycleService.computeHaulCycles(truck, shovels)
-                            .doOnSuccess(__ -> transactionManager.commit(txStatus))
                             .onErrorResume(e -> {
-                                LOG.error("Error while computing truck '" + truck.id + "' haul cycles", e);
-                                transactionManager.rollback(txStatus);
+                                LOG.error("Error while computing haul cycles for truck: " + truck.id, e);
                                 return Mono.empty();
                             });
                     })

@@ -11,6 +11,7 @@ dependencies {
     implementation project(':registry:registry-client')
 
     runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:r2dbc-postgresql'
     runtimeOnly 'org.flywaydb:flyway-core'
 
     testImplementation project(path: ':core:core-amqp', configuration: 'testApi')
@@ -21,4 +22,5 @@ dependencies {
     testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
 
     testRuntimeOnly 'com.h2database:h2'
+    testRuntimeOnly 'io.r2dbc:r2dbc-h2'
 }

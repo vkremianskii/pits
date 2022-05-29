@@ -2,8 +2,12 @@ server:
   port: 8080
 
 spring:
-  datasource:
+  flyway:
     url: jdbc:postgresql://localhost:5432/registry
+    user: registry
+    password: registry
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/registry
     username: registry
     password: registry
   rabbitmq:

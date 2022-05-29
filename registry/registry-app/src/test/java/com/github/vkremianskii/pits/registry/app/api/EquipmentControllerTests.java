@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.transaction.PlatformTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -36,18 +35,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@WebFluxTest
+@WebFluxTest(controllers = EquipmentController.class)
 @Import(CoreWebAutoConfiguration.class)
 class EquipmentControllerTests {
 
     @MockBean
     EquipmentRepository equipmentRepository;
-    @MockBean
-    LocationRepository locationRepository;
-    @MockBean
-    LocationPointRepository locationPointRepository;
-    @MockBean
-    PlatformTransactionManager transactionManager;
     @Autowired
     WebTestClient webClient;
 

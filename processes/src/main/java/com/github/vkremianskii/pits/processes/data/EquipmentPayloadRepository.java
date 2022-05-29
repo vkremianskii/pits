@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.sql.Timestamp;
@@ -35,44 +36,49 @@ public class EquipmentPayloadRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
+        return Mono.from(dslContext.deleteFrom(TABLE)).then();
     }
 
     public Mono<Void> insert(EquipmentId equipmentId, int payload) {
-        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
-            .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD)
-            .values(equipmentId.value, payload)
-            .execute());
+        return Mono.from(dslContext.insertInto(TABLE)
+                .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD)
+                .values(equipmentId.value, payload))
+            .then();
     }
 
     public Mono<Void> insert(EquipmentId equipmentId, int payload, Instant insertTimestamp) {
-        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
-            .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD, FIELD_INSERT_TIMESTAMP)
-            .values(equipmentId.value, payload, Timestamp.from(insertTimestamp))
-            .execute());
+        return Mono.from(dslContext.insertInto(TABLE)
+                .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD, FIELD_INSERT_TIMESTAMP)
+                .values(equipmentId.value, payload, Timestamp.from(insertTimestamp)))
+            .then();
     }
 
     public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipment(EquipmentId equipmentId) {
-        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value))
-            .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-            .limit(1)
-            .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)));
+        return Mono.from(dslContext.selectFrom(TABLE)
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                .limit(1))
+            .map(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord))
+            .map(Optional::of)
+            .switchIfEmpty(Mono.just(Optional.empty()));
     }
 
     public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipmentBefore(EquipmentId equipmentId, Instant timestamp) {
-        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
-            .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-            .limit(1)
-            .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)));
+        return Mono.from(dslContext.selectFrom(TABLE)
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
+                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                .limit(1))
+            .map(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord))
+            .map(Optional::of)
+            .switchIfEmpty(Mono.just(Optional.empty()));
     }
 
     public Mono<List<EquipmentPayloadRecord>> getRecordsForEquipmentAfter(EquipmentId equipmentId, Instant timestamp) {
-        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
-            .orderBy(FIELD_INSERT_TIMESTAMP)
-            .fetch(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)));
+        return Flux.from(dslContext.selectFrom(TABLE)
+                .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
+                .orderBy(FIELD_INSERT_TIMESTAMP))
+            .map(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord))
+            .collectList();
     }
 
     private static EquipmentPayloadRecord recordFromJooqRecord(org.jooq.Record record) {

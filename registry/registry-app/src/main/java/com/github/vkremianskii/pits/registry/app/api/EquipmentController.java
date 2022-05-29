@@ -1,6 +1,5 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.core.types.model.EquipmentState;
 import com.github.vkremianskii.pits.core.types.model.EquipmentType;
@@ -38,12 +37,9 @@ import static java.util.Objects.requireNonNull;
 public class EquipmentController {
 
     private final EquipmentRepository equipmentRepository;
-    private final ObjectMapper objectMapper;
 
-    public EquipmentController(EquipmentRepository equipmentRepository,
-                               ObjectMapper objectMapper) {
+    public EquipmentController(EquipmentRepository equipmentRepository) {
         this.equipmentRepository = requireNonNull(equipmentRepository);
-        this.objectMapper = requireNonNull(objectMapper);
     }
 
     @GetMapping

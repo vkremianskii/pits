@@ -9,12 +9,11 @@ import com.github.vkremianskii.pits.core.types.model.location.Hole;
 import com.github.vkremianskii.pits.core.types.model.location.Stockpile;
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
+import com.github.vkremianskii.pits.registry.app.logic.LocationService;
 import com.github.vkremianskii.pits.registry.types.dto.CreateLocationRequest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateLocationResponse;
 import com.github.vkremianskii.pits.registry.types.dto.LocationsResponse;
 import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,29 +23,25 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.IntStream;
 
 import static com.github.vkremianskii.pits.core.types.Pair.pair;
-import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW;
 
 @RestController
 @RequestMapping("/location")
 public class LocationController {
 
+    private final LocationService locationService;
     private final LocationRepository locationRepository;
     private final LocationPointRepository locationPointRepository;
-    private final PlatformTransactionManager transactionManager;
 
-    public LocationController(LocationRepository locationRepository,
-                              LocationPointRepository locationPointRepository,
-                              PlatformTransactionManager transactionManager) {
+    public LocationController(LocationService locationService,
+                              LocationRepository locationRepository,
+                              LocationPointRepository locationPointRepository) {
+        this.locationService = requireNonNull(locationService);
         this.locationRepository = requireNonNull(locationRepository);
         this.locationPointRepository = requireNonNull(locationPointRepository);
-        this.transactionManager = requireNonNull(transactionManager);
     }
 
     @GetMapping
@@ -64,24 +59,8 @@ public class LocationController {
 
     @PostMapping
     public Mono<CreateLocationResponse> createLocation(@RequestBody CreateLocationRequest request) {
-        final var locationId = locationId(UUID.randomUUID());
-        final var indexedPoints = IntStream.range(0, request.geometry().size())
-            .mapToObj(i -> pair(i, request.geometry().get(i)))
-            .toList();
-        final var txDefinition = new DefaultTransactionDefinition(PROPAGATION_REQUIRES_NEW);
-        final var txStatus = transactionManager.getTransaction(txDefinition);
-
-        return locationRepository.createLocation(locationId, request.name(), request.type())
-            .then(Flux.fromIterable(indexedPoints)
-                .flatMap(pair -> locationPointRepository.createLocationPoint(
-                    locationId,
-                    pair.left(),
-                    pair.right().latitude(),
-                    pair.right().longitude()))
-                .then())
-            .thenReturn(new CreateLocationResponse(locationId))
-            .doOnSuccess(__ -> transactionManager.commit(txStatus))
-            .doOnError(__ -> transactionManager.rollback(txStatus));
+        return locationService.createLocation(request.name(), request.type(), request.geometry())
+            .map(CreateLocationResponse::new);
     }
 
     private static Location location(LocationDeclaration declaration, List<LocationPoint> points) {

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -55,6 +56,7 @@ public class HaulCycleService {
         this.haulCycleFsmFactory = requireNonNull(haulCycleFsmFactory);
     }
 
+    @Transactional
     public Mono<Void> computeHaulCycles(Truck truck, List<Shovel> shovels) {
         return haulCycleRepository.getLastHaulCycleForTruck(truck.id)
             .flatMap(c -> computeHaulCycles(truck, shovels, c.orElse(null)));

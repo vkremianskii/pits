@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -33,24 +34,25 @@ public class LocationPointRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
+        return Mono.from(dslContext.deleteFrom(TABLE)).then();
     }
 
     public Mono<List<LocationPoint>> getPointsByLocationId(LocationId locationId) {
-        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
+        return Flux.from(dslContext.selectFrom(TABLE)
                 .where(FIELD_LOCATION_ID.eq(locationId.value))
-                .orderBy(FIELD_POINT_ORDER)
-                .fetch(r -> r.map(LocationPointRepository::locationPointFromRecord)));
+                .orderBy(FIELD_POINT_ORDER))
+            .map(r -> r.map(LocationPointRepository::locationPointFromRecord))
+            .collectList();
     }
 
     public Mono<Void> createLocationPoint(LocationId locationId,
                                           int order,
                                           double latitude,
                                           double longitude) {
-        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
+        return Mono.from(dslContext.insertInto(TABLE)
                 .columns(FIELD_LOCATION_ID, FIELD_POINT_ORDER, FIELD_LATITUDE, FIELD_LONGITUDE)
-                .values(locationId.value, (short) order, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude))
-                .execute());
+                .values(locationId.value, (short) order, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude)))
+            .then();
     }
 
     private static LocationPoint locationPointFromRecord(org.jooq.Record record) {

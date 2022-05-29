@@ -3,9 +3,9 @@ package com.github.vkremianskii.pits.registry.app.api;
 import com.github.vkremianskii.pits.core.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.core.types.model.LocationPoint;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
-import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
+import com.github.vkremianskii.pits.registry.app.logic.LocationService;
 import com.github.vkremianskii.pits.registry.types.dto.CreateLocationRequest;
 import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
 import org.junit.jupiter.api.Test;
@@ -14,37 +14,32 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.transaction.PlatformTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.github.vkremianskii.pits.core.types.TestLocations.randomLocationId;
+import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
 import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.core.types.model.LocationType.FACE;
 import static com.github.vkremianskii.pits.core.types.model.LocationType.HOLE;
 import static com.github.vkremianskii.pits.core.types.model.LocationType.STOCKPILE;
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@WebFluxTest
+@WebFluxTest(controllers = LocationController.class)
 @Import(CoreWebAutoConfiguration.class)
 class LocationControllerTests {
 
     @MockBean
-    EquipmentRepository equipmentRepository;
+    LocationService locationService;
     @MockBean
     LocationRepository locationRepository;
     @MockBean
     LocationPointRepository locationPointRepository;
-    @MockBean
-    PlatformTransactionManager transactionManager;
     @Autowired
     WebTestClient webClient;
 
@@ -104,18 +99,8 @@ class LocationControllerTests {
     @Test
     void should_create_locations() {
         // given
-        when(locationRepository.createLocation(any(), any(), same(DUMP)))
-            .thenReturn(Mono.empty());
-        when(locationPointRepository.createLocationPoint(any(), eq(0), eq(41.1494512), eq(-8.6107884)))
-            .thenReturn(Mono.empty());
-        when(locationPointRepository.createLocationPoint(any(), eq(1), eq(41.1494512), eq(-8.6107884)))
-            .thenReturn(Mono.empty());
-        when(locationRepository.createLocation(any(), any(), same(FACE)))
-            .thenReturn(Mono.empty());
-        when(locationRepository.createLocation(any(), any(), same(HOLE)))
-            .thenReturn(Mono.empty());
-        when(locationRepository.createLocation(any(), any(), same(STOCKPILE)))
-            .thenReturn(Mono.empty());
+        when(locationService.createLocation(any(), any(), any()))
+            .thenReturn(Mono.defer(() -> Mono.just(locationId(UUID.randomUUID()))));
 
         // expect
         webClient.post()
@@ -149,6 +134,5 @@ class LocationControllerTests {
             .exchange()
             .expectStatus().isOk()
             .expectBody().jsonPath("$.locationId").isNotEmpty();
-        verify(transactionManager, times(4)).commit(any());
     }
 }

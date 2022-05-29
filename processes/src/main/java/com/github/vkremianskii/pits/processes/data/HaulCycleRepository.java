@@ -44,7 +44,7 @@ public class HaulCycleRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
+        return Mono.from(dslContext.deleteFrom(TABLE)).then();
     }
 
     public Mono<Void> insert(EquipmentId truckId,
@@ -57,30 +57,30 @@ public class HaulCycleRepository {
                              @Nullable Integer endLoadPayload,
                              @Nullable Instant startUnloadTimestamp,
                              @Nullable Instant endUnloadTimestamp) {
-        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
-            .columns(
-                FIELD_TRUCK_ID,
-                FIELD_SHOVEL_ID,
-                FIELD_WAIT_LOAD_TIMESTAMP,
-                FIELD_START_LOAD_TIMESTAMP,
-                FIELD_START_LOAD_LATITUDE,
-                FIELD_START_LOAD_LONGITUDE,
-                FIELD_END_LOAD_TIMESTAMP,
-                FIELD_END_LOAD_PAYLOAD,
-                FIELD_START_UNLOAD_TIMESTAMP,
-                FIELD_END_UNLOAD_TIMESTAMP)
-            .values(
-                truckId.value,
-                shovelId != null ? shovelId.value : null,
-                Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null),
-                Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null),
-                Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null),
-                Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null),
-                Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null),
-                endLoadPayload,
-                Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null),
-                Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
-            .execute());
+        return Mono.from(dslContext.insertInto(TABLE)
+                .columns(
+                    FIELD_TRUCK_ID,
+                    FIELD_SHOVEL_ID,
+                    FIELD_WAIT_LOAD_TIMESTAMP,
+                    FIELD_START_LOAD_TIMESTAMP,
+                    FIELD_START_LOAD_LATITUDE,
+                    FIELD_START_LOAD_LONGITUDE,
+                    FIELD_END_LOAD_TIMESTAMP,
+                    FIELD_END_LOAD_PAYLOAD,
+                    FIELD_START_UNLOAD_TIMESTAMP,
+                    FIELD_END_UNLOAD_TIMESTAMP)
+                .values(
+                    truckId.value,
+                    shovelId != null ? shovelId.value : null,
+                    Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null),
+                    Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null),
+                    Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null),
+                    Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null),
+                    Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null),
+                    endLoadPayload,
+                    Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null),
+                    Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null)))
+            .then();
     }
 
     public Mono<Void> update(long haulCycleId,
@@ -93,26 +93,28 @@ public class HaulCycleRepository {
                              @Nullable Integer endLoadPayload,
                              @Nullable Instant startUnloadTimestamp,
                              @Nullable Instant endUnloadTimestamp) {
-        return Mono.fromRunnable(() -> dslContext.update(TABLE)
-            .set(FIELD_SHOVEL_ID, shovelId != null ? shovelId.value : null)
-            .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
-            .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
-            .set(FIELD_START_LOAD_LATITUDE, Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null))
-            .set(FIELD_START_LOAD_LONGITUDE, Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null))
-            .set(FIELD_END_LOAD_TIMESTAMP, Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null))
-            .set(FIELD_END_LOAD_PAYLOAD, endLoadPayload)
-            .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
-            .set(FIELD_END_UNLOAD_TIMESTAMP, Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
-            .where(FIELD_ID.eq(haulCycleId))
-            .execute());
+        return Mono.from(dslContext.update(TABLE)
+                .set(FIELD_SHOVEL_ID, shovelId != null ? shovelId.value : null)
+                .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_START_LOAD_LATITUDE, Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null))
+                .set(FIELD_START_LOAD_LONGITUDE, Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null))
+                .set(FIELD_END_LOAD_TIMESTAMP, Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_END_LOAD_PAYLOAD, endLoadPayload)
+                .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_END_UNLOAD_TIMESTAMP, Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
+                .where(FIELD_ID.eq(haulCycleId)))
+            .then();
     }
 
     public Mono<Optional<HaulCycle>> getLastHaulCycleForTruck(EquipmentId truckId) {
-        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
+        return Mono.from(dslContext.selectFrom(TABLE)
                 .where(FIELD_TRUCK_ID.eq(truckId.value))
                 .orderBy(FIELD_INSERT_TIMESTAMP.desc())
-                .limit(1)
-                .fetchOptional(r -> r.map(HaulCycleRepository::haulCycleFromRecord)));
+                .limit(1))
+            .map(r -> r.map(HaulCycleRepository::haulCycleFromRecord))
+            .map(Optional::of)
+            .switchIfEmpty(Mono.just(Optional.empty()));
     }
 
     private static HaulCycle haulCycleFromRecord(org.jooq.Record record) {

@@ -2,8 +2,12 @@ server:
   port: 8081
 
 spring:
-  datasource:
+  flyway:
     url: jdbc:postgresql://localhost:5432/processes
+    user: processes
+    password: processes
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/processes
     username: processes
     password: processes
   rabbitmq:

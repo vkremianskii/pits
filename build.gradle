@@ -24,6 +24,8 @@ subprojects {
         testApi.extendsFrom testImplementation
     }
 
+    ext['jooq.version'] = "${jooqVersion}"
+
     dependencyManagement {
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"

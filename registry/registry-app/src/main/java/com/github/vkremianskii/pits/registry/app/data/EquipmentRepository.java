@@ -14,6 +14,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -71,48 +72,51 @@ public class EquipmentRepository {
     }
 
     public Mono<Void> clear() {
-        return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
+        return Mono.from(dslContext.deleteFrom(TABLE)).then();
     }
 
     public Mono<List<Equipment>> getEquipment() {
-        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .fetch(r -> r.map(EquipmentRepository::equipmentFromRecord)));
+        return Flux.from(dslContext.selectFrom(TABLE))
+            .map(r -> r.map(EquipmentRepository::equipmentFromRecord))
+            .collectList();
     }
 
     public Mono<Optional<Equipment>> getEquipmentById(EquipmentId equipmentId) {
-        return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .where(FIELD_ID.eq(equipmentId.value))
-            .fetchOptional(r -> r.map(EquipmentRepository::equipmentFromRecord)));
+        return Mono.from(dslContext.selectFrom(TABLE)
+                .where(FIELD_ID.eq(equipmentId.value)))
+            .map(r -> r.map(EquipmentRepository::equipmentFromRecord))
+            .map(Optional::of)
+            .switchIfEmpty(Mono.just(Optional.empty()));
     }
 
     public Mono<Void> createEquipment(EquipmentId id, String name, EquipmentType type, Short loadRadius) {
-        return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
-            .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-            .values(id.value, name, valueFromType(type), loadRadius)
-            .execute());
+        return Mono.from(dslContext.insertInto(TABLE)
+                .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
+                .values(id.value, name, valueFromType(type), loadRadius))
+            .then();
     }
 
     public Mono<Void> updateEquipmentState(EquipmentId equipmentId, EquipmentState state) {
-        return Mono.fromRunnable(() -> dslContext.update(TABLE)
-            .set(FIELD_STATE, valueFromState(state))
-            .where(FIELD_ID.eq(equipmentId.value))
-            .execute());
+        return Mono.from(dslContext.update(TABLE)
+                .set(FIELD_STATE, valueFromState(state))
+                .where(FIELD_ID.eq(equipmentId.value)))
+            .then();
     }
 
     public Mono<Void> updateEquipmentPosition(EquipmentId equipmentId, Position position) {
-        return Mono.fromRunnable(() -> dslContext.update(TABLE)
-            .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
-            .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
-            .set(FIELD_ELEVATION, (short) position.elevation())
-            .where(FIELD_ID.eq(equipmentId.value))
-            .execute());
+        return Mono.from(dslContext.update(TABLE)
+                .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
+                .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
+                .set(FIELD_ELEVATION, (short) position.elevation())
+                .where(FIELD_ID.eq(equipmentId.value)))
+            .then();
     }
 
     public Mono<Void> updateEquipmentPayload(EquipmentId equipmentId, int payload) {
-        return Mono.fromRunnable(() -> dslContext.update(TABLE)
-            .set(FIELD_PAYLOAD, payload)
-            .where(FIELD_ID.eq(equipmentId.value))
-            .execute());
+        return Mono.from(dslContext.update(TABLE)
+                .set(FIELD_PAYLOAD, payload)
+                .where(FIELD_ID.eq(equipmentId.value)))
+            .then();
     }
 
     private static Equipment equipmentFromRecord(org.jooq.Record record) {
