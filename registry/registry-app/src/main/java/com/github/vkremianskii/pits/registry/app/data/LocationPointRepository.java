@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
 import com.github.vkremianskii.pits.core.types.model.LocationId;
-import com.github.vkremianskii.pits.registry.types.model.LocationPoint;
+import com.github.vkremianskii.pits.core.types.model.LocationPoint;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;

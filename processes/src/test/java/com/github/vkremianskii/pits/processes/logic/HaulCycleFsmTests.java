@@ -1,12 +1,12 @@
 package com.github.vkremianskii.pits.processes.logic;
 
+import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
+import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import com.github.vkremianskii.pits.processes.logic.fsm.HaulCycleFsm;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
 import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.UUID;
 
-import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.aShovel;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HaulCycleFsmTests {
@@ -41,7 +41,7 @@ class HaulCycleFsmTests {
     @Test
     void should_compute_haul_cycles__cold_start() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
         var shovelToOrderedPositions = new HashMap<Shovel, SortedMap<Instant, EquipmentPositionRecord>>();
         var haulCycles = new ArrayList<MutableHaulCycle>();
         var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
@@ -75,8 +75,8 @@ class HaulCycleFsmTests {
     @Test
     void should_compute_haul_cycles__from_existing() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
-        var shovelId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
+        var shovelId = randomEquipmentId();
         var shovelToOrderedPositions = new HashMap<Shovel, SortedMap<Instant, EquipmentPositionRecord>>();
         var haulCycles = new ArrayList<MutableHaulCycle>();
         var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
@@ -135,19 +135,17 @@ class HaulCycleFsmTests {
     @Test
     void should_compute_haul_cycles__shovels() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
-        var shovel1Id = equipmentId(UUID.randomUUID());
-        var shovel2Id = equipmentId(UUID.randomUUID());
-        var shovel1 = new Shovel(shovel1Id, "Shovel No.1", 20, null, null);
-        var shovel2 = new Shovel(shovel2Id, "Shovel No.2", 20, null, null);
+        var truckId = randomEquipmentId();
+        var shovel1 = aShovel();
+        var shovel2 = aShovel();
         var shovelToOrderedPositions = Map.of(
             shovel1, new TreeMap<>(Map.of(
                 Instant.ofEpochSecond(2),
-                new EquipmentPositionRecord(5, shovel1Id, 41.149320, -8.610143, 86, Instant.ofEpochSecond(2))
+                new EquipmentPositionRecord(5, shovel1.id, 41.149320, -8.610143, 86, Instant.ofEpochSecond(2))
             )),
             shovel2, new TreeMap<>(Map.of(
                 Instant.ofEpochSecond(7),
-                new EquipmentPositionRecord(6, shovel2Id, 41.149017, -8.610865, 86, Instant.ofEpochSecond(7))
+                new EquipmentPositionRecord(6, shovel2.id, 41.149017, -8.610865, 86, Instant.ofEpochSecond(7))
             )));
         var haulCycles = new ArrayList<MutableHaulCycle>();
         var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
@@ -166,7 +164,7 @@ class HaulCycleFsmTests {
         assertThat(haulCycles).containsExactlyInAnyOrder(
             new MutableHaulCycle(
                 null,
-                shovel1Id,
+                shovel1.id,
                 Instant.ofEpochSecond(3),
                 Instant.ofEpochSecond(4),
                 41.149343,
@@ -177,7 +175,7 @@ class HaulCycleFsmTests {
                 Instant.ofEpochSecond(7)),
             new MutableHaulCycle(
                 null,
-                shovel2Id,
+                shovel2.id,
                 Instant.ofEpochSecond(8),
                 null,
                 null,

@@ -1,6 +1,5 @@
-package com.github.vkremianskii.pits.registry.types.model;
+package com.github.vkremianskii.pits.core.types.model;
 
-import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;

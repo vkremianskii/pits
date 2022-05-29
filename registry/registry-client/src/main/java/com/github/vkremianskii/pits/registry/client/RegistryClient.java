@@ -1,6 +1,10 @@
 package com.github.vkremianskii.pits.registry.client;
 
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
+import com.github.vkremianskii.pits.core.types.model.EquipmentState;
+import com.github.vkremianskii.pits.core.types.model.EquipmentType;
+import com.github.vkremianskii.pits.core.types.model.LatLngPoint;
+import com.github.vkremianskii.pits.core.types.model.LocationType;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.dto.CreateLocationRequest;
@@ -9,10 +13,6 @@ import com.github.vkremianskii.pits.registry.types.dto.EquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.dto.LocationsResponse;
 import com.github.vkremianskii.pits.registry.types.dto.UpdateEquipmentStateRequest;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
-import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
-import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
-import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
-import com.github.vkremianskii.pits.registry.types.model.LocationType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 

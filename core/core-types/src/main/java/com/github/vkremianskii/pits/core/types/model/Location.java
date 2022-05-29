@@ -1,6 +1,4 @@
-package com.github.vkremianskii.pits.registry.types.model;
-
-import com.github.vkremianskii.pits.core.types.model.LocationId;
+package com.github.vkremianskii.pits.core.types.model;
 
 import java.util.List;
 import java.util.Objects;

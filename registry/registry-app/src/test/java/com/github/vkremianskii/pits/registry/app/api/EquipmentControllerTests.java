@@ -1,15 +1,11 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
+import com.github.vkremianskii.pits.core.types.model.Position;
+import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
-import com.github.vkremianskii.pits.registry.types.model.Position;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Drill;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
-import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -21,13 +17,16 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.aDozer;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.aDrill;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.aShovel;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.aTruck;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.core.types.model.equipment.TruckState.HAUL;
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
-import static com.github.vkremianskii.pits.registry.types.model.equipment.TruckState.HAUL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -56,35 +55,35 @@ class EquipmentControllerTests {
     @Test
     void should_get_equipment__v1() {
         // given
-        var dozerId = equipmentId(UUID.randomUUID());
-        var drillId = equipmentId(UUID.randomUUID());
-        var shovelId = equipmentId(UUID.randomUUID());
-        var truckId = equipmentId(UUID.randomUUID());
+        var dozer = aDozer();
+        var drill = aDrill();
+        var shovel = aShovel();
+        var truck = aTruck(HAUL, new Position(41.1494512, -8.6107884, 86), 10);
         when(equipmentRepository.getEquipment())
-            .thenReturn(Mono.just(List.of(
-                new Dozer(dozerId, "Dozer No.1", null, null),
-                new Drill(drillId, "Drill No.1", null, null),
-                new Shovel(shovelId, "Shovel No.1", 20, null, null),
-                new Truck(truckId, "Truck No.1", HAUL, new Position(41.1494512, -8.6107884, 86), 10))));
+            .thenReturn(Mono.just(List.of(dozer, drill, shovel, truck)));
 
         // expect
         webClient.get()
             .uri("/equipment")
             .exchange()
             .expectStatus().isOk()
-            .expectBody().json("""
+            .expectBody().json(String.format("""
                 [{
-                    "name": "Dozer No.1",
+                    "id": "%s",
+                    "name": "%s",
                     "type": "DOZER"
                 },{
-                    "name": "Drill No.1",
+                    "id": "%s",
+                    "name": "%s",
                     "type": "DRILL"
                 },{
-                    "name": "Shovel No.1",
+                    "id": "%s",
+                    "name": "%s",
                     "type": "SHOVEL",
                     "loadRadius": 20
                 },{
-                    "name": "Truck No.1",
+                    "id": "%s",
+                    "name": "%s",
                     "type": "TRUCK",
                     "state": "HAUL",
                     "position": {
@@ -94,22 +93,18 @@ class EquipmentControllerTests {
                     },
                     "payload": 10
                 }]
-                """);
+                """, dozer.id, dozer.name, drill.id, drill.name, shovel.id, shovel.name, truck.id, truck.name));
     }
 
     @Test
     void should_get_equipment__v2() {
         // given
-        var dozerId = equipmentId(UUID.randomUUID());
-        var drillId = equipmentId(UUID.randomUUID());
-        var shovelId = equipmentId(UUID.randomUUID());
-        var truckId = equipmentId(UUID.randomUUID());
+        var dozer = aDozer();
+        var drill = aDrill();
+        var shovel = aShovel();
+        var truck = aTruck(HAUL, new Position(41.1494512, -8.6107884, 86), 10);
         when(equipmentRepository.getEquipment())
-            .thenReturn(Mono.just(List.of(
-                new Dozer(dozerId, "Dozer No.1", null, null),
-                new Drill(drillId, "Drill No.1", null, null),
-                new Shovel(shovelId, "Shovel No.1", 20, null, null),
-                new Truck(truckId, "Truck No.1", HAUL, new Position(41.1494512, -8.6107884, 86), 10))));
+            .thenReturn(Mono.just(List.of(dozer, drill, shovel, truck)));
 
         // expect
         webClient.get()
@@ -117,20 +112,24 @@ class EquipmentControllerTests {
             .header(API_VERSION, EQUIPMENT_RESPONSE_OBJECT.toString())
             .exchange()
             .expectStatus().isOk()
-            .expectBody().json("""
+            .expectBody().json(String.format("""
                 {
                     "equipment": [{
-                        "name": "Dozer No.1",
+                        "id": "%s",
+                        "name": "%s",
                         "type": "DOZER"
                     },{
-                        "name": "Drill No.1",
+                        "id": "%s",
+                        "name": "%s",
                         "type": "DRILL"
                     },{
-                        "name": "Shovel No.1",
+                        "id": "%s",
+                        "name": "%s",
                         "type": "SHOVEL",
                         "loadRadius": 20
                     },{
-                        "name": "Truck No.1",
+                        "id": "%s",
+                        "name": "%s",
                         "type": "TRUCK",
                         "state": "HAUL",
                         "position": {
@@ -141,7 +140,7 @@ class EquipmentControllerTests {
                         "payload": 10
                     }]
                 }
-                """);
+                """, dozer.id, dozer.name, drill.id, drill.name, shovel.id, shovel.name, truck.id, truck.name));
     }
 
     @Test
@@ -192,15 +191,15 @@ class EquipmentControllerTests {
     @Test
     void should_update_equipment_state() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
-        when(equipmentRepository.getEquipmentById(truckId))
-            .thenReturn(Mono.just(Optional.of(new Truck(truckId, "Truck No.1", null, null, null))));
-        when(equipmentRepository.updateEquipmentState(truckId, TruckState.EMPTY))
+        var truck = aTruck();
+        when(equipmentRepository.getEquipmentById(truck.id))
+            .thenReturn(Mono.just(Optional.of(truck)));
+        when(equipmentRepository.updateEquipmentState(truck.id, TruckState.EMPTY))
             .thenReturn(Mono.empty());
 
         // expect
         webClient.post()
-            .uri("/equipment/{id}/state", truckId)
+            .uri("/equipment/{id}/state", truck.id)
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -209,13 +208,13 @@ class EquipmentControllerTests {
                 """)
             .exchange()
             .expectStatus().isOk();
-        verify(equipmentRepository).updateEquipmentState(truckId, TruckState.EMPTY);
+        verify(equipmentRepository).updateEquipmentState(truck.id, TruckState.EMPTY);
     }
 
     @Test
     void should_update_equipment_state__equipment_not_found() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
         when(equipmentRepository.getEquipmentById(truckId))
             .thenReturn(Mono.just(Optional.empty()));
 
@@ -237,13 +236,13 @@ class EquipmentControllerTests {
     @Test
     void should_update_equipment_state__invalid_state() {
         // given
-        var dozerId = equipmentId(UUID.randomUUID());
-        when(equipmentRepository.getEquipmentById(dozerId))
-            .thenReturn(Mono.just(Optional.of(new Dozer(dozerId, "Dozer No.1", null, null))));
+        var dozer = aDozer();
+        when(equipmentRepository.getEquipmentById(dozer.id))
+            .thenReturn(Mono.just(Optional.of(dozer)));
 
         // expect
         webClient.post()
-            .uri("/equipment/{id}/state", dozerId)
+            .uri("/equipment/{id}/state", dozer.id)
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -252,7 +251,7 @@ class EquipmentControllerTests {
                 """)
             .exchange()
             .expectStatus().isEqualTo(BAD_REQUEST);
-        verify(equipmentRepository).getEquipmentById(dozerId);
+        verify(equipmentRepository).getEquipmentById(dozer.id);
         verifyNoMoreInteractions(equipmentRepository);
     }
 }

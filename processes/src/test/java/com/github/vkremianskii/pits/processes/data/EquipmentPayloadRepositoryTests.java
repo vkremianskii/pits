@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
-import java.util.UUID;
 
-import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -20,7 +19,7 @@ class EquipmentPayloadRepositoryTests {
     @Test
     void should_insert_and_get_last_record() {
         // when
-        var equipmentId = equipmentId(UUID.randomUUID());
+        var equipmentId = randomEquipmentId();
         sut.insert(equipmentId, 10).block();
         var record = sut.getLastRecordForEquipment(equipmentId).block();
 
@@ -34,7 +33,7 @@ class EquipmentPayloadRepositoryTests {
     @Test
     void should_insert_and_get_last_record_before() {
         // when
-        var equipmentId = equipmentId(UUID.randomUUID());
+        var equipmentId = randomEquipmentId();
         sut.insert(equipmentId, 5, Instant.ofEpochSecond(1)).block();
         sut.insert(equipmentId, 10, Instant.ofEpochSecond(2)).block();
         sut.insert(equipmentId, 15, Instant.ofEpochSecond(3)).block();
@@ -50,7 +49,7 @@ class EquipmentPayloadRepositoryTests {
     @Test
     void should_insert_and_get_records_after() {
         // when
-        var equipmentId = equipmentId(UUID.randomUUID());
+        var equipmentId = randomEquipmentId();
         sut.insert(equipmentId, 5, Instant.ofEpochSecond(1)).block();
         sut.insert(equipmentId, 10, Instant.ofEpochSecond(2)).block();
         sut.insert(equipmentId, 15, Instant.ofEpochSecond(3)).block();

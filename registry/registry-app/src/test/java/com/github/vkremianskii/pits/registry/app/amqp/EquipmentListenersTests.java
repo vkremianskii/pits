@@ -2,14 +2,12 @@ package com.github.vkremianskii.pits.registry.app.amqp;
 
 import com.github.vkremianskii.pits.core.types.dto.EquipmentPayloadChanged;
 import com.github.vkremianskii.pits.core.types.dto.EquipmentPositionChanged;
+import com.github.vkremianskii.pits.core.types.model.Position;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
-import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
-import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -23,7 +21,7 @@ class EquipmentListenersTests {
     @Test
     void should_listen_to_position_changed_and_update_in_db() {
         // given
-        var equipmentId = equipmentId(UUID.randomUUID());
+        var equipmentId = randomEquipmentId();
         when(equipmentRepository.updateEquipmentPosition(equipmentId, new Position(41.1494512, -8.6107884, 86)))
             .thenReturn(Mono.empty());
 
@@ -37,7 +35,7 @@ class EquipmentListenersTests {
     @Test
     void should_listen_to_payload_changed_and_update_in_db() {
         // given
-        var equipmentId = equipmentId(UUID.randomUUID());
+        var equipmentId = randomEquipmentId();
         when(equipmentRepository.updateEquipmentPayload(equipmentId, 10))
             .thenReturn(Mono.empty());
 

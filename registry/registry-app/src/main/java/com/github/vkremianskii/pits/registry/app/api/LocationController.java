@@ -1,18 +1,18 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
+import com.github.vkremianskii.pits.core.types.model.LatLngPoint;
+import com.github.vkremianskii.pits.core.types.model.Location;
+import com.github.vkremianskii.pits.core.types.model.LocationPoint;
+import com.github.vkremianskii.pits.core.types.model.location.Dump;
+import com.github.vkremianskii.pits.core.types.model.location.Face;
+import com.github.vkremianskii.pits.core.types.model.location.Hole;
+import com.github.vkremianskii.pits.core.types.model.location.Stockpile;
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.types.dto.CreateLocationRequest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateLocationResponse;
 import com.github.vkremianskii.pits.registry.types.dto.LocationsResponse;
-import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
-import com.github.vkremianskii.pits.registry.types.model.Location;
 import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
-import com.github.vkremianskii.pits.registry.types.model.LocationPoint;
-import com.github.vkremianskii.pits.registry.types.model.location.Dump;
-import com.github.vkremianskii.pits.registry.types.model.location.Face;
-import com.github.vkremianskii.pits.registry.types.model.location.Hole;
-import com.github.vkremianskii.pits.registry.types.model.location.Stockpile;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.bind.annotation.GetMapping;

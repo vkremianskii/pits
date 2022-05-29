@@ -1,6 +1,8 @@
 package com.github.vkremianskii.pits.processes.logic;
 
 import com.github.vkremianskii.pits.core.types.Pair;
+import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
+import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
@@ -10,8 +12,6 @@ import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
 import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

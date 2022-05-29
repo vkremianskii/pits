@@ -1,9 +1,9 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
 import com.github.vkremianskii.pits.core.types.model.LocationId;
+import com.github.vkremianskii.pits.core.types.model.LocationType;
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
 import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
-import com.github.vkremianskii.pits.registry.types.model.LocationType;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
@@ -15,10 +15,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.STOCKPILE;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

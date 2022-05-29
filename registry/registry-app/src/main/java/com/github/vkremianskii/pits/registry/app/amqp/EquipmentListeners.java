@@ -2,8 +2,8 @@ package com.github.vkremianskii.pits.registry.app.amqp;
 
 import com.github.vkremianskii.pits.core.types.dto.EquipmentPayloadChanged;
 import com.github.vkremianskii.pits.core.types.dto.EquipmentPositionChanged;
+import com.github.vkremianskii.pits.core.types.model.Position;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
-import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

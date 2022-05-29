@@ -2,12 +2,12 @@ package com.github.vkremianskii.pits.processes.logic.fsm;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
+import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
+import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
 import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;

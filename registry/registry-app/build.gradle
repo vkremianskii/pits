@@ -15,6 +15,8 @@ dependencies {
     testImplementation project(path: ':core:core-amqp', configuration: 'testApi')
     testImplementation project(path: ':core:core-web', configuration: 'testApi')
 
+    testImplementation testFixtures(project(':core:core-types'))
+
     testImplementation 'io.projectreactor:reactor-test'
 
     testRuntimeOnly 'com.h2database:h2'

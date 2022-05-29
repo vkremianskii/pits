@@ -1,4 +1,4 @@
-package com.github.vkremianskii.pits.registry.types.model;
+package com.github.vkremianskii.pits.core.types.model;
 
 public enum EquipmentType {
     DOZER,

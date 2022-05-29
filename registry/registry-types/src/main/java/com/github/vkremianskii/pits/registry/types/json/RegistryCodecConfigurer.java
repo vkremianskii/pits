@@ -2,26 +2,26 @@ package com.github.vkremianskii.pits.registry.types.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.vkremianskii.pits.core.types.Microtype;
+import com.github.vkremianskii.pits.core.types.model.Equipment;
+import com.github.vkremianskii.pits.core.types.model.Location;
+import com.github.vkremianskii.pits.core.types.model.equipment.DozerState;
+import com.github.vkremianskii.pits.core.types.model.equipment.DrillState;
+import com.github.vkremianskii.pits.core.types.model.equipment.ShovelState;
+import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import com.github.vkremianskii.pits.registry.types.json.deserializer.EquipmentDeserializer;
 import com.github.vkremianskii.pits.registry.types.json.deserializer.EquipmentStateDeserializer;
 import com.github.vkremianskii.pits.registry.types.json.deserializer.LocationDeserializer;
 import com.github.vkremianskii.pits.registry.types.json.serializer.EquipmentStateSerializer;
 import com.github.vkremianskii.pits.registry.types.json.serializer.MicrotypeSerializer;
-import com.github.vkremianskii.pits.registry.types.model.Equipment;
-import com.github.vkremianskii.pits.registry.types.model.Location;
-import com.github.vkremianskii.pits.registry.types.model.equipment.DozerState;
-import com.github.vkremianskii.pits.registry.types.model.equipment.DrillState;
-import com.github.vkremianskii.pits.registry.types.model.equipment.ShovelState;
-import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.TRUCK;
 import static java.util.Objects.requireNonNull;
 
 public class RegistryCodecConfigurer {

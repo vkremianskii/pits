@@ -1,13 +1,13 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
+import com.github.vkremianskii.pits.core.types.model.LatLngPoint;
+import com.github.vkremianskii.pits.core.types.model.LocationPoint;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.types.dto.CreateLocationRequest;
-import com.github.vkremianskii.pits.registry.types.model.LatLngPoint;
 import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
-import com.github.vkremianskii.pits.registry.types.model.LocationPoint;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -18,13 +18,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
 
-import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
+import static com.github.vkremianskii.pits.core.types.TestLocations.randomLocationId;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.STOCKPILE;
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,10 +51,10 @@ class LocationControllerTests {
     @Test
     void should_get_locations() {
         // given
-        var dumpId = locationId(UUID.randomUUID());
-        var faceId = locationId(UUID.randomUUID());
-        var holeId = locationId(UUID.randomUUID());
-        var stockpileId = locationId(UUID.randomUUID());
+        var dumpId = randomLocationId();
+        var faceId = randomLocationId();
+        var holeId = randomLocationId();
+        var stockpileId = randomLocationId();
         when(locationRepository.getLocations())
             .thenReturn(Mono.just(List.of(
                 new LocationDeclaration(dumpId, "Dump No.1", DUMP),

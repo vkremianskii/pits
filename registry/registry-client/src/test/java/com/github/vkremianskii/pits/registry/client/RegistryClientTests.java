@@ -3,13 +3,11 @@ package com.github.vkremianskii.pits.registry.client;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
+import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
-import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-
-import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -21,17 +19,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.STOCKPILE;
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
@@ -129,7 +127,7 @@ class RegistryClientTests {
     @Test
     void should_update_equipment_state(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
         stubFor(post(urlPathEqualTo("/equipment/" + truckId + "/state"))
             .willReturn(aResponse().withStatus(200)));
         var sut = newClient(wmRuntimeInfo);

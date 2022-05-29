@@ -16,6 +16,8 @@ dependencies {
     testImplementation project(path: ':core:core-amqp', configuration: 'testApi')
     testImplementation project(path: ':core:core-web', configuration: 'testApi')
 
+    testImplementation testFixtures(project(':core:core-types'))
+
     testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
 
     testRuntimeOnly 'com.h2database:h2'

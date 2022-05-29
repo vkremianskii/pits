@@ -5,10 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.UUID;
-
-import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.core.types.TestLocations.randomLocationId;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
@@ -23,7 +21,7 @@ class LocationPointRepositoryTests {
     @Test
     void should_create_and_get_location_points() {
         // given
-        var dumpId = locationId(UUID.randomUUID());
+        var dumpId = randomLocationId();
         locationRepository.createLocation(dumpId, "Dump No.1", DUMP).block();
         sut.createLocationPoint(dumpId, 1, 41.149320, -8.610143).block();
         sut.createLocationPoint(dumpId, 0, 41.149320, -8.610143).block();

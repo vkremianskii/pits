@@ -6,13 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.UUID;
-
-import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
+import static com.github.vkremianskii.pits.core.types.TestLocations.randomLocationId;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.core.types.model.LocationType.STOCKPILE;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,13 +24,13 @@ class LocationRepositoryTests {
     @Test
     void should_create_and_get_locations() {
         // when
-        var dumpId = locationId(UUID.randomUUID());
+        var dumpId = randomLocationId();
         sut.createLocation(dumpId, "Dump No.1", DUMP).block();
-        var faceId = locationId(UUID.randomUUID());
+        var faceId = randomLocationId();
         sut.createLocation(faceId, "Face No.1", FACE).block();
-        var holeId = locationId(UUID.randomUUID());
+        var holeId = randomLocationId();
         sut.createLocation(holeId, "Hole No.1", HOLE).block();
-        var stockpileId = locationId(UUID.randomUUID());
+        var stockpileId = randomLocationId();
         sut.createLocation(stockpileId, "Stockpile No.1", STOCKPILE).block();
         var locations = sut.getLocations().block();
 

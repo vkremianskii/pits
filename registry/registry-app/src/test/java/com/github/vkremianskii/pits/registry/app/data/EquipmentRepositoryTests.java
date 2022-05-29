@@ -1,23 +1,21 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
-import com.github.vkremianskii.pits.registry.types.model.Position;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Dozer;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Drill;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.registry.types.model.equipment.Truck;
-import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
+import com.github.vkremianskii.pits.core.types.model.Position;
+import com.github.vkremianskii.pits.core.types.model.equipment.Dozer;
+import com.github.vkremianskii.pits.core.types.model.equipment.Drill;
+import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
+import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.core.types.model.equipment.TruckState;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.UUID;
-
-import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.TRUCK;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,13 +30,13 @@ class EquipmentRepositoryTests {
     @Test
     void should_create_and_get_equipment() {
         // when
-        var dozerId = equipmentId(UUID.randomUUID());
+        var dozerId = randomEquipmentId();
         sut.createEquipment(dozerId, "Dozer No.1", DOZER, null).block();
-        var drillId = equipmentId(UUID.randomUUID());
+        var drillId = randomEquipmentId();
         sut.createEquipment(drillId, "Drill No.1", DRILL, null).block();
-        var shovelId = equipmentId(UUID.randomUUID());
+        var shovelId = randomEquipmentId();
         sut.createEquipment(shovelId, "Shovel No.1", SHOVEL, (short) 20).block();
-        var truckId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
         sut.createEquipment(truckId, "Truck No.1", TRUCK, null).block();
         var equipment = sut.getEquipment().block();
 
@@ -65,7 +63,7 @@ class EquipmentRepositoryTests {
     @Test
     void should_get_equipment_by_id() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
         sut.createEquipment(truckId, "Truck No.1", TRUCK, null).block();
 
         // when
@@ -83,13 +81,13 @@ class EquipmentRepositoryTests {
     @Test
     void should_update_equipment_state() {
         // given
-        var truck1Id = equipmentId(UUID.randomUUID());
+        var truck1Id = randomEquipmentId();
         sut.createEquipment(truck1Id, "Truck No.1", TRUCK, null).block();
-        var truck2Id = equipmentId(UUID.randomUUID());
+        var truck2Id = randomEquipmentId();
         sut.createEquipment(truck2Id, "Truck No.2", TRUCK, null).block();
-        var truck3Id = equipmentId(UUID.randomUUID());
+        var truck3Id = randomEquipmentId();
         sut.createEquipment(truck3Id, "Truck No.3", TRUCK, null).block();
-        var truck4Id = equipmentId(UUID.randomUUID());
+        var truck4Id = randomEquipmentId();
         sut.createEquipment(truck4Id, "Truck No.4", TRUCK, null).block();
 
         // when
@@ -114,7 +112,7 @@ class EquipmentRepositoryTests {
     @Test
     void should_update_equipment_position() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
         sut.createEquipment(truckId, "Truck No.1", TRUCK, null).block();
 
         // when
@@ -133,7 +131,7 @@ class EquipmentRepositoryTests {
     @Test
     void should_update_equipment_payload() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
         sut.createEquipment(truckId, "Truck No.1", TRUCK, null).block();
 
         // when

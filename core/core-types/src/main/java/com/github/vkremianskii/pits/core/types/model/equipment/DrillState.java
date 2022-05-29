@@ -1,6 +1,6 @@
-package com.github.vkremianskii.pits.registry.types.model.equipment;
+package com.github.vkremianskii.pits.core.types.model.equipment;
 
-import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
+import com.github.vkremianskii.pits.core.types.model.EquipmentState;
 
 public class DrillState extends EquipmentState {
 

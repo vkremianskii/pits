@@ -8,6 +8,8 @@ dependencies {
     implementation 'org.springframework:spring-webflux'
     runtimeOnly 'io.projectreactor.netty:reactor-netty'
 
+    testImplementation testFixtures(project(':core:core-types'))
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation 'org.assertj:assertj-core'
     testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"

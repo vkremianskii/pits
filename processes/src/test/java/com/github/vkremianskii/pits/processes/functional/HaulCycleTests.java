@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -21,7 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
+import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
@@ -49,8 +48,8 @@ public class HaulCycleTests {
     @Test
     void should_compute_haul_cycles() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
-        var shovelId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
+        var shovelId = randomEquipmentId();
         stubFor(get(urlPathEqualTo("/equipment")).willReturn(aResponse()
             .withStatus(200)
             .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
@@ -87,8 +86,8 @@ public class HaulCycleTests {
     @Test
     void should_compute_haul_cycles__rollback_on_error() {
         // given
-        var truckId = equipmentId(UUID.randomUUID());
-        var shovelId = equipmentId(UUID.randomUUID());
+        var truckId = randomEquipmentId();
+        var shovelId = randomEquipmentId();
         stubFor(get(urlPathEqualTo("/equipment")).willReturn(aResponse()
             .withStatus(200)
             .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())

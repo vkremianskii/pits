@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.registry.types.dto;
 
-import com.github.vkremianskii.pits.registry.types.model.Location;
+import com.github.vkremianskii.pits.core.types.model.Location;
 
 import java.util.List;
 

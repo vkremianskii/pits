@@ -1,11 +1,11 @@
-package com.github.vkremianskii.pits.registry.types.model.equipment;
+package com.github.vkremianskii.pits.core.types.model.equipment;
 
+import com.github.vkremianskii.pits.core.types.model.Equipment;
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
-import com.github.vkremianskii.pits.registry.types.model.Equipment;
-import com.github.vkremianskii.pits.registry.types.model.Position;
+import com.github.vkremianskii.pits.core.types.model.Position;
 import org.jetbrains.annotations.Nullable;
 
-import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DRILL;
 
 public class Drill extends Equipment {
 
