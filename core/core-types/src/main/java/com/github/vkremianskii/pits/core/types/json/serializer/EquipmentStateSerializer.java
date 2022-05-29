@@ -1,4 +1,4 @@
-package com.github.vkremianskii.pits.registry.types.json.serializer;
+package com.github.vkremianskii.pits.core.types.json.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

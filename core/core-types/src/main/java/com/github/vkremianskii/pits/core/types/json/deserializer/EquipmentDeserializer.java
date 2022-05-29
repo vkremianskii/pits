@@ -1,4 +1,4 @@
-package com.github.vkremianskii.pits.registry.types.json.deserializer;
+package com.github.vkremianskii.pits.core.types.json.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

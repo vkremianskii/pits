@@ -1,10 +1,12 @@
 package com.github.vkremianskii.pits.core.types;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
-public class Microtype<T> {
+public class Microtype<T extends Comparable<T>> implements Comparable<Microtype<T>> {
 
     public final T value;
 
@@ -28,5 +30,10 @@ public class Microtype<T> {
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    @Override
+    public int compareTo(@NotNull Microtype<T> o) {
+        return value.compareTo(o.value);
     }
 }

@@ -91,7 +91,7 @@ public class EquipmentController {
         };
         try {
             return objectMapper.treeToValue(state, clazz);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new BadRequestError(e);
         }
     }

@@ -1,4 +1,6 @@
 dependencies {
+    api project(':core:core-types')
+
     api 'org.springframework.boot:spring-boot-starter-amqp'
 
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
