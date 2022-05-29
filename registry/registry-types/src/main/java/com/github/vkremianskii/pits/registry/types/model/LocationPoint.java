@@ -1,9 +1,9 @@
 package com.github.vkremianskii.pits.registry.types.model;
 
-import java.util.UUID;
+import com.github.vkremianskii.pits.core.types.model.LocationId;
 
 public record LocationPoint(int id,
-                            UUID locationId,
+                            LocationId locationId,
                             int order,
                             double latitude,
                             double longitude) {

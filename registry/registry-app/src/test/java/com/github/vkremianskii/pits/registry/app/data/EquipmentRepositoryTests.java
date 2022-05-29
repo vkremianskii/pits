@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DRILL;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
@@ -31,13 +32,13 @@ class EquipmentRepositoryTests {
     @Test
     void should_create_and_get_equipment() {
         // when
-        var dozerId = UUID.randomUUID();
+        var dozerId = equipmentId(UUID.randomUUID());
         sut.createEquipment(dozerId, "Dozer No.1", DOZER, null).block();
-        var drillId = UUID.randomUUID();
+        var drillId = equipmentId(UUID.randomUUID());
         sut.createEquipment(drillId, "Drill No.1", DRILL, null).block();
-        var shovelId = UUID.randomUUID();
+        var shovelId = equipmentId(UUID.randomUUID());
         sut.createEquipment(shovelId, "Shovel No.1", SHOVEL, (short) 20).block();
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         sut.createEquipment(truckId, "Truck No.1", TRUCK, null).block();
         var equipment = sut.getEquipment().block();
 
@@ -64,7 +65,7 @@ class EquipmentRepositoryTests {
     @Test
     void should_get_equipment_by_id() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         sut.createEquipment(truckId, "Truck No.1", TRUCK, null).block();
 
         // when
@@ -82,13 +83,13 @@ class EquipmentRepositoryTests {
     @Test
     void should_update_equipment_state() {
         // given
-        var truck1Id = UUID.randomUUID();
+        var truck1Id = equipmentId(UUID.randomUUID());
         sut.createEquipment(truck1Id, "Truck No.1", TRUCK, null).block();
-        var truck2Id = UUID.randomUUID();
+        var truck2Id = equipmentId(UUID.randomUUID());
         sut.createEquipment(truck2Id, "Truck No.2", TRUCK, null).block();
-        var truck3Id = UUID.randomUUID();
+        var truck3Id = equipmentId(UUID.randomUUID());
         sut.createEquipment(truck3Id, "Truck No.3", TRUCK, null).block();
-        var truck4Id = UUID.randomUUID();
+        var truck4Id = equipmentId(UUID.randomUUID());
         sut.createEquipment(truck4Id, "Truck No.4", TRUCK, null).block();
 
         // when
@@ -113,7 +114,7 @@ class EquipmentRepositoryTests {
     @Test
     void should_update_equipment_position() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         sut.createEquipment(truckId, "Truck No.1", TRUCK, null).block();
 
         // when
@@ -132,7 +133,7 @@ class EquipmentRepositoryTests {
     @Test
     void should_update_equipment_payload() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         sut.createEquipment(truckId, "Truck No.1", TRUCK, null).block();
 
         // when

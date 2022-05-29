@@ -1,10 +1,11 @@
 package com.github.vkremianskii.pits.processes.model;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
+
 import java.time.Instant;
-import java.util.UUID;
 
 public record EquipmentPayloadRecord(long id,
-                                     UUID equipmentId,
+                                     EquipmentId equipmentId,
                                      int payload,
                                      Instant insertTimestamp) {
 

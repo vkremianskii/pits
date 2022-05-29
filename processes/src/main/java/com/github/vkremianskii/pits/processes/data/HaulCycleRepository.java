@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.processes.data;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -14,6 +15,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -45,8 +47,8 @@ public class HaulCycleRepository {
         return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
     }
 
-    public Mono<Void> insert(UUID truckId,
-                             @Nullable UUID shovelId,
+    public Mono<Void> insert(EquipmentId truckId,
+                             @Nullable EquipmentId shovelId,
                              @Nullable Instant waitLoadTimestamp,
                              @Nullable Instant startLoadTimestamp,
                              @Nullable Double startLoadLatitude,
@@ -68,8 +70,8 @@ public class HaulCycleRepository {
                 FIELD_START_UNLOAD_TIMESTAMP,
                 FIELD_END_UNLOAD_TIMESTAMP)
             .values(
-                truckId,
-                shovelId,
+                truckId.value,
+                shovelId != null ? shovelId.value : null,
                 Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null),
                 Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null),
                 Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null),
@@ -82,7 +84,7 @@ public class HaulCycleRepository {
     }
 
     public Mono<Void> update(long haulCycleId,
-                             @Nullable UUID shovelId,
+                             @Nullable EquipmentId shovelId,
                              @Nullable Instant waitLoadTimestamp,
                              @Nullable Instant startLoadTimestamp,
                              @Nullable Double startLoadLatitude,
@@ -92,7 +94,7 @@ public class HaulCycleRepository {
                              @Nullable Instant startUnloadTimestamp,
                              @Nullable Instant endUnloadTimestamp) {
         return Mono.fromRunnable(() -> dslContext.update(TABLE)
-            .set(FIELD_SHOVEL_ID, shovelId)
+            .set(FIELD_SHOVEL_ID, shovelId != null ? shovelId.value : null)
             .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
             .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
             .set(FIELD_START_LOAD_LATITUDE, Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null))
@@ -105,9 +107,9 @@ public class HaulCycleRepository {
             .execute());
     }
 
-    public Mono<Optional<HaulCycle>> getLastHaulCycleForTruck(UUID truckId) {
+    public Mono<Optional<HaulCycle>> getLastHaulCycleForTruck(EquipmentId truckId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                .where(FIELD_TRUCK_ID.eq(truckId))
+                .where(FIELD_TRUCK_ID.eq(truckId.value))
                 .orderBy(FIELD_INSERT_TIMESTAMP.desc())
                 .limit(1)
                 .fetchOptional(r -> r.map(HaulCycleRepository::haulCycleFromRecord)));
@@ -115,8 +117,10 @@ public class HaulCycleRepository {
 
     private static HaulCycle haulCycleFromRecord(org.jooq.Record record) {
         final var id = record.get(FIELD_ID);
-        final var truckId = record.get(FIELD_TRUCK_ID);
-        final var shovelId = record.get(FIELD_SHOVEL_ID);
+        final var truckId = equipmentId(record.get(FIELD_TRUCK_ID));
+        final var shovelId = Optional.ofNullable(record.get(FIELD_SHOVEL_ID))
+            .map(EquipmentId::equipmentId)
+            .orElse(null);
         final var waitLoadTimestamp = Optional.ofNullable(record.get(FIELD_WAIT_LOAD_TIMESTAMP));
         final var startLoadTimestamp = Optional.ofNullable(record.get(FIELD_START_LOAD_TIMESTAMP));
         final var startLoadLatitude = Optional.ofNullable(record.get(FIELD_START_LOAD_LATITUDE));

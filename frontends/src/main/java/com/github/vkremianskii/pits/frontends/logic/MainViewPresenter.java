@@ -1,15 +1,15 @@
 package com.github.vkremianskii.pits.frontends.logic;
 
-import java.util.UUID;
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 
 public interface MainViewPresenter {
 
-    void sendEquipmentPosition(UUID equipmentId, double latitude, double longitude, int elevation);
-    void sendEquipmentPayload(UUID equipmentId, int payload);
+    void sendEquipmentPosition(EquipmentId equipmentId, double latitude, double longitude, int elevation);
+    void sendEquipmentPayload(EquipmentId equipmentId, int payload);
 
     void initializeFleet();
     void initializeLocations();
 
     void onWindowClosing();
-    void onEquipmentSelected(UUID equipmentId);
+    void onEquipmentSelected(EquipmentId equipmentId);
 }

@@ -2,6 +2,7 @@ package com.github.vkremianskii.pits.registry.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.json.RegistryCodecConfigurer;
 import com.github.vkremianskii.pits.registry.types.model.equipment.TruckState;
@@ -20,6 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.DOZER;
@@ -121,13 +123,13 @@ class RegistryClientTests {
                     "type": "TRUCK"
                 }
                 """)));
-        assertThat(response).isEqualTo(new CreateEquipmentResponse(UUID.fromString("84bb4805-48ab-4ba9-a83f-1019d1ed646f")));
+        assertThat(response).isEqualTo(new CreateEquipmentResponse(EquipmentId.valueOf("84bb4805-48ab-4ba9-a83f-1019d1ed646f")));
     }
 
     @Test
     void should_update_equipment_state(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         stubFor(post(urlPathEqualTo("/equipment/" + truckId + "/state"))
             .willReturn(aResponse().withStatus(200)));
         var sut = newClient(wmRuntimeInfo);

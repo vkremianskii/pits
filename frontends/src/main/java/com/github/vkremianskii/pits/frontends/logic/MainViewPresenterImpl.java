@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.frontends.logic;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.frontends.grpc.GrpcClient;
 import com.github.vkremianskii.pits.frontends.ui.MainView;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
@@ -19,7 +20,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.github.vkremianskii.pits.core.types.Pair.pair;
@@ -45,7 +45,7 @@ public class MainViewPresenterImpl implements MainViewPresenter {
 
     private final RegistryClient registryClient;
     private final GrpcClient grpcClient;
-    private final TreeMap<UUID, Equipment> equipmentById = new TreeMap<>();
+    private final TreeMap<EquipmentId, Equipment> equipmentById = new TreeMap<>();
     private final List<Location> locations = new ArrayList<>();
 
     private MainView view;
@@ -110,12 +110,12 @@ public class MainViewPresenterImpl implements MainViewPresenter {
     }
 
     @Override
-    public void sendEquipmentPosition(UUID equipmentId, double latitude, double longitude, int elevation) {
+    public void sendEquipmentPosition(EquipmentId equipmentId, double latitude, double longitude, int elevation) {
         grpcClient.sendPositionChanged(equipmentId, latitude, longitude, elevation);
     }
 
     @Override
-    public void sendEquipmentPayload(UUID equipmentId, int payload) {
+    public void sendEquipmentPayload(EquipmentId equipmentId, int payload) {
         grpcClient.sendPayloadChanged(equipmentId, payload);
     }
 
@@ -177,7 +177,7 @@ public class MainViewPresenterImpl implements MainViewPresenter {
     }
 
     @Override
-    public void onEquipmentSelected(UUID equipmentId) {
+    public void onEquipmentSelected(EquipmentId equipmentId) {
         final var equipment = equipmentById.get(equipmentId);
         view.refreshEquipment(equipment);
     }

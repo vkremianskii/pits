@@ -20,6 +20,7 @@ import java.util.UUID;
 import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_PAYLOAD;
 import static com.github.vkremianskii.pits.communicator.app.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_POSITION;
 import static com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.newBlockingStub;
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -54,7 +55,7 @@ class EquipmentServiceImplTests {
     @Test
     void should_listen_to_position_changed_and_forward_to_rabbitmq() {
         // given
-        var equipmentId = UUID.randomUUID();
+        var equipmentId = equipmentId(UUID.randomUUID());
         var request = PositionChanged.newBuilder()
             .setEquipmentId(equipmentId.toString())
             .setLatitude(41.1494512)
@@ -78,7 +79,7 @@ class EquipmentServiceImplTests {
     @Test
     void should_listen_to_payload_changed_and_forward_to_rabbitmq() {
         // given
-        var equipmentId = UUID.randomUUID();
+        var equipmentId = equipmentId(UUID.randomUUID());
         var request = PayloadChanged.newBuilder()
             .setEquipmentId(equipmentId.toString())
             .setPayload(10)

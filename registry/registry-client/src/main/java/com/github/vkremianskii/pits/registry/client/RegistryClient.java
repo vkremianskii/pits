@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.registry.client;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
 import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.types.dto.CreateLocationRequest;
@@ -16,7 +17,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
 
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
@@ -50,7 +50,7 @@ public class RegistryClient {
             .bodyToMono(CreateEquipmentResponse.class);
     }
 
-    public Mono<Void> updateEquipmentState(UUID equipmentId, EquipmentState state) {
+    public Mono<Void> updateEquipmentState(EquipmentId equipmentId, EquipmentState state) {
         return webClient.post()
             .uri("/equipment/{id}/state", equipmentId)
             .contentType(APPLICATION_JSON)

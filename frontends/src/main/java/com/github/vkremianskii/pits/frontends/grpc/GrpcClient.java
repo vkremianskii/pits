@@ -5,6 +5,7 @@ import com.github.vkremianskii.pits.communicator.grpc.PayloadChanged;
 import com.github.vkremianskii.pits.communicator.grpc.PayloadChangedResponse;
 import com.github.vkremianskii.pits.communicator.grpc.PositionChanged;
 import com.github.vkremianskii.pits.communicator.grpc.PositionChangedResponse;
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -12,7 +13,6 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 import static com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.newFutureStub;
@@ -39,7 +39,7 @@ public class GrpcClient {
         channel.awaitTermination(5, SECONDS);
     }
 
-    public Mono<PositionChangedResponse> sendPositionChanged(UUID equipmentId, double latitude, double longitude, int elevation) {
+    public Mono<PositionChangedResponse> sendPositionChanged(EquipmentId equipmentId, double latitude, double longitude, int elevation) {
         final var request = PositionChanged.newBuilder()
             .setEquipmentId(equipmentId.toString())
             .setLatitude(latitude)
@@ -50,7 +50,7 @@ public class GrpcClient {
         return monoFromListenableFuture(equipmentStub.positionChanged(request));
     }
 
-    public Mono<PayloadChangedResponse> sendPayloadChanged(UUID equipmentId, int payload) {
+    public Mono<PayloadChangedResponse> sendPayloadChanged(EquipmentId equipmentId, int payload) {
         final var request = PayloadChanged.newBuilder()
             .setEquipmentId(equipmentId.toString())
             .setPayload(payload)

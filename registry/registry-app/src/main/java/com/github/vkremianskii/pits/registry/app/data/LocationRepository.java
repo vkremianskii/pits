@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
+import com.github.vkremianskii.pits.core.types.model.LocationId;
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
 import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
 import com.github.vkremianskii.pits.registry.types.model.LocationType;
@@ -13,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.STOCKPILE;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.max;
 import static org.jooq.impl.DSL.table;
 
 @Repository
@@ -51,15 +52,15 @@ public class LocationRepository {
             .fetch(r -> r.map(LocationRepository::locationDeclarationFromRecord)));
     }
 
-    public Mono<Void> createLocation(UUID id, String name, LocationType type) {
+    public Mono<Void> createLocation(LocationId id, String name, LocationType type) {
         return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
             .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE)
-            .values(id, name, valueFromType(type))
+            .values(id.value, name, valueFromType(type))
             .execute());
     }
 
     private static LocationDeclaration locationDeclarationFromRecord(org.jooq.Record record) {
-        final var id = record.get(FIELD_ID);
+        final var id = locationId(record.get(FIELD_ID));
         final var name = record.get(FIELD_NAME);
         final var typeName = record.get(FIELD_TYPE);
 

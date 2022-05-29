@@ -1,14 +1,14 @@
 package com.github.vkremianskii.pits.processes.model;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public record HaulCycle(long id,
-                        UUID truckId,
+                        EquipmentId truckId,
                         Instant insertTimestamp,
-                        @Nullable UUID shovelId,
+                        @Nullable EquipmentId shovelId,
                         @Nullable Instant waitLoadTimestamp,
                         @Nullable Instant startLoadTimestamp,
                         @Nullable Double startLoadLatitude,

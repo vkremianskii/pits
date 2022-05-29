@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.registry.types.model;
 
-import java.util.UUID;
+import com.github.vkremianskii.pits.core.types.model.LocationId;
 
-public record LocationDeclaration(UUID id,
+public record LocationDeclaration(LocationId id,
                                   String name,
                                   LocationType type) {
 

@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static com.github.vkremianskii.pits.core.types.Pair.pair;
+import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW;
@@ -63,7 +64,7 @@ public class LocationController {
 
     @PostMapping
     public Mono<CreateLocationResponse> createLocation(@RequestBody CreateLocationRequest request) {
-        final var locationId = UUID.randomUUID();
+        final var locationId = locationId(UUID.randomUUID());
         final var indexedPoints = IntStream.range(0, request.geometry().size())
             .mapToObj(i -> pair(i, request.geometry().get(i)))
             .toList();

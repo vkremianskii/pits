@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.registry.app.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.core.web.error.BadRequestError;
 import com.github.vkremianskii.pits.core.web.error.NotFoundError;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
@@ -31,6 +32,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static java.util.Objects.requireNonNull;
@@ -66,7 +68,7 @@ public class EquipmentController {
 
     @PostMapping
     public Mono<CreateEquipmentResponse> createEquipment(@RequestBody CreateEquipmentRequest request) {
-        final var equipmentId = UUID.randomUUID();
+        final var equipmentId = equipmentId(UUID.randomUUID());
         final var txDefiniton = new DefaultTransactionDefinition(PROPAGATION_REQUIRES_NEW);
         final var txStatus = transactionManager.getTransaction(txDefiniton);
 
@@ -77,7 +79,7 @@ public class EquipmentController {
     }
 
     @PostMapping("/{id}/state")
-    public Mono<Void> updateEquipmentState(@PathVariable("id") UUID equipmentId,
+    public Mono<Void> updateEquipmentState(@PathVariable("id") EquipmentId equipmentId,
                                            @RequestBody FuzzyUpdateEquipmentStateRequest request) {
         return equipmentRepository.getEquipmentById(equipmentId)
             .flatMap(equipment -> equipment

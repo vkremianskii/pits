@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
@@ -51,10 +52,10 @@ class LocationControllerTests {
     @Test
     void should_get_locations() {
         // given
-        var dumpId = UUID.randomUUID();
-        var faceId = UUID.randomUUID();
-        var holeId = UUID.randomUUID();
-        var stockpileId = UUID.randomUUID();
+        var dumpId = locationId(UUID.randomUUID());
+        var faceId = locationId(UUID.randomUUID());
+        var holeId = locationId(UUID.randomUUID());
+        var stockpileId = locationId(UUID.randomUUID());
         when(locationRepository.getLocations())
             .thenReturn(Mono.just(List.of(
                 new LocationDeclaration(dumpId, "Dump No.1", DUMP),

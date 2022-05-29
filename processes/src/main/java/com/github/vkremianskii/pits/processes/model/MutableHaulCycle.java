@@ -1,15 +1,15 @@
 package com.github.vkremianskii.pits.processes.model;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 
 public class MutableHaulCycle {
 
     public Long id;
-    public UUID shovelId;
+    public EquipmentId shovelId;
     public Instant waitLoadTimestamp;
     public Instant startLoadTimestamp;
     public Double startLoadLatitude;
@@ -23,7 +23,7 @@ public class MutableHaulCycle {
     }
 
     public MutableHaulCycle(@Nullable Long id,
-                            @Nullable UUID shovelId,
+                            @Nullable EquipmentId shovelId,
                             @Nullable Instant waitLoadTimestamp,
                             @Nullable Instant startLoadTimestamp,
                             @Nullable Double startLoadLatitude,

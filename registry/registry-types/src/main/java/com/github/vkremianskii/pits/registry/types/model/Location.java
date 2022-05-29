@@ -1,19 +1,20 @@
 package com.github.vkremianskii.pits.registry.types.model;
 
+import com.github.vkremianskii.pits.core.types.model.LocationId;
+
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
 public class Location {
 
-    public final UUID id;
+    public final LocationId id;
     public final String name;
     public final LocationType type;
     public final List<LatLngPoint> geometry;
 
-    protected Location(UUID id,
+    protected Location(LocationId id,
                        String name,
                        LocationType type,
                        List<LatLngPoint> geometry) {

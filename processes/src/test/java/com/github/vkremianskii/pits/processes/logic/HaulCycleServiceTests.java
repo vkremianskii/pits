@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.any;
@@ -58,7 +59,7 @@ class HaulCycleServiceTests {
     @Test
     void should_compute_haul_cycles__no_data() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         var truck = new Truck(truckId, "Truck No.1", null, null, null);
         when(haulCycleRepository.getLastHaulCycleForTruck(truckId))
             .thenReturn(Mono.just(Optional.empty()));
@@ -88,8 +89,8 @@ class HaulCycleServiceTests {
     @Test
     void should_compute_haul_cycles__complex_scenario() {
         // given
-        var truckId = UUID.randomUUID();
-        var shovelId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
+        var shovelId = equipmentId(UUID.randomUUID());
         var truck = new Truck(truckId, "Truck No.1", null, null, null);
         var shovel = new Shovel(shovelId, "Shovel No.1", 20, null, null);
         var haulCycle = new HaulCycle(

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
@@ -55,10 +56,10 @@ class EquipmentControllerTests {
     @Test
     void should_get_equipment__v1() {
         // given
-        var dozerId = UUID.randomUUID();
-        var drillId = UUID.randomUUID();
-        var shovelId = UUID.randomUUID();
-        var truckId = UUID.randomUUID();
+        var dozerId = equipmentId(UUID.randomUUID());
+        var drillId = equipmentId(UUID.randomUUID());
+        var shovelId = equipmentId(UUID.randomUUID());
+        var truckId = equipmentId(UUID.randomUUID());
         when(equipmentRepository.getEquipment())
             .thenReturn(Mono.just(List.of(
                 new Dozer(dozerId, "Dozer No.1", null, null),
@@ -99,10 +100,10 @@ class EquipmentControllerTests {
     @Test
     void should_get_equipment__v2() {
         // given
-        var dozerId = UUID.randomUUID();
-        var drillId = UUID.randomUUID();
-        var shovelId = UUID.randomUUID();
-        var truckId = UUID.randomUUID();
+        var dozerId = equipmentId(UUID.randomUUID());
+        var drillId = equipmentId(UUID.randomUUID());
+        var shovelId = equipmentId(UUID.randomUUID());
+        var truckId = equipmentId(UUID.randomUUID());
         when(equipmentRepository.getEquipment())
             .thenReturn(Mono.just(List.of(
                 new Dozer(dozerId, "Dozer No.1", null, null),
@@ -191,7 +192,7 @@ class EquipmentControllerTests {
     @Test
     void should_update_equipment_state() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         when(equipmentRepository.getEquipmentById(truckId))
             .thenReturn(Mono.just(Optional.of(new Truck(truckId, "Truck No.1", null, null, null))));
         when(equipmentRepository.updateEquipmentState(truckId, TruckState.EMPTY))
@@ -214,7 +215,7 @@ class EquipmentControllerTests {
     @Test
     void should_update_equipment_state__equipment_not_found() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         when(equipmentRepository.getEquipmentById(truckId))
             .thenReturn(Mono.just(Optional.empty()));
 
@@ -236,7 +237,7 @@ class EquipmentControllerTests {
     @Test
     void should_update_equipment_state__invalid_state() {
         // given
-        var dozerId = UUID.randomUUID();
+        var dozerId = equipmentId(UUID.randomUUID());
         when(equipmentRepository.getEquipmentById(dozerId))
             .thenReturn(Mono.just(Optional.of(new Dozer(dozerId, "Dozer No.1", null, null))));
 

@@ -2,6 +2,7 @@ package com.github.vkremianskii.pits.frontends.ui;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.frontends.logic.MainViewPresenter;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.EquipmentState;
@@ -48,7 +49,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
-import java.util.UUID;
 
 import static com.bbn.openmap.proj.Ellipsoid.WGS_84;
 import static com.bbn.openmap.proj.coords.UTMPoint.LLtoUTM;
@@ -404,7 +404,7 @@ public class MainViewImpl implements MainView {
     }
 
     @Override
-    public void refreshFleet(SortedMap<UUID, Equipment> equipmentById) {
+    public void refreshFleet(SortedMap<EquipmentId, Equipment> equipmentById) {
         final var selectedEquipment = fleetListBox.getSelectedValue();
         fleetListModel.clear();
 
@@ -485,10 +485,10 @@ public class MainViewImpl implements MainView {
 
     private static class EquipmentListElement {
 
-        public final UUID id;
+        public final EquipmentId id;
         public final String name;
 
-        public EquipmentListElement(UUID id, String name) {
+        public EquipmentListElement(EquipmentId id, String name) {
             this.id = id;
             this.name = name;
         }

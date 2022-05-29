@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.registry.types.dto;
 
-import java.util.UUID;
+import com.github.vkremianskii.pits.core.types.model.LocationId;
 
-public record CreateLocationResponse(UUID locationId) {
+public record CreateLocationResponse(LocationId locationId) {
 
 }

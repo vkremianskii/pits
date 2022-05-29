@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.mock;
@@ -31,10 +32,10 @@ class HaulCycleJobTests {
     @Test
     void should_compute_haul_cycles_for_all_trucks() {
         // given
-        var dozerId = UUID.randomUUID();
-        var shovelId = UUID.randomUUID();
-        var truck1Id = UUID.randomUUID();
-        var truck2Id = UUID.randomUUID();
+        var dozerId = equipmentId(UUID.randomUUID());
+        var shovelId = equipmentId(UUID.randomUUID());
+        var truck1Id = equipmentId(UUID.randomUUID());
+        var truck2Id = equipmentId(UUID.randomUUID());
         var dozer = new Dozer(dozerId, "Dozer No.1", null, null);
         var shovel = new Shovel(shovelId, "Shovel No.1", 20, null, null);
         var truck1 = new Truck(truck1Id, "Truck No.1", null, null, null);
@@ -58,8 +59,8 @@ class HaulCycleJobTests {
     @Test
     void should_compute_haul_cycles_for_all_trucks_and_not_rethrow() {
         // given
-        var truck1Id = UUID.randomUUID();
-        var truck2Id = UUID.randomUUID();
+        var truck1Id = equipmentId(UUID.randomUUID());
+        var truck2Id = equipmentId(UUID.randomUUID());
         var truck1 = new Truck(truck1Id, "Truck No.1", null, null, null);
         var truck2 = new Truck(truck2Id, "Truck No.2", null, null, null);
         when(registryClient.getEquipment()).thenReturn(Mono.just(new EquipmentResponse(List.of(truck1, truck2))));

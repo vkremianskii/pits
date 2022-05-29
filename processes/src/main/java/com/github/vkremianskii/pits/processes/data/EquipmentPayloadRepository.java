@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.processes.data;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -36,46 +38,46 @@ public class EquipmentPayloadRepository {
         return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
     }
 
-    public Mono<Void> insert(UUID equipmentId, int payload) {
+    public Mono<Void> insert(EquipmentId equipmentId, int payload) {
         return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
             .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD)
-            .values(equipmentId, payload)
+            .values(equipmentId.value, payload)
             .execute());
     }
 
-    public Mono<Void> insert(UUID equipmentId, int payload, Instant insertTimestamp) {
+    public Mono<Void> insert(EquipmentId equipmentId, int payload, Instant insertTimestamp) {
         return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
             .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD, FIELD_INSERT_TIMESTAMP)
-            .values(equipmentId, payload, Timestamp.from(insertTimestamp))
+            .values(equipmentId.value, payload, Timestamp.from(insertTimestamp))
             .execute());
     }
 
-    public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipment(UUID equipmentId) {
+    public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipment(EquipmentId equipmentId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .where(FIELD_EQUIPMENT_ID.eq(equipmentId))
+            .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value))
             .orderBy(FIELD_INSERT_TIMESTAMP.desc())
             .limit(1)
             .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)));
     }
 
-    public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipmentBefore(UUID equipmentId, Instant timestamp) {
+    public Mono<Optional<EquipmentPayloadRecord>> getLastRecordForEquipmentBefore(EquipmentId equipmentId, Instant timestamp) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
+            .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
             .orderBy(FIELD_INSERT_TIMESTAMP.desc())
             .limit(1)
             .fetchOptional(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)));
     }
 
-    public Mono<List<EquipmentPayloadRecord>> getRecordsForEquipmentAfter(UUID equipmentId, Instant timestamp) {
+    public Mono<List<EquipmentPayloadRecord>> getRecordsForEquipmentAfter(EquipmentId equipmentId, Instant timestamp) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-            .where(FIELD_EQUIPMENT_ID.eq(equipmentId).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
+            .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
             .orderBy(FIELD_INSERT_TIMESTAMP)
             .fetch(r -> r.map(EquipmentPayloadRepository::recordFromJooqRecord)));
     }
 
     private static EquipmentPayloadRecord recordFromJooqRecord(org.jooq.Record record) {
         final var id = record.get(FIELD_ID);
-        final var equipmentId = record.get(FIELD_EQUIPMENT_ID);
+        final var equipmentId = equipmentId(record.get(FIELD_EQUIPMENT_ID));
         final var payload = record.get(FIELD_PAYLOAD);
         final var insertTimestamp = record.get(FIELD_INSERT_TIMESTAMP);
 

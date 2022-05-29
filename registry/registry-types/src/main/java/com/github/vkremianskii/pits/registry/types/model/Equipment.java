@@ -1,21 +1,21 @@
 package com.github.vkremianskii.pits.registry.types.model;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
 public class Equipment {
 
-    public final UUID id;
+    public final EquipmentId id;
     public final String name;
     public final EquipmentType type;
     public final EquipmentState state;
     public final Position position;
 
-    protected Equipment(UUID id,
+    protected Equipment(EquipmentId id,
                         String name,
                         EquipmentType type,
                         @Nullable EquipmentState state,

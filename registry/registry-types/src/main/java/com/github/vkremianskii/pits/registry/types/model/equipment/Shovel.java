@@ -1,12 +1,11 @@
 package com.github.vkremianskii.pits.registry.types.model.equipment;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
-import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.SHOVEL;
 
@@ -14,7 +13,7 @@ public class Shovel extends Equipment {
 
     public final int loadRadius;
 
-    public Shovel(UUID id,
+    public Shovel(EquipmentId id,
                   String name,
                   int loadRadius,
                   @Nullable ShovelState state,

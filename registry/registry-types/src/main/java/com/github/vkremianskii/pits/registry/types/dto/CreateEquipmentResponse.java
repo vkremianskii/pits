@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.registry.types.dto;
 
-import java.util.UUID;
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 
-public record CreateEquipmentResponse(UUID equipmentId) {
+public record CreateEquipmentResponse(EquipmentId equipmentId) {
 
 }

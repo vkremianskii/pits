@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,7 +23,7 @@ class EquipmentListenersTests {
     @Test
     void should_listen_to_position_changed_and_insert_into_db() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         when(positionRepository.insert(truckId, 41.1494512, -8.6107884, 86))
             .thenReturn(Mono.empty());
 
@@ -36,7 +37,7 @@ class EquipmentListenersTests {
     @Test
     void should_listen_to_payload_changed_and_insert_into_db() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         when(payloadRepository.insert(truckId, 10))
             .thenReturn(Mono.empty());
 

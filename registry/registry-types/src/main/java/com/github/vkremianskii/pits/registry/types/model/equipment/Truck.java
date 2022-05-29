@@ -1,12 +1,11 @@
 package com.github.vkremianskii.pits.registry.types.model.equipment;
 
+import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
-import com.github.vkremianskii.pits.registry.types.model.EquipmentType;
 import com.github.vkremianskii.pits.registry.types.model.Position;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.github.vkremianskii.pits.registry.types.model.EquipmentType.TRUCK;
 
@@ -14,7 +13,7 @@ public class Truck extends Equipment {
 
     public final Integer payload;
 
-    public Truck(UUID id,
+    public Truck(EquipmentId id,
                  String name,
                  @Nullable TruckState state,
                  @Nullable Position position,

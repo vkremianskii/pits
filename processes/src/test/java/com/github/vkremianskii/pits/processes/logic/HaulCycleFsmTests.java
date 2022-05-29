@@ -17,6 +17,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HaulCycleFsmTests {
@@ -40,7 +41,7 @@ class HaulCycleFsmTests {
     @Test
     void should_compute_haul_cycles__cold_start() {
         // given
-        var truckId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
         var shovelToOrderedPositions = new HashMap<Shovel, SortedMap<Instant, EquipmentPositionRecord>>();
         var haulCycles = new ArrayList<MutableHaulCycle>();
         var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
@@ -74,8 +75,8 @@ class HaulCycleFsmTests {
     @Test
     void should_compute_haul_cycles__from_existing() {
         // given
-        var truckId = UUID.randomUUID();
-        var shovelId = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
+        var shovelId = equipmentId(UUID.randomUUID());
         var shovelToOrderedPositions = new HashMap<Shovel, SortedMap<Instant, EquipmentPositionRecord>>();
         var haulCycles = new ArrayList<MutableHaulCycle>();
         var haulCycleFsm = new HaulCycleFsm(shovelToOrderedPositions, haulCycles::add);
@@ -134,9 +135,9 @@ class HaulCycleFsmTests {
     @Test
     void should_compute_haul_cycles__shovels() {
         // given
-        var truckId = UUID.randomUUID();
-        var shovel1Id = UUID.randomUUID();
-        var shovel2Id = UUID.randomUUID();
+        var truckId = equipmentId(UUID.randomUUID());
+        var shovel1Id = equipmentId(UUID.randomUUID());
+        var shovel2Id = equipmentId(UUID.randomUUID());
         var shovel1 = new Shovel(shovel1Id, "Shovel No.1", 20, null, null);
         var shovel2 = new Shovel(shovel2Id, "Shovel No.2", 20, null, null);
         var shovelToOrderedPositions = Map.of(

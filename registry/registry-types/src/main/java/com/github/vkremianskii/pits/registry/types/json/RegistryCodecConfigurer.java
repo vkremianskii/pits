@@ -1,10 +1,12 @@
 package com.github.vkremianskii.pits.registry.types.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.github.vkremianskii.pits.core.types.Microtype;
 import com.github.vkremianskii.pits.registry.types.json.deserializer.EquipmentDeserializer;
 import com.github.vkremianskii.pits.registry.types.json.deserializer.EquipmentStateDeserializer;
 import com.github.vkremianskii.pits.registry.types.json.deserializer.LocationDeserializer;
 import com.github.vkremianskii.pits.registry.types.json.serializer.EquipmentStateSerializer;
+import com.github.vkremianskii.pits.registry.types.json.serializer.MicrotypeSerializer;
 import com.github.vkremianskii.pits.registry.types.model.Equipment;
 import com.github.vkremianskii.pits.registry.types.model.Location;
 import com.github.vkremianskii.pits.registry.types.model.equipment.DozerState;
@@ -33,13 +35,14 @@ public class RegistryCodecConfigurer {
     public void configureCodecs(CodecConfigurer configurer) {
         final var mapper = objectMapperBuilder
             .serializationInclusion(JsonInclude.Include.NON_NULL)
+            .serializerByType(Microtype.class, new MicrotypeSerializer())
             .serializerByType(TruckState.class, new EquipmentStateSerializer())
+            .deserializerByType(Equipment.class, new EquipmentDeserializer())
+            .deserializerByType(Location.class, new LocationDeserializer())
             .deserializerByType(DozerState.class, new EquipmentStateDeserializer(DOZER))
             .deserializerByType(DrillState.class, new EquipmentStateDeserializer(DRILL))
             .deserializerByType(ShovelState.class, new EquipmentStateDeserializer(SHOVEL))
             .deserializerByType(TruckState.class, new EquipmentStateDeserializer(TRUCK))
-            .deserializerByType(Equipment.class, new EquipmentDeserializer())
-            .deserializerByType(Location.class, new LocationDeserializer())
             .build();
 
         configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));

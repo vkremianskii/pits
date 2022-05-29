@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.DUMP;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.FACE;
 import static com.github.vkremianskii.pits.registry.types.model.LocationType.HOLE;
@@ -25,13 +26,13 @@ class LocationRepositoryTests {
     @Test
     void should_create_and_get_locations() {
         // when
-        var dumpId = UUID.randomUUID();
+        var dumpId = locationId(UUID.randomUUID());
         sut.createLocation(dumpId, "Dump No.1", DUMP).block();
-        var faceId = UUID.randomUUID();
+        var faceId = locationId(UUID.randomUUID());
         sut.createLocation(faceId, "Face No.1", FACE).block();
-        var holeId = UUID.randomUUID();
+        var holeId = locationId(UUID.randomUUID());
         sut.createLocation(holeId, "Hole No.1", HOLE).block();
-        var stockpileId = UUID.randomUUID();
+        var stockpileId = locationId(UUID.randomUUID());
         sut.createLocation(stockpileId, "Stockpile No.1", STOCKPILE).block();
         var locations = sut.getLocations().block();
 

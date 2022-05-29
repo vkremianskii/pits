@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
+import com.github.vkremianskii.pits.core.types.model.LocationId;
 import com.github.vkremianskii.pits.registry.types.model.LocationPoint;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -34,27 +36,27 @@ public class LocationPointRepository {
         return Mono.fromRunnable(() -> dslContext.deleteFrom(TABLE).execute());
     }
 
-    public Mono<List<LocationPoint>> getPointsByLocationId(UUID locationId) {
+    public Mono<List<LocationPoint>> getPointsByLocationId(LocationId locationId) {
         return Mono.fromSupplier(() -> dslContext.selectFrom(TABLE)
-                .where(FIELD_LOCATION_ID.eq(locationId))
+                .where(FIELD_LOCATION_ID.eq(locationId.value))
                 .orderBy(FIELD_POINT_ORDER)
                 .fetch(r -> r.map(LocationPointRepository::locationPointFromRecord)));
     }
 
-    public Mono<Void> createLocationPoint(UUID locationId,
+    public Mono<Void> createLocationPoint(LocationId locationId,
                                           int order,
                                           double latitude,
                                           double longitude) {
         return Mono.fromRunnable(() -> dslContext.insertInto(TABLE)
                 .columns(FIELD_LOCATION_ID, FIELD_POINT_ORDER, FIELD_LATITUDE, FIELD_LONGITUDE)
-                .values(locationId, (short) order, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude))
+                .values(locationId.value, (short) order, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude))
                 .execute());
     }
 
     private static LocationPoint locationPointFromRecord(org.jooq.Record record) {
         return new LocationPoint(
             record.get(FIELD_ID),
-            record.get(FIELD_LOCATION_ID),
+            locationId(record.get(FIELD_LOCATION_ID)),
             record.get(FIELD_POINT_ORDER).intValue(),
             record.get(FIELD_LATITUDE).doubleValue(),
             record.get(FIELD_LONGITUDE).doubleValue());
