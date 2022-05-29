@@ -32,7 +32,7 @@ public class HaulCycleRepository {
     private static final Field<BigDecimal> FIELD_START_LOAD_LATITUDE = field("start_load_latitude", BigDecimal.class);
     private static final Field<BigDecimal> FIELD_START_LOAD_LONGITUDE = field("start_load_longitude", BigDecimal.class);
     private static final Field<Timestamp> FIELD_END_LOAD_TIMESTAMP = field("end_load_timestamp", Timestamp.class);
-    private static final Field<Short> FIELD_END_LOAD_PAYLOAD = field("end_load_payload", Short.class);
+    private static final Field<Integer> FIELD_END_LOAD_PAYLOAD = field("end_load_payload", Integer.class);
     private static final Field<Timestamp> FIELD_START_UNLOAD_TIMESTAMP = field("start_unload_timestamp", Timestamp.class);
     private static final Field<Timestamp> FIELD_END_UNLOAD_TIMESTAMP = field("end_unload_timestamp", Timestamp.class);
     private static final Field<Timestamp> FIELD_INSERT_TIMESTAMP = field("insert_timestamp", Timestamp.class);
@@ -77,7 +77,7 @@ public class HaulCycleRepository {
                 Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null),
                 Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null),
                 Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null),
-                Optional.ofNullable(endLoadPayload).map(Integer::shortValue).orElse(null),
+                endLoadPayload,
                 Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null),
                 Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
             .execute());
@@ -100,7 +100,7 @@ public class HaulCycleRepository {
             .set(FIELD_START_LOAD_LATITUDE, Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null))
             .set(FIELD_START_LOAD_LONGITUDE, Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null))
             .set(FIELD_END_LOAD_TIMESTAMP, Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null))
-            .set(FIELD_END_LOAD_PAYLOAD, Optional.ofNullable(endLoadPayload).map(Integer::shortValue).orElse(null))
+            .set(FIELD_END_LOAD_PAYLOAD, endLoadPayload)
             .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
             .set(FIELD_END_UNLOAD_TIMESTAMP, Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
             .where(FIELD_ID.eq(haulCycleId))
@@ -141,7 +141,7 @@ public class HaulCycleRepository {
             startLoadLatitude.map(BigDecimal::doubleValue).orElse(null),
             startLoadLongitude.map(BigDecimal::doubleValue).orElse(null),
             endLoadTimestamp.map(Timestamp::toInstant).orElse(null),
-            endLoadPayload.map(Short::intValue).orElse(null),
+            endLoadPayload.orElse(null),
             startUnloadTimestamp.map(Timestamp::toInstant).orElse(null),
             endUnloadTimestamp.map(Timestamp::toInstant).orElse(null));
     }
