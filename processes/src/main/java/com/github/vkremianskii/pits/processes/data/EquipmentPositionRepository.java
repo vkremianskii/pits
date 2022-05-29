@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.processes.data;
 
+import com.github.vkremianskii.pits.core.data.TransactionalJooq;
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
-import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
@@ -32,27 +32,28 @@ public class EquipmentPositionRepository {
     private static final Field<Integer> FIELD_ELEVATION = field("elevation", Integer.class);
     private static final Field<Timestamp> FIELD_INSERT_TIMESTAMP = field("insert_timestamp", Timestamp.class);
 
-    private final DSLContext dslContext;
+    private final TransactionalJooq transactionalJooq;
 
-    public EquipmentPositionRepository(DSLContext dslContext) {
-        this.dslContext = requireNonNull(dslContext);
+    public EquipmentPositionRepository(TransactionalJooq transactionalJooq) {
+        this.transactionalJooq = requireNonNull(transactionalJooq);
     }
 
     public Mono<Void> clear() {
-        return Mono.from(dslContext.deleteFrom(TABLE)).then();
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.deleteFrom(TABLE)))
+            .then();
     }
 
     public Mono<Void> insert(EquipmentId equipmentId,
                              double latitude,
                              double longitude,
                              int elevation) {
-        return Mono.from(dslContext.insertInto(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
                 .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION)
                 .values(
                     equipmentId.value,
                     BigDecimal.valueOf(latitude),
                     BigDecimal.valueOf(longitude),
-                    elevation))
+                    elevation)))
             .then();
     }
 
@@ -61,43 +62,43 @@ public class EquipmentPositionRepository {
                              double longitude,
                              int elevation,
                              Instant insertTimestamp) {
-        return Mono.from(dslContext.insertInto(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
                 .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION, FIELD_INSERT_TIMESTAMP)
                 .values(
                     equipmentId.value,
                     BigDecimal.valueOf(latitude),
                     BigDecimal.valueOf(longitude),
                     elevation,
-                    Timestamp.from(insertTimestamp)))
+                    Timestamp.from(insertTimestamp))))
             .then();
     }
 
     public Mono<Optional<EquipmentPositionRecord>> getLastRecordForEquipment(EquipmentId equipmentId) {
-        return Mono.from(dslContext.selectFrom(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.selectFrom(TABLE)
                 .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value))
                 .orderBy(FIELD_INSERT_TIMESTAMP.desc())
                 .limit(1))
             .map(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord))
             .map(Optional::of)
-            .switchIfEmpty(Mono.just(Optional.empty()));
+            .switchIfEmpty(Mono.just(Optional.empty())));
     }
 
     public Mono<Optional<EquipmentPositionRecord>> getLastRecordForEquipmentBefore(EquipmentId equipmentId, Instant timestamp) {
-        return Mono.from(dslContext.selectFrom(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.selectFrom(TABLE)
                 .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value).and(FIELD_INSERT_TIMESTAMP.le(Timestamp.from(timestamp))))
                 .orderBy(FIELD_INSERT_TIMESTAMP.desc())
                 .limit(1))
             .map(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord))
             .map(Optional::of)
-            .switchIfEmpty(Mono.just(Optional.empty()));
+            .switchIfEmpty(Mono.just(Optional.empty())));
     }
 
     public Mono<List<EquipmentPositionRecord>> getRecordsForEquipmentAfter(EquipmentId equipmentId, Instant timestamp) {
-        return Flux.from(dslContext.selectFrom(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Flux.from(ctx.selectFrom(TABLE)
                 .where(FIELD_EQUIPMENT_ID.eq(equipmentId.value).and(FIELD_INSERT_TIMESTAMP.gt(Timestamp.from(timestamp))))
                 .orderBy(FIELD_INSERT_TIMESTAMP))
             .map(r -> r.map(EquipmentPositionRepository::recordFromJooqRecord))
-            .collectList();
+            .collectList());
     }
 
     private static EquipmentPositionRecord recordFromJooqRecord(org.jooq.Record record) {

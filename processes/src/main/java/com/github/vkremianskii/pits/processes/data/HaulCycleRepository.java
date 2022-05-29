@@ -1,9 +1,9 @@
 package com.github.vkremianskii.pits.processes.data;
 
+import com.github.vkremianskii.pits.core.data.TransactionalJooq;
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
@@ -37,14 +37,15 @@ public class HaulCycleRepository {
     private static final Field<Timestamp> FIELD_END_UNLOAD_TIMESTAMP = field("end_unload_timestamp", Timestamp.class);
     private static final Field<Timestamp> FIELD_INSERT_TIMESTAMP = field("insert_timestamp", Timestamp.class);
 
-    private final DSLContext dslContext;
+    private final TransactionalJooq transactionalJooq;
 
-    public HaulCycleRepository(DSLContext dslContext) {
-        this.dslContext = requireNonNull(dslContext);
+    public HaulCycleRepository(TransactionalJooq transactionalJooq) {
+        this.transactionalJooq = requireNonNull(transactionalJooq);
     }
 
     public Mono<Void> clear() {
-        return Mono.from(dslContext.deleteFrom(TABLE)).then();
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.deleteFrom(TABLE)))
+            .then();
     }
 
     public Mono<Void> insert(EquipmentId truckId,
@@ -57,7 +58,7 @@ public class HaulCycleRepository {
                              @Nullable Integer endLoadPayload,
                              @Nullable Instant startUnloadTimestamp,
                              @Nullable Instant endUnloadTimestamp) {
-        return Mono.from(dslContext.insertInto(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
                 .columns(
                     FIELD_TRUCK_ID,
                     FIELD_SHOVEL_ID,
@@ -79,7 +80,7 @@ public class HaulCycleRepository {
                     Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null),
                     endLoadPayload,
                     Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null),
-                    Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null)))
+                    Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))))
             .then();
     }
 
@@ -93,7 +94,7 @@ public class HaulCycleRepository {
                              @Nullable Integer endLoadPayload,
                              @Nullable Instant startUnloadTimestamp,
                              @Nullable Instant endUnloadTimestamp) {
-        return Mono.from(dslContext.update(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.update(TABLE)
                 .set(FIELD_SHOVEL_ID, shovelId != null ? shovelId.value : null)
                 .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
                 .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
@@ -103,18 +104,18 @@ public class HaulCycleRepository {
                 .set(FIELD_END_LOAD_PAYLOAD, endLoadPayload)
                 .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
                 .set(FIELD_END_UNLOAD_TIMESTAMP, Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
-                .where(FIELD_ID.eq(haulCycleId)))
+                .where(FIELD_ID.eq(haulCycleId))))
             .then();
     }
 
     public Mono<Optional<HaulCycle>> getLastHaulCycleForTruck(EquipmentId truckId) {
-        return Mono.from(dslContext.selectFrom(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.selectFrom(TABLE)
                 .where(FIELD_TRUCK_ID.eq(truckId.value))
                 .orderBy(FIELD_INSERT_TIMESTAMP.desc())
                 .limit(1))
             .map(r -> r.map(HaulCycleRepository::haulCycleFromRecord))
             .map(Optional::of)
-            .switchIfEmpty(Mono.just(Optional.empty()));
+            .switchIfEmpty(Mono.just(Optional.empty())));
     }
 
     private static HaulCycle haulCycleFromRecord(org.jooq.Record record) {

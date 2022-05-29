@@ -22,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 
 @SpringBootTest(properties = {"integration.registry.baseUrl=http://localhost:18080"})
@@ -112,7 +113,7 @@ public class HaulCycleTests {
                 }
                 """)));
         var haulCycles = haulCycleRepository.getLastHaulCycleForTruck(truckId).block();
-        // assertThat(haulCycles).isEmpty();
+        assertThat(haulCycles).isEmpty();
     }
 
     @AfterEach

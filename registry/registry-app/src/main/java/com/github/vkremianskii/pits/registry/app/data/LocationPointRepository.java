@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
+import com.github.vkremianskii.pits.core.data.TransactionalJooq;
 import com.github.vkremianskii.pits.core.types.model.LocationId;
 import com.github.vkremianskii.pits.core.types.model.LocationPoint;
-import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
@@ -27,31 +27,37 @@ public class LocationPointRepository {
     private static final Field<Short> FIELD_POINT_ORDER = field("point_order", Short.class);
     private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
     private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
-    private final DSLContext dslContext;
 
-    public LocationPointRepository(DSLContext dslContext) {
-        this.dslContext = requireNonNull(dslContext);
+    private final TransactionalJooq transactionalJooq;
+
+    public LocationPointRepository(TransactionalJooq transactionalJooq) {
+        this.transactionalJooq = requireNonNull(transactionalJooq);
     }
 
     public Mono<Void> clear() {
-        return Mono.from(dslContext.deleteFrom(TABLE)).then();
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.deleteFrom(TABLE)))
+            .then();
     }
 
     public Mono<List<LocationPoint>> getPointsByLocationId(LocationId locationId) {
-        return Flux.from(dslContext.selectFrom(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Flux.from(ctx.selectFrom(TABLE)
                 .where(FIELD_LOCATION_ID.eq(locationId.value))
                 .orderBy(FIELD_POINT_ORDER))
             .map(r -> r.map(LocationPointRepository::locationPointFromRecord))
-            .collectList();
+            .collectList());
     }
 
     public Mono<Void> createLocationPoint(LocationId locationId,
                                           int order,
                                           double latitude,
                                           double longitude) {
-        return Mono.from(dslContext.insertInto(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
                 .columns(FIELD_LOCATION_ID, FIELD_POINT_ORDER, FIELD_LATITUDE, FIELD_LONGITUDE)
-                .values(locationId.value, (short) order, BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude)))
+                .values(
+                    locationId.value,
+                    (short) order,
+                    BigDecimal.valueOf(latitude),
+                    BigDecimal.valueOf(longitude))))
             .then();
     }
 

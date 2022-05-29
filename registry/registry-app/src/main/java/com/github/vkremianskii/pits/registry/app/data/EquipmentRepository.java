@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
+import com.github.vkremianskii.pits.core.data.TransactionalJooq;
 import com.github.vkremianskii.pits.core.types.model.Equipment;
 import com.github.vkremianskii.pits.core.types.model.EquipmentId;
 import com.github.vkremianskii.pits.core.types.model.EquipmentState;
@@ -10,9 +11,14 @@ import com.github.vkremianskii.pits.core.types.model.equipment.Drill;
 import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
 import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
+import io.r2dbc.spi.Connection;
+import io.r2dbc.spi.ConnectionFactory;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.SQLDialect;
 import org.jooq.Table;
+import org.jooq.impl.DSL;
+import org.springframework.r2dbc.connection.ConnectionFactoryUtils;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
 import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DOZER;
@@ -65,57 +72,58 @@ public class EquipmentRepository {
     private static final Map<String, EquipmentState> VALUE_TO_STATE = STATE_TO_VALUE.entrySet().stream()
         .collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
 
-    private final DSLContext dslContext;
+    private final TransactionalJooq transactionalJooq;
 
-    public EquipmentRepository(DSLContext dslContext) {
-        this.dslContext = requireNonNull(dslContext);
+    public EquipmentRepository(TransactionalJooq transactionalJooq) {
+        this.transactionalJooq = requireNonNull(transactionalJooq);
     }
 
     public Mono<Void> clear() {
-        return Mono.from(dslContext.deleteFrom(TABLE)).then();
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.deleteFrom(TABLE)))
+            .then();
     }
 
     public Mono<List<Equipment>> getEquipment() {
-        return Flux.from(dslContext.selectFrom(TABLE))
+        return transactionalJooq.inTransactionalContext(ctx -> Flux.from(ctx.selectFrom(TABLE))
             .map(r -> r.map(EquipmentRepository::equipmentFromRecord))
-            .collectList();
+            .collectList());
     }
 
     public Mono<Optional<Equipment>> getEquipmentById(EquipmentId equipmentId) {
-        return Mono.from(dslContext.selectFrom(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.selectFrom(TABLE)
                 .where(FIELD_ID.eq(equipmentId.value)))
             .map(r -> r.map(EquipmentRepository::equipmentFromRecord))
             .map(Optional::of)
-            .switchIfEmpty(Mono.just(Optional.empty()));
+            .switchIfEmpty(Mono.just(Optional.empty())));
     }
 
     public Mono<Void> createEquipment(EquipmentId id, String name, EquipmentType type, Short loadRadius) {
-        return Mono.from(dslContext.insertInto(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
                 .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_LOAD_RADIUS)
-                .values(id.value, name, valueFromType(type), loadRadius))
+                .values(id.value, name, valueFromType(type), loadRadius)))
             .then();
     }
 
     public Mono<Void> updateEquipmentState(EquipmentId equipmentId, EquipmentState state) {
-        return Mono.from(dslContext.update(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.update(TABLE)
                 .set(FIELD_STATE, valueFromState(state))
-                .where(FIELD_ID.eq(equipmentId.value)))
+                .where(FIELD_ID.eq(equipmentId.value))))
             .then();
     }
 
     public Mono<Void> updateEquipmentPosition(EquipmentId equipmentId, Position position) {
-        return Mono.from(dslContext.update(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.update(TABLE)
                 .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
                 .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
                 .set(FIELD_ELEVATION, (short) position.elevation())
-                .where(FIELD_ID.eq(equipmentId.value)))
+                .where(FIELD_ID.eq(equipmentId.value))))
             .then();
     }
 
     public Mono<Void> updateEquipmentPayload(EquipmentId equipmentId, int payload) {
-        return Mono.from(dslContext.update(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.update(TABLE)
                 .set(FIELD_PAYLOAD, payload)
-                .where(FIELD_ID.eq(equipmentId.value)))
+                .where(FIELD_ID.eq(equipmentId.value))))
             .then();
     }
 

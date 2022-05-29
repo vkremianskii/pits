@@ -4,8 +4,6 @@ import com.github.vkremianskii.pits.core.types.model.Position;
 import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.app.data.EquipmentRepository;
-import com.github.vkremianskii.pits.registry.app.data.LocationPointRepository;
-import com.github.vkremianskii.pits.registry.app.data.LocationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;

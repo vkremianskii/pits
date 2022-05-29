@@ -1,12 +1,17 @@
 package com.github.vkremianskii.pits.registry.app.data;
 
+import com.github.vkremianskii.pits.core.data.TransactionalJooq;
 import com.github.vkremianskii.pits.core.types.model.LocationId;
 import com.github.vkremianskii.pits.core.types.model.LocationType;
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
 import com.github.vkremianskii.pits.registry.types.model.LocationDeclaration;
+import io.r2dbc.spi.Connection;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.SQLDialect;
 import org.jooq.Table;
+import org.jooq.impl.DSL;
+import org.springframework.r2dbc.connection.ConnectionFactoryUtils;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,6 +19,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static com.github.vkremianskii.pits.core.types.model.LocationId.locationId;
 import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
@@ -38,26 +44,27 @@ public class LocationRepository {
         HOLE, "hole",
         STOCKPILE, "stockpile");
 
-    private final DSLContext dslContext;
+    private final TransactionalJooq transactionalJooq;
 
-    public LocationRepository(DSLContext dslContext) {
-        this.dslContext = requireNonNull(dslContext);
+    public LocationRepository(TransactionalJooq transactionalJooq) {
+        this.transactionalJooq = requireNonNull(transactionalJooq);
     }
 
     public Mono<Void> clear() {
-        return Mono.from(dslContext.deleteFrom(TABLE)).then();
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.deleteFrom(TABLE)))
+            .then();
     }
 
     public Mono<List<LocationDeclaration>> getLocations() {
-        return Flux.from(dslContext.selectFrom(TABLE))
+        return transactionalJooq.inTransactionalContext(ctx -> Flux.from(ctx.selectFrom(TABLE))
             .map(r -> r.map(LocationRepository::locationDeclarationFromRecord))
-            .collectList();
+            .collectList());
     }
 
     public Mono<Void> createLocation(LocationId id, String name, LocationType type) {
-        return Mono.from(dslContext.insertInto(TABLE)
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
                 .columns(FIELD_ID, FIELD_NAME, FIELD_TYPE)
-                .values(id.value, name, valueFromType(type)))
+                .values(id.value, name, valueFromType(type))))
             .then();
     }
 
