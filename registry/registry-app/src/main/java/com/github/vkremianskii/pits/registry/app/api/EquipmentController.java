@@ -1,6 +1,5 @@
 package com.github.vkremianskii.pits.registry.app.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.vkremianskii.pits.core.types.model.Equipment;
