@@ -5,3 +5,7 @@ GRANT ALL PRIVILEGES ON DATABASE registry to registry;
 CREATE DATABASE processes;
 CREATE USER processes WITH PASSWORD 'processes';
 GRANT ALL PRIVILEGES ON DATABASE processes to processes;
+
+CREATE DATABASE auth;
+CREATE USER auth WITH PASSWORD 'auth';
+GRANT ALL PRIVILEGES ON DATABASE auth to auth;

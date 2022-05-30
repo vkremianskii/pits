@@ -1,0 +1,12 @@
+server:
+  port: 8084
+
+spring:
+  flyway:
+    url: jdbc:postgresql://localhost:5432/auth
+    user: auth
+    password: auth
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/auth
+    username: auth
+    password: auth

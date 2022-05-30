@@ -14,3 +14,7 @@ include 'registry:registry-types'
 
 include 'communicator:communicator-app'
 include 'communicator:communicator-types'
+
+include 'authenticator:authenticator-app'
+include 'authenticator:authenticator-client'
+include 'authenticator:authenticator-types'
