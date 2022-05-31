@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation project(':core:core-types')
     implementation project(':registry:registry-client')
+    implementation project(':registry:registry-types')
     implementation project(':communicator:communicator-types')
 
     implementation 'io.projectreactor:reactor-core'

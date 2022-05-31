@@ -9,6 +9,7 @@ dependencies {
     implementation project(':core:core-types')
     implementation project(':core:core-web')
     implementation project(':registry:registry-client')
+    implementation project(':registry:registry-types')
 
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.postgresql:r2dbc-postgresql'

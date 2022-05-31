@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api project(':core:core-types')
+    implementation project(':core:core-types')
 
     api 'org.springframework:spring-web'
 }
