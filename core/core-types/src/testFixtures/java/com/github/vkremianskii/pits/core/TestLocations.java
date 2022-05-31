@@ -6,9 +6,9 @@ import com.github.vkremianskii.pits.core.model.location.Face;
 import com.github.vkremianskii.pits.core.model.location.Hole;
 import com.github.vkremianskii.pits.core.model.location.Stockpile;
 
-import java.util.UUID;
-
+import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
 import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
 
 public class TestLocations {
 
@@ -29,7 +29,7 @@ public class TestLocations {
     }
 
     public static LocationId randomLocationId() {
-        return LocationId.locationId(UUID.randomUUID());
+        return locationId(randomUUID());
     }
 
     private TestLocations() {

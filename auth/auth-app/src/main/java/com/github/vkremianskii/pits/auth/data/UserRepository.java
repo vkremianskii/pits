@@ -11,7 +11,6 @@ import com.github.vkremianskii.pits.auth.model.Username;
 import com.github.vkremianskii.pits.core.data.TransactionalJooq;
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
 import org.jooq.Field;
-import org.jooq.JSONB;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
@@ -30,11 +29,11 @@ import static org.jooq.impl.DSL.table;
 @Repository
 public class UserRepository {
 
-    private static final Table<?> TABLE = table("user");
+    private static final Table<?> TABLE = table("auth_user");
     private static final Field<UUID> FIELD_ID = field("id", UUID.class);
     private static final Field<String> FIELD_USERNAME = field("username", String.class);
     private static final Field<String> FIELD_PASSWORD = field("password", String.class);
-    private static final Field<JSONB> FIELD_SCOPES = field("scopes", JSONB.class);
+    private static final Field<String> FIELD_SCOPES = field("scopes", String.class);
 
     private final TransactionalJooq transactionalJooq;
     private final ObjectMapper objectMapper;
@@ -45,12 +44,18 @@ public class UserRepository {
         this.objectMapper = requireNonNull(objectMapper);
     }
 
+    public Mono<Void> clear() {
+        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.deleteFrom(TABLE)))
+            .then();
+    }
+
     public Mono<Void> createUser(UserId userId,
                                  Username username,
-                                 PasswordHash password) {
+                                 PasswordHash password,
+                                 Set<Scope> scopes) {
         return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
-                .columns(FIELD_ID, FIELD_USERNAME, FIELD_PASSWORD)
-                .values(userId.value, username.value, password.value))
+                .columns(FIELD_ID, FIELD_USERNAME, FIELD_PASSWORD, FIELD_SCOPES)
+                .values(userId.value, username.value, password.value, serializeScopes(scopes)))
             .then());
     }
 
@@ -72,12 +77,20 @@ public class UserRepository {
             id,
             username,
             password,
-            parseScopes(scopes));
+            deserializeScopes(scopes));
     }
 
-    private Set<Scope> parseScopes(JSONB jsonb) {
+    private String serializeScopes(Set<Scope> scopes) {
         try {
-            return objectMapper.readValue(jsonb.data(), new TypeReference<>() {
+            return objectMapper.writeValueAsString(scopes);
+        } catch (JsonProcessingException e) {
+            throw new InternalServerError(e);
+        }
+    }
+
+    private Set<Scope> deserializeScopes(String json) {
+        try {
+            return objectMapper.readValue(json, new TypeReference<>() {
             });
         } catch (JsonProcessingException e) {
             throw new InternalServerError(e);

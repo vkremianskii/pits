@@ -34,4 +34,4 @@ CREATE TABLE location_point
     CONSTRAINT loc_poi_loc_id_fk FOREIGN KEY (location_id) REFERENCES location (id)
 );
 
-CREATE INDEX loc_poc_loc_id_idx ON location_point (location_id)
+CREATE INDEX loc_poc_loc_id_idx ON location_point (location_id);

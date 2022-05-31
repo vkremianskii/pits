@@ -14,17 +14,19 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.github.vkremianskii.pits.auth.model.PasswordHash.passwordHash;
 import static com.github.vkremianskii.pits.auth.model.UserId.userId;
 import static java.util.Objects.requireNonNull;
+import static java.util.UUID.randomUUID;
 
 @Service
 public class UserService {
 
-    private static final int NUM_HASH_ITERATIONS = 1;
+    private static final int HASH_NUM_ITERATIONS = 1;
+    private static final int HASH_KEY_LENGTH = 128;
 
     private final UserRepository userRepository;
 
@@ -32,11 +34,11 @@ public class UserService {
         this.userRepository = requireNonNull(userRepository);
     }
 
-    public Mono<UserId> createUser(Username username, char[] password) {
-        final var userId = userId(UUID.randomUUID());
+    public Mono<UserId> createUser(Username username, char[] password, Set<Scope> scopes) {
+        final var userId = userId(randomUUID());
         final var hash = hash(password, userId);
 
-        return userRepository.createUser(userId, username, hash)
+        return userRepository.createUser(userId, username, hash, scopes)
             .thenReturn(userId);
     }
 
@@ -61,10 +63,10 @@ public class UserService {
 
     private static PasswordHash hash(char[] password, byte[] salt) {
         try {
-            final var keySpec = new PBEKeySpec(password, salt, NUM_HASH_ITERATIONS);
+            final var keySpec = new PBEKeySpec(password, salt, HASH_NUM_ITERATIONS, HASH_KEY_LENGTH);
             final var keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             final var encoded = keyFactory.generateSecret(keySpec).getEncoded();
-            return passwordHash(new String(encoded));
+            return passwordHash(Base64.getEncoder().encodeToString(encoded));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new InternalServerError(e);
         }

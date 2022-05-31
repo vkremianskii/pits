@@ -25,7 +25,10 @@ public class UserController {
 
     @PostMapping
     public Mono<CreateUserResponse> createUser(@RequestBody CreateUserRequest request) {
-        return userService.createUser(request.username(), request.password().toCharArray())
+        return userService.createUser(
+                request.username(),
+                request.password().toCharArray(),
+                request.scopes())
             .map(CreateUserResponse::new);
     }
 

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vkremianskii.pits.auth.client.AuthClientAutoConfiguration
+com.github.vkremianskii.pits.auth.client.com.github.vkremianskii.pits.auth.client.AuthClientAutoConfiguration

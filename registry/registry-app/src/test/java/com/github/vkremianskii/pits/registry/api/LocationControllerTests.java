@@ -5,8 +5,8 @@ import com.github.vkremianskii.pits.core.model.LocationPoint;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.data.LocationRepository;
-import com.github.vkremianskii.pits.registry.logic.LocationService;
 import com.github.vkremianskii.pits.registry.dto.CreateLocationRequest;
+import com.github.vkremianskii.pits.registry.logic.LocationService;
 import com.github.vkremianskii.pits.registry.model.LocationDeclaration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
 
 import static com.github.vkremianskii.pits.core.TestLocations.randomLocationId;
 import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
@@ -26,6 +25,7 @@ import static com.github.vkremianskii.pits.core.model.LocationType.FACE;
 import static com.github.vkremianskii.pits.core.model.LocationType.HOLE;
 import static com.github.vkremianskii.pits.core.model.LocationType.STOCKPILE;
 import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -100,7 +100,7 @@ class LocationControllerTests {
     void should_create_locations() {
         // given
         when(locationService.createLocation(any(), any(), any()))
-            .thenReturn(Mono.defer(() -> Mono.just(locationId(UUID.randomUUID()))));
+            .thenReturn(Mono.defer(() -> Mono.just(locationId(randomUUID()))));
 
         // expect
         webClient.post()

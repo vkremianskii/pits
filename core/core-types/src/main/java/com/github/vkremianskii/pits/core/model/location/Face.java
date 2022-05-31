@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.core.model.location;
 
-import com.github.vkremianskii.pits.core.model.LocationId;
 import com.github.vkremianskii.pits.core.model.LatLngPoint;
 import com.github.vkremianskii.pits.core.model.Location;
+import com.github.vkremianskii.pits.core.model.LocationId;
 
 import java.util.List;
 

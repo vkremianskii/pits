@@ -1,15 +1,15 @@
 package com.github.vkremianskii.pits.core;
 
 import com.github.vkremianskii.pits.core.model.EquipmentId;
+import com.github.vkremianskii.pits.core.model.EquipmentState;
+import com.github.vkremianskii.pits.core.model.Position;
 import com.github.vkremianskii.pits.core.model.equipment.Dozer;
 import com.github.vkremianskii.pits.core.model.equipment.Drill;
 import com.github.vkremianskii.pits.core.model.equipment.Shovel;
 import com.github.vkremianskii.pits.core.model.equipment.Truck;
-import com.github.vkremianskii.pits.core.model.EquipmentState;
-import com.github.vkremianskii.pits.core.model.Position;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
+import static java.util.UUID.randomUUID;
 
 public class TestEquipment {
 
@@ -34,7 +34,7 @@ public class TestEquipment {
     }
 
     public static EquipmentId randomEquipmentId() {
-        return EquipmentId.equipmentId(UUID.randomUUID());
+        return EquipmentId.equipmentId(randomUUID());
     }
 
     private TestEquipment() {

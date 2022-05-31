@@ -32,9 +32,9 @@ import static com.github.vkremianskii.pits.core.model.LocationType.HOLE;
 import static com.github.vkremianskii.pits.core.model.LocationType.STOCKPILE;
 import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
-import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 
 @WireMockTest

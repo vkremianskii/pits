@@ -11,12 +11,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static com.github.vkremianskii.pits.core.Pair.pair;
 import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
 import static java.util.Objects.requireNonNull;
+import static java.util.UUID.randomUUID;
 
 @Service
 public class LocationService {
@@ -32,7 +32,7 @@ public class LocationService {
 
     @Transactional
     public Mono<LocationId> createLocation(String name, LocationType type, List<LatLngPoint> geometry) {
-        final var locationId = locationId(UUID.randomUUID());
+        final var locationId = locationId(randomUUID());
         final var indexedPoints = IntStream.range(0, geometry.size())
             .mapToObj(i -> pair(i, geometry.get(i)))
             .toList();

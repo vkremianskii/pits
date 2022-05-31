@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.github.vkremianskii.pits.core.json.deserializer.EquipmentDeserializer;
-import com.github.vkremianskii.pits.core.json.serializer.MicrotypeSerializer;
 import com.github.vkremianskii.pits.core.json.deserializer.LocationDeserializer;
+import com.github.vkremianskii.pits.core.json.serializer.MicrotypeSerializer;
 import com.github.vkremianskii.pits.core.model.Equipment;
 import com.github.vkremianskii.pits.core.model.Location;
 

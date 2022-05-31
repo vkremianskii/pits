@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.core.model.equipment;
 
-import com.github.vkremianskii.pits.core.model.EquipmentId;
 import com.github.vkremianskii.pits.core.model.Equipment;
+import com.github.vkremianskii.pits.core.model.EquipmentId;
 import com.github.vkremianskii.pits.core.model.EquipmentState;
 import com.github.vkremianskii.pits.core.model.Position;
 import org.jetbrains.annotations.Nullable;

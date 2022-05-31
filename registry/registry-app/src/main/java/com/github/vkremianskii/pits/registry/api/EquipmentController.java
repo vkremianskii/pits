@@ -9,8 +9,8 @@ import com.github.vkremianskii.pits.core.model.equipment.Shovel;
 import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.core.web.error.BadRequestError;
 import com.github.vkremianskii.pits.core.web.error.NotFoundError;
-import com.github.vkremianskii.pits.registry.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.ApiVersion;
+import com.github.vkremianskii.pits.registry.data.EquipmentRepository;
 import com.github.vkremianskii.pits.registry.dto.CreateEquipmentRequest;
 import com.github.vkremianskii.pits.registry.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.dto.EquipmentResponse;
@@ -25,12 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 import static com.github.vkremianskii.pits.core.model.EquipmentId.equipmentId;
 import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static java.util.Objects.requireNonNull;
+import static java.util.UUID.randomUUID;
 
 @RestController
 @RequestMapping("/equipment")
@@ -56,7 +55,7 @@ public class EquipmentController {
 
     @PostMapping
     public Mono<CreateEquipmentResponse> createEquipment(@RequestBody CreateEquipmentRequest request) {
-        final var equipmentId = equipmentId(UUID.randomUUID());
+        final var equipmentId = equipmentId(randomUUID());
         return equipmentRepository.createEquipment(equipmentId, request.name(), request.type(), null)
             .thenReturn(new CreateEquipmentResponse(equipmentId));
     }
