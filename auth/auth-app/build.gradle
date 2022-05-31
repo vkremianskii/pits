@@ -6,8 +6,8 @@ plugins {
 dependencies {
     implementation project(':core:core-data')
     implementation project(':core:core-web')
-    implementation project(':authenticator:authenticator-client')
-    implementation project(':authenticator:authenticator-types')
+    implementation project(':auth:auth-client')
+    implementation project(':auth:auth-types')
 
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.postgresql:r2dbc-postgresql'

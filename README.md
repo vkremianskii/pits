@@ -25,10 +25,10 @@ Open-pit mining system – exercise in software engineering.
 
 |Service|Purpose|Implemented|Dependencies|
 |-|-|-|-|
-|Registry|- Manages equipment and locations|:heavy_check_mark:|- PostgreSQL<br>- RabbitMQ<br>- Authenticator|
-|Processes|- Tracks historical data (e.g., equipment positions)<br>- Supervises business processes (e.g., haul cycles)|:heavy_check_mark:|- PostgreSQL<br>- RabbitMQ<br>- Registry<br>- Authenticator|
+|Auth|- Manages and authenticates users|:heavy_check_mark:|- PostgreSQL|
+|Registry|- Manages equipment and locations|:heavy_check_mark:|- PostgreSQL<br>- RabbitMQ<br>- Auth|
+|Processes|- Tracks historical data (e.g., equipment positions)<br>- Supervises business processes (e.g., haul cycles)|:heavy_check_mark:|- PostgreSQL<br>- RabbitMQ<br>- Registry<br>- Auth|
 |Communicator|- Talks to mobile equipment (e.g., trucks)|:heavy_check_mark:|- RabbitMQ|
-|Authenticator|- Manages and authenticates users|:heavy_check_mark:|- PostgreSQL|
 |Web App|- UI for mine personnel|:x:|- Registry<br>- Processes|
 |Mobile Equipment|- On-board computer software|:x:|- Communicator|
 
@@ -64,18 +64,18 @@ Open-pit mining system – exercise in software engineering.
 ### Commands
 
 - Start infra services: `docker-compose -f docker/docker-compose.yml up -d db adminer rabbitmq`
-- Build backend services: `docker-compose -f docker/docker-compose.yml build registry processes communicator authenticator`
-- Start backend services: `docker-compose -f docker/docker-compose.yml up -d registry processes communicator authenticator`
+- Build backend services: `docker-compose -f docker/docker-compose.yml build auth registry processes communicator`
+- Start backend services: `docker-compose -f docker/docker-compose.yml up -d auth registry processes communicator`
 - Optionally, start ELK Stack: `docker-compose -f docker/docker-compose.yml up -d elasticsearch logstash kibana`
 
 ### Services
 
 |Service|Port|Protocol|
 |-|-|-|
+|Auth|8084|HTTP|
 |Registry|8080|HTTP|
 |Processes|8081|HTTP|
 |Communicator|8082,8083|HTTP,gRPC|
-|Authenticator|8084|HTTP|
 |Adminer|8090|HTTP|
 |PostgreSQL|5432|TCP|
 |RabbitMQ|5672,15672|TCP,HTTP|
