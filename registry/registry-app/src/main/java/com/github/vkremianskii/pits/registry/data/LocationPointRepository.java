@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,8 +24,8 @@ public class LocationPointRepository {
     private static final Field<Integer> FIELD_ID = field("id", Integer.class);
     private static final Field<UUID> FIELD_LOCATION_ID = field("location_id", UUID.class);
     private static final Field<Short> FIELD_POINT_ORDER = field("point_order", Short.class);
-    private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
-    private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
+    private static final Field<Double> FIELD_LATITUDE = field("latitude", Double.class);
+    private static final Field<Double> FIELD_LONGITUDE = field("longitude", Double.class);
 
     private final TransactionalJooq transactionalJooq;
 
@@ -56,8 +55,8 @@ public class LocationPointRepository {
                 .values(
                     locationId.value,
                     (short) order,
-                    BigDecimal.valueOf(latitude),
-                    BigDecimal.valueOf(longitude))))
+                    latitude,
+                    longitude)))
             .then();
     }
 
@@ -66,7 +65,7 @@ public class LocationPointRepository {
             record.get(FIELD_ID),
             locationId(record.get(FIELD_LOCATION_ID)),
             record.get(FIELD_POINT_ORDER).intValue(),
-            record.get(FIELD_LATITUDE).doubleValue(),
-            record.get(FIELD_LONGITUDE).doubleValue());
+            record.get(FIELD_LATITUDE),
+            record.get(FIELD_LONGITUDE));
     }
 }

@@ -9,7 +9,6 @@ import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
@@ -29,8 +28,8 @@ public class HaulCycleRepository {
     private static final Field<UUID> FIELD_SHOVEL_ID = field("shovel_id", UUID.class);
     private static final Field<Timestamp> FIELD_WAIT_LOAD_TIMESTAMP = field("wait_load_timestamp", Timestamp.class);
     private static final Field<Timestamp> FIELD_START_LOAD_TIMESTAMP = field("start_load_timestamp", Timestamp.class);
-    private static final Field<BigDecimal> FIELD_START_LOAD_LATITUDE = field("start_load_latitude", BigDecimal.class);
-    private static final Field<BigDecimal> FIELD_START_LOAD_LONGITUDE = field("start_load_longitude", BigDecimal.class);
+    private static final Field<Double> FIELD_START_LOAD_LATITUDE = field("start_load_latitude", Double.class);
+    private static final Field<Double> FIELD_START_LOAD_LONGITUDE = field("start_load_longitude", Double.class);
     private static final Field<Timestamp> FIELD_END_LOAD_TIMESTAMP = field("end_load_timestamp", Timestamp.class);
     private static final Field<Integer> FIELD_END_LOAD_PAYLOAD = field("end_load_payload", Integer.class);
     private static final Field<Timestamp> FIELD_START_UNLOAD_TIMESTAMP = field("start_unload_timestamp", Timestamp.class);
@@ -75,8 +74,8 @@ public class HaulCycleRepository {
                     shovelId != null ? shovelId.value : null,
                     Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null),
                     Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null),
-                    Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null),
-                    Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null),
+                    startLoadLatitude,
+                    startLoadLongitude,
                     Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null),
                     endLoadPayload,
                     Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null),
@@ -98,8 +97,8 @@ public class HaulCycleRepository {
                 .set(FIELD_SHOVEL_ID, shovelId != null ? shovelId.value : null)
                 .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
                 .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
-                .set(FIELD_START_LOAD_LATITUDE, Optional.ofNullable(startLoadLatitude).map(BigDecimal::valueOf).orElse(null))
-                .set(FIELD_START_LOAD_LONGITUDE, Optional.ofNullable(startLoadLongitude).map(BigDecimal::valueOf).orElse(null))
+                .set(FIELD_START_LOAD_LATITUDE, startLoadLatitude)
+                .set(FIELD_START_LOAD_LONGITUDE, startLoadLongitude)
                 .set(FIELD_END_LOAD_TIMESTAMP, Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null))
                 .set(FIELD_END_LOAD_PAYLOAD, endLoadPayload)
                 .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
@@ -126,8 +125,8 @@ public class HaulCycleRepository {
             .orElse(null);
         final var waitLoadTimestamp = Optional.ofNullable(record.get(FIELD_WAIT_LOAD_TIMESTAMP));
         final var startLoadTimestamp = Optional.ofNullable(record.get(FIELD_START_LOAD_TIMESTAMP));
-        final var startLoadLatitude = Optional.ofNullable(record.get(FIELD_START_LOAD_LATITUDE));
-        final var startLoadLongitude = Optional.ofNullable(record.get(FIELD_START_LOAD_LONGITUDE));
+        final var startLoadLatitude = record.get(FIELD_START_LOAD_LATITUDE);
+        final var startLoadLongitude = record.get(FIELD_START_LOAD_LONGITUDE);
         final var endLoadTimestamp = Optional.ofNullable(record.get(FIELD_END_LOAD_TIMESTAMP));
         final var endLoadPayload = Optional.ofNullable(record.get(FIELD_END_LOAD_PAYLOAD));
         final var startUnloadTimestamp = Optional.ofNullable(record.get(FIELD_START_UNLOAD_TIMESTAMP));
@@ -141,8 +140,8 @@ public class HaulCycleRepository {
             shovelId,
             waitLoadTimestamp.map(Timestamp::toInstant).orElse(null),
             startLoadTimestamp.map(Timestamp::toInstant).orElse(null),
-            startLoadLatitude.map(BigDecimal::doubleValue).orElse(null),
-            startLoadLongitude.map(BigDecimal::doubleValue).orElse(null),
+            startLoadLatitude,
+            startLoadLongitude,
             endLoadTimestamp.map(Timestamp::toInstant).orElse(null),
             endLoadPayload.orElse(null),
             startUnloadTimestamp.map(Timestamp::toInstant).orElse(null),

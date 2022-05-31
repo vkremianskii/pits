@@ -4,8 +4,8 @@ CREATE TABLE equipment_position
 (
     id bigserial NOT NULL PRIMARY KEY,
     equipment_id uuid NOT NULL,
-    latitude numeric(10, 8) NOT NULL,
-    longitude numeric(11, 8) NOT NULL,
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL,
     elevation integer NOT NULL,
     insert_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -33,8 +33,8 @@ CREATE TABLE haul_cycle
     shovel_id uuid,
     wait_load_timestamp timestamp,
     start_load_timestamp timestamp,
-    start_load_latitude numeric(10, 8),
-    start_load_longitude numeric(11, 8),
+    start_load_latitude double precision,
+    start_load_longitude double precision,
     end_load_timestamp timestamp,
     end_load_payload integer,
     start_unload_timestamp timestamp,

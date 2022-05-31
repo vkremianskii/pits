@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -27,8 +26,8 @@ public class EquipmentPositionRepository {
     private static final Table<?> TABLE = table("equipment_position");
     private static final Field<Long> FIELD_ID = field("id", Long.class);
     private static final Field<UUID> FIELD_EQUIPMENT_ID = field("equipment_id", UUID.class);
-    private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
-    private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
+    private static final Field<Double> FIELD_LATITUDE = field("latitude", Double.class);
+    private static final Field<Double> FIELD_LONGITUDE = field("longitude", Double.class);
     private static final Field<Integer> FIELD_ELEVATION = field("elevation", Integer.class);
     private static final Field<Timestamp> FIELD_INSERT_TIMESTAMP = field("insert_timestamp", Timestamp.class);
 
@@ -51,8 +50,8 @@ public class EquipmentPositionRepository {
                 .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION)
                 .values(
                     equipmentId.value,
-                    BigDecimal.valueOf(latitude),
-                    BigDecimal.valueOf(longitude),
+                    latitude,
+                    longitude,
                     elevation)))
             .then();
     }
@@ -66,8 +65,8 @@ public class EquipmentPositionRepository {
                 .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION, FIELD_INSERT_TIMESTAMP)
                 .values(
                     equipmentId.value,
-                    BigDecimal.valueOf(latitude),
-                    BigDecimal.valueOf(longitude),
+                    latitude,
+                    longitude,
                     elevation,
                     Timestamp.from(insertTimestamp))))
             .then();
@@ -112,8 +111,8 @@ public class EquipmentPositionRepository {
         return new EquipmentPositionRecord(
             id,
             equipmentId,
-            latitude.doubleValue(),
-            longitude.doubleValue(),
+            latitude,
+            longitude,
             elevation,
             insertTimestamp.toInstant());
     }

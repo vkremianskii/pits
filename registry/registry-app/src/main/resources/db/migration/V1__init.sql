@@ -6,8 +6,8 @@ CREATE TABLE equipment
     name varchar(64) NOT NULL,
     type varchar(16) NOT NULL,
     state varchar(32),
-    latitude numeric(10, 8),
-    longitude numeric(11, 8),
+    latitude double precision,
+    longitude double precision,
     elevation smallint,
     payload integer,
     load_radius smallint
@@ -29,8 +29,8 @@ CREATE TABLE location_point
     id serial NOT NULL PRIMARY KEY,
     location_id uuid NOT NULL,
     point_order smallint NOT NULL,
-    latitude numeric(10, 8) NOT NULL,
-    longitude numeric(11, 8) NOT NULL,
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL,
     CONSTRAINT loc_poi_loc_id_fk FOREIGN KEY (location_id) REFERENCES location (id)
 );
 

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,8 +40,8 @@ public class EquipmentRepository {
     private static final Field<String> FIELD_NAME = field("name", String.class);
     private static final Field<String> FIELD_TYPE = field("type", String.class);
     private static final Field<String> FIELD_STATE = field("state", String.class);
-    private static final Field<BigDecimal> FIELD_LATITUDE = field("latitude", BigDecimal.class);
-    private static final Field<BigDecimal> FIELD_LONGITUDE = field("longitude", BigDecimal.class);
+    private static final Field<Double> FIELD_LATITUDE = field("latitude", Double.class);
+    private static final Field<Double> FIELD_LONGITUDE = field("longitude", Double.class);
     private static final Field<Short> FIELD_ELEVATION = field("elevation", Short.class);
     private static final Field<Integer> FIELD_PAYLOAD = field("payload", Integer.class);
     private static final Field<Short> FIELD_LOAD_RADIUS = field("load_radius", Short.class);
@@ -106,8 +105,8 @@ public class EquipmentRepository {
 
     public Mono<Void> updateEquipmentPosition(EquipmentId equipmentId, Position position) {
         return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.update(TABLE)
-                .set(FIELD_LATITUDE, BigDecimal.valueOf(position.latitude()))
-                .set(FIELD_LONGITUDE, BigDecimal.valueOf(position.longitude()))
+                .set(FIELD_LATITUDE, position.latitude())
+                .set(FIELD_LONGITUDE, position.longitude())
                 .set(FIELD_ELEVATION, (short) position.elevation())
                 .where(FIELD_ID.eq(equipmentId.value))))
             .then();
@@ -133,7 +132,7 @@ public class EquipmentRepository {
 
         Position position = null;
         if (latitude != null && longitude != null && elevation != null) {
-            position = new Position(latitude.doubleValue(), longitude.doubleValue(), elevation);
+            position = new Position(latitude, longitude, elevation);
         }
 
         return switch (type) {
