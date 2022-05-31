@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.processes.logic.fsm;
 
-import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
+import com.github.vkremianskii.pits.core.model.equipment.Shovel;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 
 import java.time.Instant;

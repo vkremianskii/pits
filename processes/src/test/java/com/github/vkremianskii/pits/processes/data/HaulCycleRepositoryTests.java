@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
 
-import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.core.TestEquipment.randomEquipmentId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 

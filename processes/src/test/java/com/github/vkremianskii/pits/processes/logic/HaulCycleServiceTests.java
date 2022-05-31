@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.processes.logic;
 
-import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import static com.github.vkremianskii.pits.core.types.TestEquipment.aShovel;
-import static com.github.vkremianskii.pits.core.types.TestEquipment.aTruck;
+import static com.github.vkremianskii.pits.core.TestEquipment.aShovel;
+import static com.github.vkremianskii.pits.core.TestEquipment.aTruck;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.any;

@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.processes.job;
 
-import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.core.model.equipment.Shovel;
+import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.logic.HaulCycleService;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import org.slf4j.Logger;
@@ -12,8 +12,8 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.github.vkremianskii.pits.core.types.model.EquipmentType.SHOVEL;
-import static com.github.vkremianskii.pits.core.types.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.core.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.core.model.EquipmentType.TRUCK;
 import static java.util.Objects.requireNonNull;
 
 @Component

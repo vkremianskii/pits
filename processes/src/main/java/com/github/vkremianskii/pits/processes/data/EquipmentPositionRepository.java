@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.processes.data;
 
 import com.github.vkremianskii.pits.core.data.TransactionalJooq;
-import com.github.vkremianskii.pits.core.types.model.EquipmentId;
+import com.github.vkremianskii.pits.core.model.EquipmentId;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import org.jooq.Field;
 import org.jooq.Table;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.github.vkremianskii.pits.core.types.model.EquipmentId.equipmentId;
+import static com.github.vkremianskii.pits.core.model.EquipmentId.equipmentId;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

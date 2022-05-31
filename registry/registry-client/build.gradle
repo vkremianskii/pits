@@ -5,6 +5,7 @@ plugins {
 dependencies {
     api project(':registry:registry-types')
 
+    implementation 'org.springframework.boot:spring-boot'
     implementation 'org.springframework:spring-webflux'
     runtimeOnly 'io.projectreactor.netty:reactor-netty'
 

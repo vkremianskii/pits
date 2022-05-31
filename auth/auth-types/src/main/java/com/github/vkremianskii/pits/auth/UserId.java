@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.auth;
 
-import com.github.vkremianskii.pits.core.types.Microtype;
+import com.github.vkremianskii.pits.core.Microtype;
 
 import java.util.UUID;
 

@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import com.github.vkremianskii.pits.core.types.json.CoreTypesModule;
-import com.github.vkremianskii.pits.core.types.model.EquipmentId;
-import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
-import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
-import com.github.vkremianskii.pits.registry.types.infra.RegistryCodecConfigurer;
+import com.github.vkremianskii.pits.core.json.CoreTypesModule;
+import com.github.vkremianskii.pits.core.model.EquipmentId;
+import com.github.vkremianskii.pits.core.model.equipment.Truck;
+import com.github.vkremianskii.pits.registry.dto.CreateEquipmentResponse;
+import com.github.vkremianskii.pits.registry.infra.RegistryCodecConfigurer;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -22,17 +22,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.vkremianskii.pits.core.types.TestEquipment.randomEquipmentId;
-import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DOZER;
-import static com.github.vkremianskii.pits.core.types.model.EquipmentType.DRILL;
-import static com.github.vkremianskii.pits.core.types.model.EquipmentType.SHOVEL;
-import static com.github.vkremianskii.pits.core.types.model.EquipmentType.TRUCK;
-import static com.github.vkremianskii.pits.core.types.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.core.types.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.core.types.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.core.types.model.LocationType.STOCKPILE;
-import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
-import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
+import static com.github.vkremianskii.pits.core.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.core.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.core.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.core.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.core.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.core.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.core.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.core.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.core.model.LocationType.STOCKPILE;
+import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
+import static com.github.vkremianskii.pits.registry.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
@@ -45,7 +45,6 @@ class RegistryClientTests {
         .modules(new CoreTypesModule())
         .serializationInclusion(JsonInclude.Include.NON_NULL)
         .build();
-    RegistryCodecConfigurer registryCodecConfigurer = new RegistryCodecConfigurer(objectMapper);
 
     @Test
     void should_get_equipment(WireMockRuntimeInfo wmRuntimeInfo) {
@@ -211,6 +210,7 @@ class RegistryClientTests {
 
     RegistryClient newClient(WireMockRuntimeInfo wmRuntimeInfo) {
         var baseUrl = "http://localhost:" + wmRuntimeInfo.getHttpPort();
-        return new RegistryClient(baseUrl, registryCodecConfigurer);
+        var properties = new RegistryProperties(baseUrl);
+        return new RegistryClient(properties, objectMapper);
     }
 }

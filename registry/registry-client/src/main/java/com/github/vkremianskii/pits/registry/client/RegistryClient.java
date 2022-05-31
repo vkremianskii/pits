@@ -1,35 +1,38 @@
 package com.github.vkremianskii.pits.registry.client;
 
-import com.github.vkremianskii.pits.core.types.model.EquipmentId;
-import com.github.vkremianskii.pits.core.types.model.EquipmentState;
-import com.github.vkremianskii.pits.core.types.model.EquipmentType;
-import com.github.vkremianskii.pits.core.types.model.LatLngPoint;
-import com.github.vkremianskii.pits.core.types.model.LocationType;
-import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentRequest;
-import com.github.vkremianskii.pits.registry.types.dto.CreateEquipmentResponse;
-import com.github.vkremianskii.pits.registry.types.dto.CreateLocationRequest;
-import com.github.vkremianskii.pits.registry.types.dto.CreateLocationResponse;
-import com.github.vkremianskii.pits.registry.types.dto.EquipmentResponse;
-import com.github.vkremianskii.pits.registry.types.dto.LocationsResponse;
-import com.github.vkremianskii.pits.registry.types.dto.UpdateEquipmentStateRequest;
-import com.github.vkremianskii.pits.registry.types.infra.RegistryCodecConfigurer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.vkremianskii.pits.core.model.EquipmentId;
+import com.github.vkremianskii.pits.core.model.EquipmentState;
+import com.github.vkremianskii.pits.core.model.EquipmentType;
+import com.github.vkremianskii.pits.core.model.LatLngPoint;
+import com.github.vkremianskii.pits.core.model.LocationType;
+import com.github.vkremianskii.pits.registry.dto.CreateEquipmentRequest;
+import com.github.vkremianskii.pits.registry.dto.CreateEquipmentResponse;
+import com.github.vkremianskii.pits.registry.dto.CreateLocationRequest;
+import com.github.vkremianskii.pits.registry.dto.CreateLocationResponse;
+import com.github.vkremianskii.pits.registry.dto.EquipmentResponse;
+import com.github.vkremianskii.pits.registry.dto.LocationsResponse;
+import com.github.vkremianskii.pits.registry.dto.UpdateEquipmentStateRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.github.vkremianskii.pits.registry.types.ApiHeaders.API_VERSION;
-import static com.github.vkremianskii.pits.registry.types.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
+import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
+import static com.github.vkremianskii.pits.registry.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
+import static com.github.vkremianskii.pits.registry.infra.RegistryCodecConfigurer.configureCodecs;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+@Component
 public class RegistryClient {
 
     private final WebClient webClient;
 
-    public RegistryClient(String baseUrl, RegistryCodecConfigurer codecConfigurer) {
+    public RegistryClient(RegistryProperties properties, ObjectMapper objectMapper) {
         this.webClient = WebClient.builder()
-            .baseUrl(baseUrl)
-            .codecs(codecConfigurer::configureCodecs)
+            .baseUrl(properties.baseUrl())
+            .codecs(c -> configureCodecs(c, objectMapper))
             .build();
     }
 

@@ -7,7 +7,6 @@ dependencies {
     implementation project(':core:core-amqp')
     implementation project(':core:core-types')
     implementation project(':core:core-web')
-    implementation project(':registry:registry-client')
     implementation project(':communicator:communicator-types')
 
     testImplementation project(path: ':core:core-amqp', configuration: 'testApi')

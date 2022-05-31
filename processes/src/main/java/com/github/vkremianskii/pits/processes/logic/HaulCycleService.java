@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.processes.logic;
 
-import com.github.vkremianskii.pits.core.types.Pair;
-import com.github.vkremianskii.pits.core.types.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.types.model.equipment.Truck;
+import com.github.vkremianskii.pits.core.Pair;
+import com.github.vkremianskii.pits.core.model.equipment.Shovel;
+import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
@@ -29,8 +29,8 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static com.github.vkremianskii.pits.core.types.Pair.pair;
-import static com.github.vkremianskii.pits.core.types.PairUtils.pairsToMap;
+import static com.github.vkremianskii.pits.core.Pair.pair;
+import static com.github.vkremianskii.pits.core.PairUtils.pairsToMap;
 import static java.util.Objects.requireNonNull;
 
 @Service

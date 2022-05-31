@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.processes.amqp;
 
-import com.github.vkremianskii.pits.core.types.dto.EquipmentPayloadChanged;
-import com.github.vkremianskii.pits.core.types.dto.EquipmentPositionChanged;
+import com.github.vkremianskii.pits.core.dto.EquipmentPayloadChanged;
+import com.github.vkremianskii.pits.core.dto.EquipmentPositionChanged;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

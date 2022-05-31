@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.processes.model;
 
-import com.github.vkremianskii.pits.core.types.model.EquipmentId;
+import com.github.vkremianskii.pits.core.model.EquipmentId;
 
 import java.time.Instant;
 
