@@ -1,4 +1,4 @@
-package com.github.vkremianskii.pits.auth;
+package com.github.vkremianskii.pits.auth.model;
 
 import com.github.vkremianskii.pits.core.Microtype;
 

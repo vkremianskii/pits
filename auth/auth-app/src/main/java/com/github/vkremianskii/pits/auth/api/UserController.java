@@ -1,9 +1,11 @@
 package com.github.vkremianskii.pits.auth.api;
 
 import com.github.vkremianskii.pits.auth.data.UserRepository;
-import com.github.vkremianskii.pits.auth.User;
+import com.github.vkremianskii.pits.auth.dto.CreateUserRequest;
+import com.github.vkremianskii.pits.auth.model.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -28,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping
-    public Mono<Void> createUser() {
+    public Mono<Void> createUser(@RequestBody CreateUserRequest request) {
         return userRepository.createUser();
     }
 }

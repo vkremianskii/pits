@@ -30,7 +30,7 @@ public class RegistryClient {
     private final WebClient webClient;
 
     public RegistryClient(RegistryProperties properties, ObjectMapper objectMapper) {
-        this.webClient = WebClient.builder()
+        webClient = WebClient.builder()
             .baseUrl(properties.baseUrl())
             .codecs(c -> configureCodecs(c, objectMapper))
             .build();

@@ -7,7 +7,6 @@ import com.github.vkremianskii.pits.frontends.logic.MainViewPresenterImpl;
 import com.github.vkremianskii.pits.frontends.ui.MainViewImpl;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
 import com.github.vkremianskii.pits.registry.client.RegistryProperties;
-import com.github.vkremianskii.pits.registry.infra.RegistryCodecConfigurer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 public class Application {

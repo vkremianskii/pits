@@ -8,7 +8,6 @@ import com.github.vkremianskii.pits.core.json.CoreTypesModule;
 import com.github.vkremianskii.pits.core.model.EquipmentId;
 import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.registry.dto.CreateEquipmentResponse;
-import com.github.vkremianskii.pits.registry.infra.RegistryCodecConfigurer;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 

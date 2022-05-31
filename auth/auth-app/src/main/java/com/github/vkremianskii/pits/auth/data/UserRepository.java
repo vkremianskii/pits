@@ -1,7 +1,7 @@
 package com.github.vkremianskii.pits.auth.data;
 
-import com.github.vkremianskii.pits.auth.User;
-import com.github.vkremianskii.pits.auth.UserId;
+import com.github.vkremianskii.pits.auth.model.User;
+import com.github.vkremianskii.pits.auth.model.UserId;
 import com.github.vkremianskii.pits.core.data.TransactionalJooq;
 import org.jooq.Field;
 import org.jooq.Table;
