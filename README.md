@@ -72,10 +72,10 @@ Open-pit mining system – exercise in software engineering.
 
 |Service|Port|Protocol|
 |-|-|-|
-|Auth|8084|HTTP|
-|Registry|8080|HTTP|
-|Processes|8081|HTTP|
-|Communicator|8082,8083|HTTP,gRPC|
+|Auth|8080|HTTP|
+|Registry|8081|HTTP|
+|Processes|8082|HTTP|
+|Communicator|8083,8084|HTTP,gRPC|
 |Adminer|8090|HTTP|
 |PostgreSQL|5432|TCP|
 |RabbitMQ|5672,15672|TCP,HTTP|

@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8083
 
 spring:
   rabbitmq:
@@ -9,8 +9,4 @@ spring:
     password: guest
 
 grpc:
-  port: 8083
-
-integration:
-  registry:
-    baseUrl: http://localhost:8080
+  port: 8084

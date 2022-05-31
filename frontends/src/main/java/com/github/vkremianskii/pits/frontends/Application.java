@@ -17,7 +17,7 @@ public class Application {
             .serializationInclusion(JsonInclude.Include.NON_NULL)
             .build();
         final var codecConfigurer = new RegistryCodecConfigurer(objectMapper);
-        final var registryClient = new RegistryClient("http://localhost:8080", codecConfigurer);
+        final var registryClient = new RegistryClient("http://localhost:8081", codecConfigurer);
 
         final var grpcClient = new GrpcClient();
         grpcClient.start();

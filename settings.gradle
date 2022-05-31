@@ -8,13 +8,13 @@ include 'core:core-data'
 include 'core:core-types'
 include 'core:core-web'
 
+include 'auth:auth-app'
+include 'auth:auth-client'
+include 'auth:auth-types'
+
 include 'registry:registry-app'
 include 'registry:registry-client'
 include 'registry:registry-types'
 
 include 'communicator:communicator-app'
 include 'communicator:communicator-types'
-
-include 'auth:auth-app'
-include 'auth:auth-client'
-include 'auth:auth-types'

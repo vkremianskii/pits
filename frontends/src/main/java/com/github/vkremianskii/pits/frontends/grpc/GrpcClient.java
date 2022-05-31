@@ -27,7 +27,7 @@ public class GrpcClient {
     private EquipmentServiceFutureStub equipmentStub;
 
     public void start() {
-        channel = ManagedChannelBuilder.forAddress("localhost", 8083)
+        channel = ManagedChannelBuilder.forAddress("localhost", 8084)
             .usePlaintext()
             .build();
 
