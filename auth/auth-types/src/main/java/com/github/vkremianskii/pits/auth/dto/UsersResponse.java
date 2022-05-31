@@ -4,6 +4,6 @@ import com.github.vkremianskii.pits.auth.model.User;
 
 import java.util.List;
 
-public record GetUsersResponse(List<User> users) {
+public record UsersResponse(List<User> users) {
 
 }

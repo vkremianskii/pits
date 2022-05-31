@@ -9,4 +9,9 @@ dependencies {
     implementation 'org.springframework:spring-webflux'
     implementation 'org.springframework.boot:spring-boot'
     runtimeOnly 'io.projectreactor.netty:reactor-netty'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.assertj:assertj-core'
+    testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

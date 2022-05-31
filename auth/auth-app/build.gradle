@@ -13,6 +13,8 @@ dependencies {
     runtimeOnly 'org.postgresql:r2dbc-postgresql'
     runtimeOnly 'org.flywaydb:flyway-core'
 
+    testImplementation project(path: ':core:core-web', configuration: 'testApi')
+
     testRuntimeOnly 'com.h2database:h2'
     testRuntimeOnly 'io.r2dbc:r2dbc-h2'
 }

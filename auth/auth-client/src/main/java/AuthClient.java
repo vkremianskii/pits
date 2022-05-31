@@ -1,7 +1,9 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.vkremianskii.pits.auth.dto.AuthenticateRequest;
+import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.auth.dto.CreateUserRequest;
 import com.github.vkremianskii.pits.auth.dto.CreateUserResponse;
-import com.github.vkremianskii.pits.auth.dto.GetUsersResponse;
+import com.github.vkremianskii.pits.auth.model.Username;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -19,19 +21,21 @@ public class AuthClient {
             .build();
     }
 
-    public Mono<GetUsersResponse> getUsers() {
-        return webClient.get()
-            .uri("/user")
-            .retrieve()
-            .bodyToMono(GetUsersResponse.class);
-    }
-
-    public Mono<CreateUserResponse> createUser() {
+    public Mono<CreateUserResponse> createUser(Username username, char[] password) {
         return webClient.post()
             .uri("/user")
             .contentType(APPLICATION_JSON)
-            .bodyValue(new CreateUserRequest())
+            .bodyValue(new CreateUserRequest(username, String.valueOf(password)))
             .retrieve()
             .bodyToMono(CreateUserResponse.class);
+    }
+
+    public Mono<AuthenticateResponse> authenticate(Username username, char[] password) {
+        return webClient.post()
+            .uri("/user/auth")
+            .contentType(APPLICATION_JSON)
+            .bodyValue(new AuthenticateRequest(username, String.valueOf(password)))
+            .retrieve()
+            .bodyToMono(AuthenticateResponse.class);
     }
 }

@@ -3,6 +3,7 @@ package com.github.vkremianskii.pits.core.web;
 import com.github.vkremianskii.pits.core.web.error.BadRequestError;
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
 import com.github.vkremianskii.pits.core.web.error.NotFoundError;
+import com.github.vkremianskii.pits.core.web.error.UnauthorizedError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @ControllerAdvice
 @Order(HIGHEST_PRECEDENCE)
@@ -22,6 +24,12 @@ public class CoreExceptionHandler {
     public ResponseEntity<Void> handleBadRequestError(BadRequestError e) {
         LOG.error("", e);
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Void> handleUnauthorizedError(UnauthorizedError e) {
+        LOG.error("", e);
+        return ResponseEntity.status(UNAUTHORIZED).build();
     }
 
     @ExceptionHandler

@@ -1,16 +1,15 @@
 package com.github.vkremianskii.pits.auth.api;
 
-import com.github.vkremianskii.pits.auth.data.UserRepository;
+import com.github.vkremianskii.pits.auth.dto.AuthenticateRequest;
+import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.auth.dto.CreateUserRequest;
-import com.github.vkremianskii.pits.auth.model.User;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.github.vkremianskii.pits.auth.dto.CreateUserResponse;
+import com.github.vkremianskii.pits.auth.logic.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -18,19 +17,21 @@ import static java.util.Objects.requireNonNull;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = requireNonNull(userRepository);
-    }
-
-    @GetMapping
-    public Mono<List<User>> getUsers() {
-        return userRepository.getUsers();
+    public UserController(UserService userService) {
+        this.userService = requireNonNull(userService);
     }
 
     @PostMapping
-    public Mono<Void> createUser(@RequestBody CreateUserRequest request) {
-        return userRepository.createUser();
+    public Mono<CreateUserResponse> createUser(@RequestBody CreateUserRequest request) {
+        return userService.createUser(request.username(), request.password().toCharArray())
+            .map(CreateUserResponse::new);
+    }
+
+    @PostMapping("/auth")
+    public Mono<AuthenticateResponse> authenticate(@RequestBody AuthenticateRequest request) {
+        return userService.authenticate(request.username(), request.password().toCharArray())
+            .map(AuthenticateResponse::new);
     }
 }
