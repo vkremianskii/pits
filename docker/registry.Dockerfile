@@ -4,7 +4,7 @@ WORKDIR /home/gradle/src
 RUN gradle :registry:registry-app:bootJar --no-daemon
 
 FROM openjdk:18.0.1.1-slim
-EXPOSE 8080
+EXPOSE 8081
 RUN mkdir /app
 COPY ./docker/registry/ /app
 COPY --from=build /home/gradle/src/registry/registry-app/build/libs/registry-app-1.0-SNAPSHOT.jar /app/registry.jar
