@@ -30,7 +30,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static com.github.vkremianskii.pits.core.Pair.pair;
-import static com.github.vkremianskii.pits.core.PairUtils.pairsToMap;
+import static com.github.vkremianskii.pits.core.util.PairUtils.pairsToMap;
 import static java.util.Objects.requireNonNull;
 
 @Service

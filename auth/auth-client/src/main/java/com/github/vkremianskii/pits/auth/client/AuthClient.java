@@ -37,7 +37,7 @@ public class AuthClient {
             .bodyToMono(CreateUserResponse.class);
     }
 
-    public Mono<AuthenticateResponse> authenticate(Username username, char[] password) {
+    public Mono<AuthenticateResponse> authenticateUser(Username username, char[] password) {
         return webClient.post()
             .uri("/user/auth")
             .contentType(APPLICATION_JSON)

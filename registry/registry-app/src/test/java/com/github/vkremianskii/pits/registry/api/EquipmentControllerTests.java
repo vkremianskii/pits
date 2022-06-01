@@ -53,7 +53,7 @@ class EquipmentControllerTests {
 
     @BeforeEach
     void setup() {
-        when(authClient.authenticate(username("admin"), "admin".toCharArray()))
+        when(authClient.authenticateUser(username("admin"), "admin".toCharArray()))
             .thenReturn(Mono.just(new AuthenticateResponse(Set.of(scope("scope")))));
     }
 

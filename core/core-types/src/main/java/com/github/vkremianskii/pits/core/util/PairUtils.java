@@ -1,4 +1,6 @@
-package com.github.vkremianskii.pits.core;
+package com.github.vkremianskii.pits.core.util;
+
+import com.github.vkremianskii.pits.core.Pair;
 
 import java.util.Collection;
 import java.util.Map;

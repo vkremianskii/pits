@@ -94,7 +94,7 @@ class AuthClientTests {
         var sut = newClient(wmRuntimeInfo);
 
         // when
-        var response = sut.authenticate(username("username"), "password".toCharArray()).block();
+        var response = sut.authenticateUser(username("username"), "password".toCharArray()).block();
 
         // then
         assertThat(response.scopes()).containsExactly(scope("scope"));
@@ -122,7 +122,7 @@ class AuthClientTests {
         var sut = newClient(wmRuntimeInfo);
 
         // when
-        assertThatThrownBy(() -> sut.authenticate(
+        assertThatThrownBy(() -> sut.authenticateUser(
             username("username"),
             "password".toCharArray()).block()).isInstanceOf(WebClientResponseException.Unauthorized.class);
 

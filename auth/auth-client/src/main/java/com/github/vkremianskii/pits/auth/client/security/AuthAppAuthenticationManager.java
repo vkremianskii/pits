@@ -32,7 +32,7 @@ public class AuthAppAuthenticationManager implements ReactiveAuthenticationManag
         final var username = basicAuthentication.getName();
         final var password = basicAuthentication.getCredentials().toString();
 
-        return authClient.authenticate(username(username), password.toCharArray())
+        return authClient.authenticateUser(username(username), password.toCharArray())
             .map(response -> new AuthAppAuthentication(response.scopes().stream()
                 .map(scope -> new SimpleGrantedAuthority(scope.value))
                 .toList()))

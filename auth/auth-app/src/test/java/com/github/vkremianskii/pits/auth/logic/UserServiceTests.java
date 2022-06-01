@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.github.vkremianskii.pits.auth.model.PasswordHash.passwordHash;
+import static com.github.vkremianskii.pits.core.model.Hash.hash;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,17 +47,17 @@ class UserServiceTests {
     void should_authenticate_user() {
         // given
         var userId = UserId.valueOf("6786e0cb-655f-46b9-ad46-fa8fe398dd3f");
-        when(userRepository.getUserByName(username("username")))
+        when(userRepository.getUserByName(username("user")))
             .thenReturn(Mono.just(Optional.of(new User(
                 userId,
-                username("username"),
-                passwordHash("gwcJ5V8jn1S735XIwvKAYA=="),
+                username("user"),
+                hash("nRJnuQFUraYmqOYCKEwO7g=="),
                 Set.of(scope("scope"))))));
 
         // when
-        var scopes = sut.authenticate(
-            username("username"),
-            "password".toCharArray()).block();
+        var scopes = sut.authenticateUser(
+            username("user"),
+            "user".toCharArray()).block();
 
         // then
         assertThat(scopes).isEqualTo(Set.of(scope("scope")));

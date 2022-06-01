@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public Mono<AuthenticateResponse> authenticate(@RequestBody AuthenticateRequest request) {
-        return userService.authenticate(request.username(), request.password().toCharArray())
+    public Mono<AuthenticateResponse> authenticateUser(@RequestBody AuthenticateRequest request) {
+        return userService.authenticateUser(request.username(), request.password().toCharArray())
             .map(AuthenticateResponse::new);
     }
 }

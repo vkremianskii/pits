@@ -3,7 +3,7 @@ package com.github.vkremianskii.pits.auth.data;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vkremianskii.pits.auth.model.PasswordHash;
+import com.github.vkremianskii.pits.core.model.Hash;
 import com.github.vkremianskii.pits.auth.model.Scope;
 import com.github.vkremianskii.pits.auth.model.User;
 import com.github.vkremianskii.pits.auth.model.UserId;
@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.github.vkremianskii.pits.auth.model.PasswordHash.passwordHash;
+import static com.github.vkremianskii.pits.core.model.Hash.hash;
 import static com.github.vkremianskii.pits.auth.model.UserId.userId;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static java.util.Objects.requireNonNull;
@@ -51,7 +51,7 @@ public class UserRepository {
 
     public Mono<Void> createUser(UserId userId,
                                  Username username,
-                                 PasswordHash password,
+                                 Hash password,
                                  Set<Scope> scopes) {
         return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
                 .columns(FIELD_ID, FIELD_USERNAME, FIELD_PASSWORD, FIELD_SCOPES)
@@ -70,7 +70,7 @@ public class UserRepository {
     private User userFromRecord(org.jooq.Record record) {
         final var id = userId(record.get(FIELD_ID));
         final var username = username(record.get(FIELD_USERNAME));
-        final var password = passwordHash(record.get(FIELD_PASSWORD));
+        final var password = hash(record.get(FIELD_PASSWORD));
         final var scopes = record.get(FIELD_SCOPES);
 
         return new User(

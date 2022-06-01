@@ -40,7 +40,7 @@ class UserControllerTests {
 
     @BeforeEach
     void setup() {
-        when(userService.authenticate(username("admin"), "admin".toCharArray()))
+        when(userService.authenticateUser(username("admin"), "admin".toCharArray()))
             .thenReturn(Mono.just(Set.of(scope("scope"))));
     }
 
@@ -74,7 +74,7 @@ class UserControllerTests {
     @Test
     void should_authenticate_user() {
         // given
-        when(userService.authenticate(username("username"), "password".toCharArray()))
+        when(userService.authenticateUser(username("username"), "password".toCharArray()))
             .thenReturn(Mono.just(Set.of(scope("scope"))));
 
         // expect
@@ -86,6 +86,6 @@ class UserControllerTests {
             .exchange()
             .expectStatus().isOk()
             .expectBody().jsonPath("$.scopes[0]").isEqualTo("scope");
-        verify(userService).authenticate(username("username"), "password".toCharArray());
+        verify(userService).authenticateUser(username("username"), "password".toCharArray());
     }
 }

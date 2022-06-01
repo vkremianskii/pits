@@ -32,7 +32,7 @@ public class InternalAuthenticationManager implements ReactiveAuthenticationMana
         final var username = basicAuthentication.getName();
         final var password = basicAuthentication.getCredentials().toString();
 
-        return userService.authenticate(username(username), password.toCharArray())
+        return userService.authenticateUser(username(username), password.toCharArray())
             .map(scopes -> new InternalAuthentication(scopes.stream()
                 .map(scope -> new SimpleGrantedAuthority(scope.value))
                 .toList()))
