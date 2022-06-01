@@ -1,10 +1,10 @@
 package com.github.vkremianskii.pits.auth.logic;
 
 import com.github.vkremianskii.pits.auth.data.UserRepository;
-import com.github.vkremianskii.pits.core.model.Hash;
 import com.github.vkremianskii.pits.auth.model.Scope;
 import com.github.vkremianskii.pits.auth.model.UserId;
 import com.github.vkremianskii.pits.auth.model.Username;
+import com.github.vkremianskii.pits.core.model.Hash;
 import com.github.vkremianskii.pits.core.web.error.UnauthorizedError;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

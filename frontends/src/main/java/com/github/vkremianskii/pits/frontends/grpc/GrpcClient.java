@@ -5,7 +5,7 @@ import com.github.vkremianskii.pits.communicator.grpc.PayloadChanged;
 import com.github.vkremianskii.pits.communicator.grpc.PayloadChangedResponse;
 import com.github.vkremianskii.pits.communicator.grpc.PositionChanged;
 import com.github.vkremianskii.pits.communicator.grpc.PositionChangedResponse;
-import com.github.vkremianskii.pits.core.model.EquipmentId;
+import com.github.vkremianskii.pits.registry.model.EquipmentId;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;

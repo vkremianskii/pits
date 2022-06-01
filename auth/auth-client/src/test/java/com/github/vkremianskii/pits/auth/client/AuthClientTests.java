@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.auth.model.UserId;
-import com.github.vkremianskii.pits.core.json.CoreTypesModule;
+import com.github.vkremianskii.pits.core.json.CoreModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -30,7 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 class AuthClientTests {
 
     ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
-        .modules(new CoreTypesModule())
+        .modules(new CoreModule())
         .serializationInclusion(JsonInclude.Include.NON_NULL)
         .build();
 

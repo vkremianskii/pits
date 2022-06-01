@@ -11,9 +11,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.github.vkremianskii.pits.core.TestEquipment.aDozer;
-import static com.github.vkremianskii.pits.core.TestEquipment.aShovel;
-import static com.github.vkremianskii.pits.core.TestEquipment.aTruck;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aDozer;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aShovel;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aTruck;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.mock;

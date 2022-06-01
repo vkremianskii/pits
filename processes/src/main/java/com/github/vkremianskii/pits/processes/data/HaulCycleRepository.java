@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.processes.data;
 
 import com.github.vkremianskii.pits.core.data.TransactionalJooq;
-import com.github.vkremianskii.pits.core.model.EquipmentId;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
+import com.github.vkremianskii.pits.registry.model.EquipmentId;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Field;
 import org.jooq.Table;
@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.github.vkremianskii.pits.core.model.EquipmentId.equipmentId;
+import static com.github.vkremianskii.pits.registry.model.EquipmentId.equipmentId;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

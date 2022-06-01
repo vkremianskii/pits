@@ -2,8 +2,8 @@ package com.github.vkremianskii.pits.communicator.grpc;
 
 import com.github.vkremianskii.pits.communicator.amqp.AmqpConfig;
 import com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.EquipmentServiceBlockingStub;
-import com.github.vkremianskii.pits.core.dto.EquipmentPayloadChanged;
-import com.github.vkremianskii.pits.core.dto.EquipmentPositionChanged;
+import com.github.vkremianskii.pits.registry.dto.EquipmentPayloadChanged;
+import com.github.vkremianskii.pits.registry.dto.EquipmentPositionChanged;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessChannelBuilder;
@@ -16,7 +16,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import java.io.IOException;
 
 import static com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.newBlockingStub;
-import static com.github.vkremianskii.pits.core.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;

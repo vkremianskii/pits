@@ -1,13 +1,13 @@
 package com.github.vkremianskii.pits.processes.amqp;
 
-import com.github.vkremianskii.pits.core.dto.EquipmentPayloadChanged;
-import com.github.vkremianskii.pits.core.dto.EquipmentPositionChanged;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
+import com.github.vkremianskii.pits.registry.dto.EquipmentPayloadChanged;
+import com.github.vkremianskii.pits.registry.dto.EquipmentPositionChanged;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import static com.github.vkremianskii.pits.core.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

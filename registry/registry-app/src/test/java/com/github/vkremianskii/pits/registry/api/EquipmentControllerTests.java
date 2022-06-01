@@ -2,10 +2,11 @@ package com.github.vkremianskii.pits.registry.api;
 
 import com.github.vkremianskii.pits.auth.client.AuthClient;
 import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
-import com.github.vkremianskii.pits.core.model.Position;
-import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.data.EquipmentRepository;
+import com.github.vkremianskii.pits.registry.infra.JsonConfig;
+import com.github.vkremianskii.pits.registry.model.Position;
+import com.github.vkremianskii.pits.registry.model.equipment.Truck;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,14 @@ import java.util.Set;
 
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
-import static com.github.vkremianskii.pits.core.TestEquipment.aDozer;
-import static com.github.vkremianskii.pits.core.TestEquipment.aDrill;
-import static com.github.vkremianskii.pits.core.TestEquipment.aShovel;
-import static com.github.vkremianskii.pits.core.TestEquipment.aTruck;
-import static com.github.vkremianskii.pits.core.TestEquipment.randomEquipmentId;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.TRUCK;
 import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aDozer;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aDrill;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aShovel;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aTruck;
+import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.TRUCK;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -41,7 +42,10 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @WebFluxTest(controllers = EquipmentController.class)
-@Import(CoreWebAutoConfiguration.class)
+@Import({
+    CoreWebAutoConfiguration.class,
+    JsonConfig.class
+})
 class EquipmentControllerTests {
 
     @MockBean

@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.github.vkremianskii.pits.core.TestLocations.randomLocationId;
-import static com.github.vkremianskii.pits.core.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.core.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.core.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.core.model.LocationType.STOCKPILE;
+import static com.github.vkremianskii.pits.registry.TestLocations.randomLocationId;
+import static com.github.vkremianskii.pits.registry.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.STOCKPILE;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;

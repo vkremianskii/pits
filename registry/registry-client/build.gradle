@@ -10,7 +10,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot'
     runtimeOnly 'io.projectreactor.netty:reactor-netty'
 
-    testImplementation testFixtures(project(':core:core-types'))
+    testImplementation testFixtures(project(':registry:registry-types'))
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation 'org.assertj:assertj-core'

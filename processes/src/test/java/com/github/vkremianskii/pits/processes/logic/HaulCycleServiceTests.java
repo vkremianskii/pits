@@ -1,6 +1,5 @@
 package com.github.vkremianskii.pits.processes.logic;
 
-import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
 import com.github.vkremianskii.pits.processes.data.EquipmentPositionRepository;
 import com.github.vkremianskii.pits.processes.data.HaulCycleRepository;
@@ -12,6 +11,7 @@ import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
 import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
 import com.github.vkremianskii.pits.registry.client.RegistryClient;
+import com.github.vkremianskii.pits.registry.model.equipment.Truck;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import static com.github.vkremianskii.pits.core.TestEquipment.aShovel;
-import static com.github.vkremianskii.pits.core.TestEquipment.aTruck;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aShovel;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aTruck;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.any;

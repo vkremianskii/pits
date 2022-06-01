@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.frontends.ui;
 
-import com.github.vkremianskii.pits.core.model.Equipment;
-import com.github.vkremianskii.pits.core.model.EquipmentId;
-import com.github.vkremianskii.pits.core.model.Location;
+import com.github.vkremianskii.pits.registry.model.Equipment;
+import com.github.vkremianskii.pits.registry.model.EquipmentId;
+import com.github.vkremianskii.pits.registry.model.Location;
 
 import java.util.List;
 import java.util.SortedMap;

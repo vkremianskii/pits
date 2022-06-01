@@ -1,8 +1,8 @@
 package com.github.vkremianskii.pits.registry.data;
 
 import com.github.vkremianskii.pits.core.data.TransactionalJooq;
-import com.github.vkremianskii.pits.core.model.LocationId;
-import com.github.vkremianskii.pits.core.model.LocationPoint;
+import com.github.vkremianskii.pits.registry.model.LocationId;
+import com.github.vkremianskii.pits.registry.model.LocationPoint;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.UUID;
 
-import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
+import static com.github.vkremianskii.pits.registry.model.LocationId.locationId;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

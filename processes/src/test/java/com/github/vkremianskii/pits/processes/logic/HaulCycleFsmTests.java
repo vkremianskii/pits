@@ -1,12 +1,12 @@
 package com.github.vkremianskii.pits.processes.logic;
 
-import com.github.vkremianskii.pits.core.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.logic.fsm.HaulCycleFsm;
 import com.github.vkremianskii.pits.processes.model.EquipmentPayloadRecord;
 import com.github.vkremianskii.pits.processes.model.EquipmentPositionRecord;
 import com.github.vkremianskii.pits.processes.model.HaulCycle;
 import com.github.vkremianskii.pits.processes.model.MutableHaulCycle;
+import com.github.vkremianskii.pits.registry.model.equipment.Shovel;
+import com.github.vkremianskii.pits.registry.model.equipment.Truck;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static com.github.vkremianskii.pits.core.TestEquipment.aShovel;
-import static com.github.vkremianskii.pits.core.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.registry.TestEquipment.aShovel;
+import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HaulCycleFsmTests {

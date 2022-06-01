@@ -8,10 +8,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.github.vkremianskii.pits.core.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.core.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.core.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.core.model.LocationType.STOCKPILE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.STOCKPILE;
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;

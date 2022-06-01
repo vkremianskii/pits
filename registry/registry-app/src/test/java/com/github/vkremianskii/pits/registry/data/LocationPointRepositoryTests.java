@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.github.vkremianskii.pits.core.TestLocations.randomLocationId;
-import static com.github.vkremianskii.pits.core.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.TestLocations.randomLocationId;
+import static com.github.vkremianskii.pits.registry.model.LocationType.DUMP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 

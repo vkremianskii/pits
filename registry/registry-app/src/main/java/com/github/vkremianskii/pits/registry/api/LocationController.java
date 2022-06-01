@@ -1,19 +1,19 @@
 package com.github.vkremianskii.pits.registry.api;
 
 import com.github.vkremianskii.pits.core.model.LatLngPoint;
-import com.github.vkremianskii.pits.core.model.Location;
-import com.github.vkremianskii.pits.core.model.LocationPoint;
-import com.github.vkremianskii.pits.core.model.location.Dump;
-import com.github.vkremianskii.pits.core.model.location.Face;
-import com.github.vkremianskii.pits.core.model.location.Hole;
-import com.github.vkremianskii.pits.core.model.location.Stockpile;
 import com.github.vkremianskii.pits.registry.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.dto.CreateLocationRequest;
 import com.github.vkremianskii.pits.registry.dto.CreateLocationResponse;
 import com.github.vkremianskii.pits.registry.dto.LocationsResponse;
 import com.github.vkremianskii.pits.registry.logic.LocationService;
+import com.github.vkremianskii.pits.registry.model.Location;
 import com.github.vkremianskii.pits.registry.model.LocationDeclaration;
+import com.github.vkremianskii.pits.registry.model.LocationPoint;
+import com.github.vkremianskii.pits.registry.model.location.Dump;
+import com.github.vkremianskii.pits.registry.model.location.Face;
+import com.github.vkremianskii.pits.registry.model.location.Hole;
+import com.github.vkremianskii.pits.registry.model.location.Stockpile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

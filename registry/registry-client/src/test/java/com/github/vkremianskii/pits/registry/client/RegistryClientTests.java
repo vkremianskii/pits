@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import com.github.vkremianskii.pits.core.json.CoreTypesModule;
-import com.github.vkremianskii.pits.core.model.EquipmentId;
-import com.github.vkremianskii.pits.core.model.equipment.Truck;
+import com.github.vkremianskii.pits.core.json.CoreModule;
 import com.github.vkremianskii.pits.registry.dto.CreateEquipmentResponse;
+import com.github.vkremianskii.pits.registry.json.RegistryModule;
+import com.github.vkremianskii.pits.registry.model.EquipmentId;
+import com.github.vkremianskii.pits.registry.model.equipment.Truck;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -21,17 +22,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.vkremianskii.pits.core.TestEquipment.randomEquipmentId;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.DOZER;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.DRILL;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.SHOVEL;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.TRUCK;
-import static com.github.vkremianskii.pits.core.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.core.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.core.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.core.model.LocationType.STOCKPILE;
 import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
+import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.registry.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.STOCKPILE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -41,7 +42,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 class RegistryClientTests {
 
     ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
-        .modules(new CoreTypesModule())
+        .modules(new CoreModule(), new RegistryModule())
         .serializationInclusion(JsonInclude.Include.NON_NULL)
         .build();
 

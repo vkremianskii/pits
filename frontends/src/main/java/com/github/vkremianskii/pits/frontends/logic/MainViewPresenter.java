@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.frontends.logic;
 
-import com.github.vkremianskii.pits.core.model.EquipmentId;
+import com.github.vkremianskii.pits.registry.model.EquipmentId;
 
 public interface MainViewPresenter {
 

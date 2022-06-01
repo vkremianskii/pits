@@ -1,10 +1,10 @@
 package com.github.vkremianskii.pits.registry.logic;
 
 import com.github.vkremianskii.pits.core.model.LatLngPoint;
-import com.github.vkremianskii.pits.core.model.LocationId;
-import com.github.vkremianskii.pits.core.model.LocationType;
 import com.github.vkremianskii.pits.registry.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.data.LocationRepository;
+import com.github.vkremianskii.pits.registry.model.LocationId;
+import com.github.vkremianskii.pits.registry.model.LocationType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.github.vkremianskii.pits.core.Tuple2.tuple;
-import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
+import static com.github.vkremianskii.pits.registry.model.LocationId.locationId;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 

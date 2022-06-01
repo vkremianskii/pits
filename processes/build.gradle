@@ -20,7 +20,7 @@ dependencies {
     testImplementation project(path: ':core:core-amqp', configuration: 'testApi')
     testImplementation project(path: ':core:core-web', configuration: 'testApi')
 
-    testImplementation testFixtures(project(':core:core-types'))
+    testImplementation testFixtures(project(':registry:registry-types'))
 
     testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
 

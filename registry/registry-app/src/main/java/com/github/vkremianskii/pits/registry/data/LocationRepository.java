@@ -1,10 +1,10 @@
 package com.github.vkremianskii.pits.registry.data;
 
 import com.github.vkremianskii.pits.core.data.TransactionalJooq;
-import com.github.vkremianskii.pits.core.model.LocationId;
-import com.github.vkremianskii.pits.core.model.LocationType;
 import com.github.vkremianskii.pits.core.web.error.InternalServerError;
 import com.github.vkremianskii.pits.registry.model.LocationDeclaration;
+import com.github.vkremianskii.pits.registry.model.LocationId;
+import com.github.vkremianskii.pits.registry.model.LocationType;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
-import static com.github.vkremianskii.pits.core.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.core.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.core.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.core.model.LocationType.STOCKPILE;
+import static com.github.vkremianskii.pits.registry.model.LocationId.locationId;
+import static com.github.vkremianskii.pits.registry.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.STOCKPILE;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

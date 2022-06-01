@@ -2,9 +2,10 @@ package com.github.vkremianskii.pits.auth.api;
 
 import com.github.vkremianskii.pits.auth.dto.AuthenticateRequest;
 import com.github.vkremianskii.pits.auth.dto.CreateUserRequest;
+import com.github.vkremianskii.pits.auth.infra.InternalAuthenticationManager;
+import com.github.vkremianskii.pits.auth.infra.JsonConfig;
+import com.github.vkremianskii.pits.auth.infra.SecurityConfig;
 import com.github.vkremianskii.pits.auth.logic.UserService;
-import com.github.vkremianskii.pits.auth.security.InternalAuthenticationManager;
-import com.github.vkremianskii.pits.auth.security.SecurityConfig;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @WebFluxTest(controllers = UserController.class)
 @Import({
     CoreWebAutoConfiguration.class,
+    JsonConfig.class,
     SecurityConfig.class,
     InternalAuthenticationManager.class})
 class UserControllerTests {

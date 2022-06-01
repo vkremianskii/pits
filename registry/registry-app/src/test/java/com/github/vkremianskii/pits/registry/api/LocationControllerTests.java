@@ -3,13 +3,14 @@ package com.github.vkremianskii.pits.registry.api;
 import com.github.vkremianskii.pits.auth.client.AuthClient;
 import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.core.model.LatLngPoint;
-import com.github.vkremianskii.pits.core.model.LocationPoint;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.data.LocationPointRepository;
 import com.github.vkremianskii.pits.registry.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.dto.CreateLocationRequest;
+import com.github.vkremianskii.pits.registry.infra.JsonConfig;
 import com.github.vkremianskii.pits.registry.logic.LocationService;
 import com.github.vkremianskii.pits.registry.model.LocationDeclaration;
+import com.github.vkremianskii.pits.registry.model.LocationPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,12 @@ import java.util.Set;
 
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
-import static com.github.vkremianskii.pits.core.TestLocations.randomLocationId;
-import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
-import static com.github.vkremianskii.pits.core.model.LocationType.DUMP;
-import static com.github.vkremianskii.pits.core.model.LocationType.FACE;
-import static com.github.vkremianskii.pits.core.model.LocationType.HOLE;
-import static com.github.vkremianskii.pits.core.model.LocationType.STOCKPILE;
+import static com.github.vkremianskii.pits.registry.TestLocations.randomLocationId;
+import static com.github.vkremianskii.pits.registry.model.LocationId.locationId;
+import static com.github.vkremianskii.pits.registry.model.LocationType.DUMP;
+import static com.github.vkremianskii.pits.registry.model.LocationType.FACE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.HOLE;
+import static com.github.vkremianskii.pits.registry.model.LocationType.STOCKPILE;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +39,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @WebFluxTest(controllers = LocationController.class)
-@Import(CoreWebAutoConfiguration.class)
+@Import({
+    CoreWebAutoConfiguration.class,
+    JsonConfig.class
+})
 class LocationControllerTests {
 
     @MockBean

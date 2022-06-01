@@ -1,12 +1,5 @@
 package com.github.vkremianskii.pits.registry.api;
 
-import com.github.vkremianskii.pits.core.model.EquipmentId;
-import com.github.vkremianskii.pits.core.model.EquipmentState;
-import com.github.vkremianskii.pits.core.model.EquipmentType;
-import com.github.vkremianskii.pits.core.model.equipment.Dozer;
-import com.github.vkremianskii.pits.core.model.equipment.Drill;
-import com.github.vkremianskii.pits.core.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.core.web.error.BadRequestError;
 import com.github.vkremianskii.pits.core.web.error.NotFoundError;
 import com.github.vkremianskii.pits.registry.ApiVersion;
@@ -15,6 +8,13 @@ import com.github.vkremianskii.pits.registry.dto.CreateEquipmentRequest;
 import com.github.vkremianskii.pits.registry.dto.CreateEquipmentResponse;
 import com.github.vkremianskii.pits.registry.dto.EquipmentResponse;
 import com.github.vkremianskii.pits.registry.dto.UpdateEquipmentStateRequest;
+import com.github.vkremianskii.pits.registry.model.EquipmentId;
+import com.github.vkremianskii.pits.registry.model.EquipmentState;
+import com.github.vkremianskii.pits.registry.model.EquipmentType;
+import com.github.vkremianskii.pits.registry.model.equipment.Dozer;
+import com.github.vkremianskii.pits.registry.model.equipment.Drill;
+import com.github.vkremianskii.pits.registry.model.equipment.Shovel;
+import com.github.vkremianskii.pits.registry.model.equipment.Truck;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import static com.github.vkremianskii.pits.core.model.EquipmentId.equipmentId;
 import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
+import static com.github.vkremianskii.pits.registry.model.EquipmentId.equipmentId;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 

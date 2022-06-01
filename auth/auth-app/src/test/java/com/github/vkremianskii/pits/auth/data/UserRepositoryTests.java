@@ -7,10 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Set;
 
-import static com.github.vkremianskii.pits.core.model.Hash.hash;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.UserId.userId;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
+import static com.github.vkremianskii.pits.core.model.Hash.hash;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 

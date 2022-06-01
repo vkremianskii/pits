@@ -9,9 +9,9 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.github.vkremianskii.pits.core.model.Hash.hash;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
+import static com.github.vkremianskii.pits.core.model.Hash.hash;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

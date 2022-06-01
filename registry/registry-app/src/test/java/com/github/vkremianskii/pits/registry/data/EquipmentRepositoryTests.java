@@ -1,20 +1,20 @@
 package com.github.vkremianskii.pits.registry.data;
 
-import com.github.vkremianskii.pits.core.model.Position;
-import com.github.vkremianskii.pits.core.model.equipment.Dozer;
-import com.github.vkremianskii.pits.core.model.equipment.Drill;
-import com.github.vkremianskii.pits.core.model.equipment.Shovel;
-import com.github.vkremianskii.pits.core.model.equipment.Truck;
+import com.github.vkremianskii.pits.registry.model.Position;
+import com.github.vkremianskii.pits.registry.model.equipment.Dozer;
+import com.github.vkremianskii.pits.registry.model.equipment.Drill;
+import com.github.vkremianskii.pits.registry.model.equipment.Shovel;
+import com.github.vkremianskii.pits.registry.model.equipment.Truck;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.github.vkremianskii.pits.core.TestEquipment.randomEquipmentId;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.DOZER;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.DRILL;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.SHOVEL;
-import static com.github.vkremianskii.pits.core.model.EquipmentType.TRUCK;
+import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.DOZER;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.DRILL;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.SHOVEL;
+import static com.github.vkremianskii.pits.registry.model.EquipmentType.TRUCK;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;

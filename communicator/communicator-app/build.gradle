@@ -8,9 +8,10 @@ dependencies {
     implementation project(':core:core-types')
     implementation project(':core:core-web')
     implementation project(':communicator:communicator-types')
+    implementation project(':registry:registry-types')
 
     testImplementation project(path: ':core:core-amqp', configuration: 'testApi')
     testImplementation project(path: ':core:core-web', configuration: 'testApi')
 
-    testImplementation testFixtures(project(':core:core-types'))
+    testImplementation testFixtures(project(':registry:registry-types'))
 }
