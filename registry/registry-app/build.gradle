@@ -19,6 +19,7 @@ dependencies {
     testImplementation project(path: ':core:core-amqp', configuration: 'testApi')
     testImplementation project(path: ':core:core-web', configuration: 'testApi')
 
+    testImplementation testFixtures(project(':auth:auth-types'))
     testImplementation testFixtures(project(':registry:registry-types'))
 
     testImplementation 'io.projectreactor:reactor-test'

@@ -7,11 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Set;
 
+import static com.github.vkremianskii.pits.auth.TestUser.randomUserId;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
-import static com.github.vkremianskii.pits.auth.model.UserId.userId;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static com.github.vkremianskii.pits.core.model.Hash.hash;
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -23,7 +22,7 @@ class UserRepositoryTests {
     @Test
     void should_create_and_get_user_by_name() {
         // when
-        var userId = userId(randomUUID());
+        var userId = randomUserId();
         sut.createUser(
             userId,
             username("username"),

@@ -1,9 +1,12 @@
 plugins {
     id 'java-library'
+    id 'java-test-fixtures'
 }
 
 dependencies {
     implementation project(':core:core-types')
 
     api 'org.springframework:spring-web'
+
+    testFixturesImplementation project(':core:core-types')
 }

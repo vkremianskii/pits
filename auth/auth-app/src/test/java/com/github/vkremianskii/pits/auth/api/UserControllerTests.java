@@ -18,10 +18,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.Set;
 
+import static com.github.vkremianskii.pits.auth.TestAuthentication.basicAuth;
+import static com.github.vkremianskii.pits.auth.TestUser.randomUserId;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
-import static com.github.vkremianskii.pits.auth.model.UserId.userId;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
-import static java.util.UUID.randomUUID;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -49,7 +49,7 @@ class UserControllerTests {
     @Test
     void should_create_user() {
         // given
-        var userId = userId(randomUUID());
+        var userId = randomUserId();
         when(userService.createUser(
             username("username"),
             "password".toCharArray(),
@@ -58,7 +58,7 @@ class UserControllerTests {
         // expect
         webClient.post()
             .uri("/user")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuth(username("admin"), "admin".toCharArray()))
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateUserRequest(
                 username("username"),
@@ -82,12 +82,11 @@ class UserControllerTests {
         // expect
         webClient.post()
             .uri("/user/auth")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuth(username("username"), "password".toCharArray()))
             .contentType(APPLICATION_JSON)
             .bodyValue(new AuthenticateRequest(username("username"), "password"))
             .exchange()
             .expectStatus().isOk()
             .expectBody().jsonPath("$.scopes[0]").isEqualTo("scope");
-        verify(userService).authenticateUser(username("username"), "password".toCharArray());
     }
 }

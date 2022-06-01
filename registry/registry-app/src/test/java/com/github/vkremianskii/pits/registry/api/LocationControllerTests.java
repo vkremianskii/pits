@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Set;
 
+import static com.github.vkremianskii.pits.auth.TestAuthentication.basicAuthAdmin;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static com.github.vkremianskii.pits.registry.TestLocations.randomLocationId;
@@ -87,7 +88,7 @@ class LocationControllerTests {
         // expect
         webClient.get()
             .uri("/location")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .exchange()
             .expectStatus().isOk()
             .expectBody().json("""
@@ -125,7 +126,7 @@ class LocationControllerTests {
         // expect
         webClient.post()
             .uri("/location")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Dump No.1", DUMP, List.of(
                 new LatLngPoint(41.1494512, -8.6107884),
@@ -136,7 +137,7 @@ class LocationControllerTests {
             .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Face No.1", FACE, emptyList()))
             .exchange()
@@ -144,7 +145,7 @@ class LocationControllerTests {
             .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Hole No.1", HOLE, emptyList()))
             .exchange()
@@ -152,7 +153,7 @@ class LocationControllerTests {
             .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Stockpile No.1", STOCKPILE, emptyList()))
             .exchange()

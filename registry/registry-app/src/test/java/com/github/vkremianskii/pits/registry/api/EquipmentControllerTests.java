@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.github.vkremianskii.pits.auth.TestAuthentication.basicAuthAdmin;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
@@ -74,7 +75,7 @@ class EquipmentControllerTests {
         // expect
         webClient.get()
             .uri("/equipment")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .exchange()
             .expectStatus().isOk()
             .expectBody().json(String.format("""
@@ -119,7 +120,7 @@ class EquipmentControllerTests {
         // expect
         webClient.get()
             .uri("/equipment")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .header(API_VERSION, EQUIPMENT_RESPONSE_OBJECT.toString())
             .exchange()
             .expectStatus().isOk()
@@ -163,7 +164,7 @@ class EquipmentControllerTests {
         // expect
         webClient.post()
             .uri("/equipment")
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -189,7 +190,7 @@ class EquipmentControllerTests {
         // expect
         webClient.post()
             .uri("/equipment/{id}/state", truck.id)
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -211,7 +212,7 @@ class EquipmentControllerTests {
         // expect
         webClient.post()
             .uri("/equipment/{id}/state", truckId)
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -234,7 +235,7 @@ class EquipmentControllerTests {
         // expect
         webClient.post()
             .uri("/equipment/{id}/state", dozer.id)
-            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+            .header(AUTHORIZATION, basicAuthAdmin())
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {

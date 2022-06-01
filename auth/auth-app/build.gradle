@@ -17,6 +17,8 @@ dependencies {
 
     testImplementation project(path: ':core:core-web', configuration: 'testApi')
 
+    testImplementation testFixtures(project(':auth:auth-types'))
+
     testRuntimeOnly 'com.h2database:h2'
     testRuntimeOnly 'io.r2dbc:r2dbc-h2'
 }
