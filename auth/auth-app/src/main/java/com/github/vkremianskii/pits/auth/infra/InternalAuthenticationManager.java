@@ -21,7 +21,6 @@ public class InternalAuthenticationManager implements ReactiveAuthenticationMana
         this.userService = requireNonNull(userService);
     }
 
-
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         if (!authentication.getClass().equals(UsernamePasswordAuthenticationToken.class)) {
@@ -33,7 +32,7 @@ public class InternalAuthenticationManager implements ReactiveAuthenticationMana
         final var password = basicAuthentication.getCredentials().toString();
 
         return userService.authenticateUser(username(username), password.toCharArray())
-            .map(scopes -> new InternalAuthentication(scopes.stream()
+            .map(auth -> new InternalAuthentication(auth.first(), auth.second().stream()
                 .map(scope -> new SimpleGrantedAuthority(scope.value))
                 .toList()))
             .doOnNext(auth -> auth.setAuthenticated(true))

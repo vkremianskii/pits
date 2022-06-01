@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.github.vkremianskii.pits.auth.TestAuthentication.basicAuthAdmin;
+import static com.github.vkremianskii.pits.auth.TestUser.randomUserId;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
@@ -59,7 +60,7 @@ class EquipmentControllerTests {
     @BeforeEach
     void setup() {
         when(authClient.authenticateUser(username("admin"), "admin".toCharArray()))
-            .thenReturn(Mono.just(new AuthenticateResponse(Set.of(scope("scope")))));
+            .thenReturn(Mono.just(new AuthenticateResponse(randomUserId(), Set.of(scope("admin")))));
     }
 
     @Test

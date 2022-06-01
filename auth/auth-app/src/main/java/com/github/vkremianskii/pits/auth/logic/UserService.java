@@ -4,6 +4,7 @@ import com.github.vkremianskii.pits.auth.data.UserRepository;
 import com.github.vkremianskii.pits.auth.model.Scope;
 import com.github.vkremianskii.pits.auth.model.UserId;
 import com.github.vkremianskii.pits.auth.model.Username;
+import com.github.vkremianskii.pits.core.Tuple2;
 import com.github.vkremianskii.pits.core.model.Hash;
 import com.github.vkremianskii.pits.core.web.error.UnauthorizedError;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 import static com.github.vkremianskii.pits.auth.model.UserId.userId;
 import static com.github.vkremianskii.pits.auth.util.PasswordUtils.hashPassword;
+import static com.github.vkremianskii.pits.core.Tuple2.tuple2;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 
@@ -33,15 +35,15 @@ public class UserService {
             .thenReturn(userId);
     }
 
-    public Mono<Set<Scope>> authenticateUser(Username username, char[] password) {
+    public Mono<Tuple2<UserId, Set<Scope>>> authenticateUser(Username username, char[] password) {
         return userRepository.getUserByName(username)
             .flatMap(maybeUser -> maybeUser
                 .map(user -> {
                     final var hash = hashUserPassword(user.userId(), password);
                     if (hash.equals(user.password())) {
-                        return Mono.just(user.scopes());
+                        return Mono.just(tuple2(user.userId(), user.scopes()));
                     } else {
-                        return Mono.<Set<Scope>>error(new UnauthorizedError());
+                        return Mono.<Tuple2<UserId, Set<Scope>>>error(new UnauthorizedError());
                     }
                 })
                 .orElse(Mono.error(new UnauthorizedError())));

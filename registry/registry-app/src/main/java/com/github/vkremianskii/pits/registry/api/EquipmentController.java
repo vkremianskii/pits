@@ -16,6 +16,7 @@ import com.github.vkremianskii.pits.registry.model.equipment.Drill;
 import com.github.vkremianskii.pits.registry.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.model.equipment.Truck;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ public class EquipmentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('registry:equipment:list', 'admin')")
     public Mono<ResponseEntity<?>> getEquipment(@RequestHeader(name = API_VERSION, required = false) ApiVersion version) {
         if (version != null && version.isGreaterThanOrEqual(EQUIPMENT_RESPONSE_OBJECT)) {
             return equipmentRepository.getEquipment()
@@ -54,6 +56,7 @@ public class EquipmentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('registry:equipment:create', 'admin')")
     public Mono<CreateEquipmentResponse> createEquipment(@RequestBody CreateEquipmentRequest request) {
         final var equipmentId = equipmentId(randomUUID());
         return equipmentRepository.createEquipment(equipmentId, request.name(), request.type(), null)
@@ -61,6 +64,7 @@ public class EquipmentController {
     }
 
     @PostMapping("/{id}/state")
+    @PreAuthorize("hasAnyAuthority('registry:equipment:update', 'admin')")
     public Mono<Void> updateEquipmentState(@PathVariable("id") EquipmentId equipmentId,
                                            @RequestBody UpdateEquipmentStateRequest request) {
         return equipmentRepository.getEquipmentById(equipmentId)

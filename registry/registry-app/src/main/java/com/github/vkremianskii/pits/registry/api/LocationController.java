@@ -14,6 +14,7 @@ import com.github.vkremianskii.pits.registry.model.location.Dump;
 import com.github.vkremianskii.pits.registry.model.location.Face;
 import com.github.vkremianskii.pits.registry.model.location.Hole;
 import com.github.vkremianskii.pits.registry.model.location.Stockpile;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.github.vkremianskii.pits.core.Tuple2.tuple;
+import static com.github.vkremianskii.pits.core.Tuple2.tuple2;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
@@ -45,12 +46,13 @@ public class LocationController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('registry:locations:list', 'admin')")
     public Mono<LocationsResponse> getLocations() {
         return locationRepository.getLocations()
             .flatMap(locations -> Flux.fromIterable(locations)
                 .flatMap(location -> locationPointRepository.getPointsByLocationId(location.id())
                     .switchIfEmpty(Mono.just(emptyList()))
-                    .map(points -> tuple(location, points)))
+                    .map(points -> tuple2(location, points)))
                 .collectList()
                 .map(pairs -> new LocationsResponse(pairs.stream()
                     .map(pair -> location(pair.first(), pair.second()))
@@ -58,6 +60,7 @@ public class LocationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('registry:locations:create', 'admin')")
     public Mono<CreateLocationResponse> createLocation(@RequestBody CreateLocationRequest request) {
         return locationService.createLocation(request.name(), request.type(), request.geometry())
             .map(CreateLocationResponse::new);

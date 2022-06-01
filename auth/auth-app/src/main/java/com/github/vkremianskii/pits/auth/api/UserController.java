@@ -5,6 +5,7 @@ import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.auth.dto.CreateUserRequest;
 import com.github.vkremianskii.pits.auth.dto.CreateUserResponse;
 import com.github.vkremianskii.pits.auth.logic.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Mono<CreateUserResponse> createUser(@RequestBody CreateUserRequest request) {
         return userService.createUser(
                 request.username(),
@@ -35,6 +37,6 @@ public class UserController {
     @PostMapping("/auth")
     public Mono<AuthenticateResponse> authenticateUser(@RequestBody AuthenticateRequest request) {
         return userService.authenticateUser(request.username(), request.password().toCharArray())
-            .map(AuthenticateResponse::new);
+            .map(auth -> new AuthenticateResponse(auth.first(), auth.second()));
     }
 }

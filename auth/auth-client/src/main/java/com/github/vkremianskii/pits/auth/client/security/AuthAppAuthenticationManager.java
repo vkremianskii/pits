@@ -33,7 +33,7 @@ public class AuthAppAuthenticationManager implements ReactiveAuthenticationManag
         final var password = basicAuthentication.getCredentials().toString();
 
         return authClient.authenticateUser(username(username), password.toCharArray())
-            .map(response -> new AuthAppAuthentication(response.scopes().stream()
+            .map(response -> new AuthAppAuthentication(response.userId(), response.scopes().stream()
                 .map(scope -> new SimpleGrantedAuthority(scope.value))
                 .toList()))
             .doOnNext(auth -> auth.setAuthenticated(true))

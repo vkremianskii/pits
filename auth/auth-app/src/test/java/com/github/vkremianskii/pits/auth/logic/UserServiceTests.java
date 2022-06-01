@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
+import static com.github.vkremianskii.pits.core.Tuple2.tuple2;
 import static com.github.vkremianskii.pits.core.model.Hash.hash;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,6 +61,6 @@ class UserServiceTests {
             "user".toCharArray()).block();
 
         // then
-        assertThat(scopes).isEqualTo(Set.of(scope("scope")));
+        assertThat(scopes).isEqualTo(tuple2(userId, Set.of(scope("scope"))));
     }
 }

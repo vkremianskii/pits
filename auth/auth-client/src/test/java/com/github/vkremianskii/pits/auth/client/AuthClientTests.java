@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.auth.model.UserId;
 import com.github.vkremianskii.pits.core.json.CoreModule;
 import org.junit.jupiter.api.Test;
@@ -88,6 +89,7 @@ class AuthClientTests {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
                 .withBody("""
                     {
+                        "userId": "d7a8ba56-c335-4035-b781-942b4052c37e",
                         "scopes": ["scope"]
                     }
                     """)));
@@ -97,7 +99,9 @@ class AuthClientTests {
         var response = sut.authenticateUser(username("username"), "password".toCharArray()).block();
 
         // then
-        assertThat(response.scopes()).containsExactly(scope("scope"));
+        assertThat(response).isEqualTo(new AuthenticateResponse(
+            UserId.valueOf("d7a8ba56-c335-4035-b781-942b4052c37e"),
+            Set.of(scope("scope"))));
         verify(postRequestedFor(urlPathEqualTo("/user/auth"))
             .withRequestBody(equalToJson("""
                 {

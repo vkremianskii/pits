@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-import static com.github.vkremianskii.pits.core.Tuple3.tuple;
+import static com.github.vkremianskii.pits.core.Tuple3.tuple3;
 import static com.github.vkremianskii.pits.frontends.ui.ViewUtils.uiThread;
 import static com.github.vkremianskii.pits.registry.model.EquipmentType.DOZER;
 import static com.github.vkremianskii.pits.registry.model.EquipmentType.DRILL;
@@ -122,12 +122,12 @@ public class MainViewPresenterImpl implements MainViewPresenter {
     @Override
     public void initializeFleet() {
         Flux.fromStream(Stream.of(
-                tuple("Dozer No.1", DOZER, new Position(65.305376, 41.026554, DEFAULT_ELEVATION)),
-                tuple("Drill No.1", DRILL, new Position(65.299853, 41.019001, DEFAULT_ELEVATION)),
-                tuple("Shovel No.1", SHOVEL, new Position(65.303583, 41.019173, DEFAULT_ELEVATION)),
-                tuple("Truck No.1", TRUCK, new Position(65.294329, 41.026382, DEFAULT_ELEVATION))))
+                tuple3("Dozer No.1", DOZER, new Position(65.305376, 41.026554, DEFAULT_ELEVATION)),
+                tuple3("Drill No.1", DRILL, new Position(65.299853, 41.019001, DEFAULT_ELEVATION)),
+                tuple3("Shovel No.1", SHOVEL, new Position(65.303583, 41.019173, DEFAULT_ELEVATION)),
+                tuple3("Truck No.1", TRUCK, new Position(65.294329, 41.026382, DEFAULT_ELEVATION))))
             .flatMap(tuple -> registryClient.createEquipment(tuple.first(), tuple.second())
-                .map(response -> Tuple2.tuple(response.equipmentId(), tuple.third())))
+                .map(response -> Tuple2.tuple2(response.equipmentId(), tuple.third())))
             .flatMap(pair -> grpcClient.sendPositionChanged(
                 pair.first(),
                 pair.second().latitude(),
@@ -144,15 +144,15 @@ public class MainViewPresenterImpl implements MainViewPresenter {
     @Override
     public void initializeLocations() {
         Flux.fromStream(Stream.of(
-                tuple("Dump No.1", DUMP, List.of(
+                tuple3("Dump No.1", DUMP, List.of(
                     new LatLngPoint(65.299351, 41.042862),
                     new LatLngPoint(65.312403, 41.053848),
                     new LatLngPoint(65.309391, 41.074791),
                     new LatLngPoint(65.297342, 41.052475)
                 )),
-                tuple("Face No.1", FACE, List.<LatLngPoint>of()),
-                tuple("Hole No.1", HOLE, List.<LatLngPoint>of()),
-                tuple("Stockpile No.1", STOCKPILE, List.<LatLngPoint>of())))
+                tuple3("Face No.1", FACE, List.<LatLngPoint>of()),
+                tuple3("Hole No.1", HOLE, List.<LatLngPoint>of()),
+                tuple3("Stockpile No.1", STOCKPILE, List.<LatLngPoint>of())))
             .flatMap(tuple -> registryClient.createLocation(tuple.first(), tuple.second(), tuple.third()))
             .onErrorResume(e -> {
                 LOG.error("Error while initializing localisations", e);

@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static com.github.vkremianskii.pits.core.Tuple2.tuple;
+import static com.github.vkremianskii.pits.core.Tuple2.tuple2;
 import static com.github.vkremianskii.pits.core.util.TupleUtils.mapFromTuples;
 import static java.util.Objects.requireNonNull;
 
@@ -76,13 +76,13 @@ public class HaulCycleService {
 
         final var shovelToPositions = Flux.concat(shovels.stream()
                 .map(shovel -> positionRepository.getRecordsForEquipmentAfter(shovel.id, startTimestamp)
-                    .map(records -> tuple(shovel, records)))
+                    .map(records -> tuple2(shovel, records)))
                 .toList())
             .collectList();
 
         final var shovelToLastPosition = Flux.concat(shovels.stream()
                 .map(shovel -> positionRepository.getLastRecordForEquipmentBefore(shovel.id, startTimestamp)
-                    .map(record -> tuple(shovel, record)))
+                    .map(record -> tuple2(shovel, record)))
                 .toList())
             .collectList();
 
@@ -194,14 +194,14 @@ public class HaulCycleService {
                                                                                                             List<EquipmentPayloadRecord> payloads) {
         final var records = new TreeMap<Instant, Tuple2<EquipmentPositionRecord, EquipmentPayloadRecord>>();
         for (final var record : positions) {
-            records.put(record.insertTimestamp(), tuple(record, null));
+            records.put(record.insertTimestamp(), tuple2(record, null));
         }
         for (final var record : payloads) {
             records.compute(record.insertTimestamp(), (key, existing) -> {
                 if (existing == null) {
-                    return tuple(null, record);
+                    return tuple2(null, record);
                 }
-                return tuple(existing.first(), record);
+                return tuple2(existing.first(), record);
             });
         }
         return records;
