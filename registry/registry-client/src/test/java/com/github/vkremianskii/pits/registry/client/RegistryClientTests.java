@@ -210,7 +210,7 @@ class RegistryClientTests {
 
     RegistryClient newClient(WireMockRuntimeInfo wmRuntimeInfo) {
         var baseUrl = "http://localhost:" + wmRuntimeInfo.getHttpPort();
-        var properties = new RegistryProperties(baseUrl);
+        var properties = new RegistryProperties(baseUrl, "admin", "admin");
         return new RegistryClient(properties, objectMapper);
     }
 }

@@ -13,7 +13,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class Application {
 
     public static void main(String[] args) {
-        final var registryProperties = new RegistryProperties("http://localhost:8081");
+        final var registryProperties = new RegistryProperties(
+            "http://localhost:8081",
+            "admin",
+            "admin");
         final var objectMapper = new Jackson2ObjectMapperBuilder()
             .modules(new CoreModule(), new RegistryModule())
             .serializationInclusion(JsonInclude.Include.NON_NULL)

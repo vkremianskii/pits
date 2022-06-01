@@ -19,11 +19,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.Set;
 
-import static com.github.vkremianskii.pits.auth.TestAuthentication.basicAuth;
 import static com.github.vkremianskii.pits.auth.TestAuthentication.basicAuthAdmin;
 import static com.github.vkremianskii.pits.auth.TestUser.randomUserId;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
+import static com.github.vkremianskii.pits.auth.util.AuthenticationUtils.basicAuth;
 import static com.github.vkremianskii.pits.core.Tuple2.tuple2;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

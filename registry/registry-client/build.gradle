@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     implementation project(':core:core-types')
+    implementation project(':auth:auth-types')
     implementation project(':registry:registry-types')
 
     implementation 'org.springframework:spring-webflux'

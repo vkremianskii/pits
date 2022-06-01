@@ -142,7 +142,7 @@ class AuthClientTests {
 
     AuthClient newClient(WireMockRuntimeInfo wmRuntimeInfo) {
         var baseUrl = "http://localhost:" + wmRuntimeInfo.getHttpPort();
-        var properties = new AuthProperties(baseUrl);
+        var properties = new AuthProperties(baseUrl, "admin", "admin");
         return new AuthClient(properties, objectMapper);
     }
 }

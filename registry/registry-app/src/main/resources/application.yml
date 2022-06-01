@@ -19,3 +19,5 @@ spring:
 integration:
   auth:
     baseUrl: http://localhost:8080
+    username: admin
+    password: admin

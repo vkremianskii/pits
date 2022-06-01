@@ -7,3 +7,9 @@ spring:
     listener:
       simple:
         auto-startup: false
+
+integration:
+  auth:
+    baseUrl: http://localhost:8080
+    username: admin
+    password: admin

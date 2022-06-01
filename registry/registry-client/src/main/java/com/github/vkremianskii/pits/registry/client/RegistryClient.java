@@ -19,9 +19,12 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.github.vkremianskii.pits.auth.model.Username.username;
+import static com.github.vkremianskii.pits.auth.util.AuthenticationUtils.basicAuth;
 import static com.github.vkremianskii.pits.registry.ApiHeaders.API_VERSION;
 import static com.github.vkremianskii.pits.registry.ApiVersion.EQUIPMENT_RESPONSE_OBJECT;
 import static com.github.vkremianskii.pits.registry.infra.RegistryCodecConfigurer.configureCodecs;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
@@ -32,6 +35,7 @@ public class RegistryClient {
     public RegistryClient(RegistryProperties properties, ObjectMapper objectMapper) {
         webClient = WebClient.builder()
             .baseUrl(properties.baseUrl())
+            .defaultHeader(AUTHORIZATION, basicAuth(username(properties.username()), properties.password().toCharArray()))
             .codecs(c -> configureCodecs(c, objectMapper))
             .build();
     }

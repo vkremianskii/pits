@@ -19,8 +19,12 @@ spring:
 integration:
   auth:
     baseUrl: http://localhost:8080
+    username: admin
+    password: admin
   registry:
     baseUrl: http://localhost:8081
+    username: admin
+    password: admin
 
 jobs:
   haul-cycle:
