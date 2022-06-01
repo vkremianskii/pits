@@ -37,7 +37,9 @@ Open-pit mining system – exercise in software engineering.
 ### Backend
 
 - Java 17
-- Spring Boot 2
+- Spring Boot
+- Spring WebFlux
+- Spring Security
 - jOOQ
 - Flyway
 - gRPC
