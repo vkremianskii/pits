@@ -1,5 +1,6 @@
 package com.github.vkremianskii.pits.frontends.logic;
 
+import com.github.vkremianskii.pits.core.Tuple2;
 import com.github.vkremianskii.pits.core.model.Equipment;
 import com.github.vkremianskii.pits.core.model.EquipmentId;
 import com.github.vkremianskii.pits.core.model.LatLngPoint;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-import static com.github.vkremianskii.pits.core.Pair.pair;
 import static com.github.vkremianskii.pits.core.Tuple3.tuple;
 import static com.github.vkremianskii.pits.core.model.EquipmentType.DOZER;
 import static com.github.vkremianskii.pits.core.model.EquipmentType.DRILL;
@@ -127,12 +127,12 @@ public class MainViewPresenterImpl implements MainViewPresenter {
                 tuple("Shovel No.1", SHOVEL, new Position(65.303583, 41.019173, DEFAULT_ELEVATION)),
                 tuple("Truck No.1", TRUCK, new Position(65.294329, 41.026382, DEFAULT_ELEVATION))))
             .flatMap(tuple -> registryClient.createEquipment(tuple.first(), tuple.second())
-                .map(response -> pair(response.equipmentId(), tuple.third())))
+                .map(response -> Tuple2.tuple(response.equipmentId(), tuple.third())))
             .flatMap(pair -> grpcClient.sendPositionChanged(
-                pair.left(),
-                pair.right().latitude(),
-                pair.right().longitude(),
-                pair.right().elevation()))
+                pair.first(),
+                pair.second().latitude(),
+                pair.second().longitude(),
+                pair.second().elevation()))
             .onErrorResume(e -> {
                 LOG.error("Error while initializing fleet", e);
                 return Mono.empty();

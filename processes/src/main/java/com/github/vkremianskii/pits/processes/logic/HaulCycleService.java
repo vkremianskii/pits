@@ -1,6 +1,6 @@
 package com.github.vkremianskii.pits.processes.logic;
 
-import com.github.vkremianskii.pits.core.Pair;
+import com.github.vkremianskii.pits.core.Tuple2;
 import com.github.vkremianskii.pits.core.model.equipment.Shovel;
 import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.processes.data.EquipmentPayloadRepository;
@@ -29,8 +29,8 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static com.github.vkremianskii.pits.core.Pair.pair;
-import static com.github.vkremianskii.pits.core.util.PairUtils.pairsToMap;
+import static com.github.vkremianskii.pits.core.Tuple2.tuple;
+import static com.github.vkremianskii.pits.core.util.TupleUtils.mapFromTuples;
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -76,13 +76,13 @@ public class HaulCycleService {
 
         final var shovelToPositions = Flux.concat(shovels.stream()
                 .map(shovel -> positionRepository.getRecordsForEquipmentAfter(shovel.id, startTimestamp)
-                    .map(records -> pair(shovel, records)))
+                    .map(records -> tuple(shovel, records)))
                 .toList())
             .collectList();
 
         final var shovelToLastPosition = Flux.concat(shovels.stream()
                 .map(shovel -> positionRepository.getLastRecordForEquipmentBefore(shovel.id, startTimestamp)
-                    .map(record -> pair(shovel, record)))
+                    .map(record -> tuple(shovel, record)))
                 .toList())
             .collectList();
 
@@ -90,7 +90,7 @@ public class HaulCycleService {
             .flatMap(__ -> computeHaulCycles(
                 truck,
                 mergeRecords(__.getT1(), __.getT2()),
-                shovelToOrderedPositions(pairsToMap(__.getT5()), pairsToMap(__.getT6())),
+                shovelToOrderedPositions(mapFromTuples(__.getT5()), mapFromTuples(__.getT6())),
                 __.getT3().orElse(null),
                 __.getT4().orElse(null),
                 lastHaulCycle));
@@ -127,7 +127,7 @@ public class HaulCycleService {
     }
 
     private Mono<Void> computeHaulCycles(Truck truck,
-                                         SortedMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> orderedRecords,
+                                         SortedMap<Instant, Tuple2<EquipmentPositionRecord, EquipmentPayloadRecord>> orderedRecords,
                                          Map<Shovel, SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions,
                                          @Nullable EquipmentPositionRecord startPosition,
                                          @Nullable EquipmentPayloadRecord startPayload,
@@ -142,8 +142,8 @@ public class HaulCycleService {
 
         for (final var entry : orderedRecords.entrySet()) {
             final var records = entry.getValue();
-            final var positionRecord = records.left();
-            final var payloadRecord = records.right();
+            final var positionRecord = records.first();
+            final var payloadRecord = records.second();
             if (positionRecord != null) {
                 haulCycleFsm.consume(positionRecord);
             }
@@ -190,18 +190,18 @@ public class HaulCycleService {
             .then();
     }
 
-    private static SortedMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>> mergeRecords(List<EquipmentPositionRecord> positions,
-                                                                                                          List<EquipmentPayloadRecord> payloads) {
-        final var records = new TreeMap<Instant, Pair<EquipmentPositionRecord, EquipmentPayloadRecord>>();
+    private static SortedMap<Instant, Tuple2<EquipmentPositionRecord, EquipmentPayloadRecord>> mergeRecords(List<EquipmentPositionRecord> positions,
+                                                                                                            List<EquipmentPayloadRecord> payloads) {
+        final var records = new TreeMap<Instant, Tuple2<EquipmentPositionRecord, EquipmentPayloadRecord>>();
         for (final var record : positions) {
-            records.put(record.insertTimestamp(), pair(record, null));
+            records.put(record.insertTimestamp(), tuple(record, null));
         }
         for (final var record : payloads) {
             records.compute(record.insertTimestamp(), (key, existing) -> {
                 if (existing == null) {
-                    return pair(null, record);
+                    return tuple(null, record);
                 }
-                return pair(existing.left(), record);
+                return tuple(existing.first(), record);
             });
         }
         return records;

@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.github.vkremianskii.pits.core.Pair.pair;
+import static com.github.vkremianskii.pits.core.Tuple2.tuple;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
@@ -50,10 +50,10 @@ public class LocationController {
             .flatMap(locations -> Flux.fromIterable(locations)
                 .flatMap(location -> locationPointRepository.getPointsByLocationId(location.id())
                     .switchIfEmpty(Mono.just(emptyList()))
-                    .map(points -> pair(location, points)))
+                    .map(points -> tuple(location, points)))
                 .collectList()
                 .map(pairs -> new LocationsResponse(pairs.stream()
-                    .map(pair -> location(pair.left(), pair.right()))
+                    .map(pair -> location(pair.first(), pair.second()))
                     .toList())));
     }
 

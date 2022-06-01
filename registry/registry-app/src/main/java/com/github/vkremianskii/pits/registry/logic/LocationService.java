@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.github.vkremianskii.pits.core.Pair.pair;
+import static com.github.vkremianskii.pits.core.Tuple2.tuple;
 import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
@@ -34,15 +34,15 @@ public class LocationService {
     public Mono<LocationId> createLocation(String name, LocationType type, List<LatLngPoint> geometry) {
         final var locationId = locationId(randomUUID());
         final var indexedPoints = IntStream.range(0, geometry.size())
-            .mapToObj(i -> pair(i, geometry.get(i)))
+            .mapToObj(i -> tuple(i, geometry.get(i)))
             .toList();
         return locationRepository.createLocation(locationId, name, type)
             .then(Flux.fromIterable(indexedPoints)
                 .flatMap(pair -> locationPointRepository.createLocationPoint(
                     locationId,
-                    pair.left(),
-                    pair.right().latitude(),
-                    pair.right().longitude()))
+                    pair.first(),
+                    pair.second().latitude(),
+                    pair.second().longitude()))
                 .then())
             .thenReturn(locationId);
     }
