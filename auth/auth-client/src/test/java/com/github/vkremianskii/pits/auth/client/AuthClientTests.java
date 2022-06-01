@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.vkremianskii.pits.auth.model.UserId;
 import com.github.vkremianskii.pits.core.json.CoreTypesModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.Set;
 
@@ -20,6 +22,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @WireMockTest
@@ -43,7 +47,12 @@ class AuthClientTests {
                 """))
             .willReturn(aResponse()
                 .withStatus(200)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())));
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
+                .withBody("""
+                    {
+                        "userId": "f5c9e539-008f-4344-bcc4-0673f22ce8b5"
+                    }
+                    """)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
@@ -53,6 +62,7 @@ class AuthClientTests {
             Set.of(scope("scope"))).block();
 
         // then
+        assertThat(response.userId()).isEqualTo(UserId.valueOf("f5c9e539-008f-4344-bcc4-0673f22ce8b5"));
         verify(postRequestedFor(urlPathEqualTo("/user"))
             .withRequestBody(equalToJson("""
                 {
@@ -75,11 +85,46 @@ class AuthClientTests {
                 """))
             .willReturn(aResponse()
                 .withStatus(200)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())));
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON.toString())
+                .withBody("""
+                    {
+                        "scopes": ["scope"]
+                    }
+                    """)));
         var sut = newClient(wmRuntimeInfo);
 
         // when
         var response = sut.authenticate(username("username"), "password".toCharArray()).block();
+
+        // then
+        assertThat(response.scopes()).containsExactly(scope("scope"));
+        verify(postRequestedFor(urlPathEqualTo("/user/auth"))
+            .withRequestBody(equalToJson("""
+                {
+                    "username": "username",
+                    "password": "password"
+                }
+                """)));
+    }
+
+    @Test
+    void should_authenticate_user__unauthorized(WireMockRuntimeInfo wmRuntimeInfo) {
+        // given
+        stubFor(post(urlPathEqualTo("/user/auth"))
+            .withRequestBody(equalToJson("""
+                {
+                    "username": "username",
+                    "password": "password"
+                }
+                """))
+            .willReturn(aResponse()
+                .withStatus(401)));
+        var sut = newClient(wmRuntimeInfo);
+
+        // when
+        assertThatThrownBy(() -> sut.authenticate(
+            username("username"),
+            "password".toCharArray()).block()).isInstanceOf(WebClientResponseException.Unauthorized.class);
 
         // then
         verify(postRequestedFor(urlPathEqualTo("/user/auth"))

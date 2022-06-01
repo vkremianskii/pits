@@ -1,9 +1,12 @@
 package com.github.vkremianskii.pits.registry.api;
 
+import com.github.vkremianskii.pits.auth.client.AuthClient;
+import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.core.model.Position;
 import com.github.vkremianskii.pits.core.model.equipment.Truck;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
 import com.github.vkremianskii.pits.registry.data.EquipmentRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -14,7 +17,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import static com.github.vkremianskii.pits.auth.model.Scope.scope;
+import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static com.github.vkremianskii.pits.core.TestEquipment.aDozer;
 import static com.github.vkremianskii.pits.core.TestEquipment.aDrill;
 import static com.github.vkremianskii.pits.core.TestEquipment.aShovel;
@@ -29,6 +35,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -38,9 +45,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 class EquipmentControllerTests {
 
     @MockBean
+    AuthClient authClient;
+    @MockBean
     EquipmentRepository equipmentRepository;
     @Autowired
     WebTestClient webClient;
+
+    @BeforeEach
+    void setup() {
+        when(authClient.authenticate(username("admin"), "admin".toCharArray()))
+            .thenReturn(Mono.just(new AuthenticateResponse(Set.of(scope("scope")))));
+    }
 
     @Test
     void should_get_equipment__v1() {
@@ -55,6 +70,7 @@ class EquipmentControllerTests {
         // expect
         webClient.get()
             .uri("/equipment")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .exchange()
             .expectStatus().isOk()
             .expectBody().json(String.format("""
@@ -99,6 +115,7 @@ class EquipmentControllerTests {
         // expect
         webClient.get()
             .uri("/equipment")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .header(API_VERSION, EQUIPMENT_RESPONSE_OBJECT.toString())
             .exchange()
             .expectStatus().isOk()
@@ -142,6 +159,7 @@ class EquipmentControllerTests {
         // expect
         webClient.post()
             .uri("/equipment")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -167,6 +185,7 @@ class EquipmentControllerTests {
         // expect
         webClient.post()
             .uri("/equipment/{id}/state", truck.id)
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -188,6 +207,7 @@ class EquipmentControllerTests {
         // expect
         webClient.post()
             .uri("/equipment/{id}/state", truckId)
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -210,6 +230,7 @@ class EquipmentControllerTests {
         // expect
         webClient.post()
             .uri("/equipment/{id}/state", dozer.id)
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue("""
                 {

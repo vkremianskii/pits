@@ -7,6 +7,7 @@ import com.github.vkremianskii.pits.auth.dto.CreateUserRequest;
 import com.github.vkremianskii.pits.auth.dto.CreateUserResponse;
 import com.github.vkremianskii.pits.auth.model.Scope;
 import com.github.vkremianskii.pits.auth.model.Username;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -15,6 +16,7 @@ import java.util.Set;
 import static com.github.vkremianskii.pits.auth.infra.AuthCodecConfigurer.configureCodecs;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+@Component
 public class AuthClient {
 
     private final WebClient webClient;

@@ -3,7 +3,10 @@ package com.github.vkremianskii.pits.auth.api;
 import com.github.vkremianskii.pits.auth.dto.AuthenticateRequest;
 import com.github.vkremianskii.pits.auth.dto.CreateUserRequest;
 import com.github.vkremianskii.pits.auth.logic.UserService;
+import com.github.vkremianskii.pits.auth.security.InternalAuthenticationManager;
+import com.github.vkremianskii.pits.auth.security.SecurityConfig;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -20,16 +23,26 @@ import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static java.util.UUID.randomUUID;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @WebFluxTest(controllers = UserController.class)
-@Import(CoreWebAutoConfiguration.class)
+@Import({
+    CoreWebAutoConfiguration.class,
+    SecurityConfig.class,
+    InternalAuthenticationManager.class})
 class UserControllerTests {
 
     @MockBean
     UserService userService;
     @Autowired
     WebTestClient webClient;
+
+    @BeforeEach
+    void setup() {
+        when(userService.authenticate(username("admin"), "admin".toCharArray()))
+            .thenReturn(Mono.just(Set.of(scope("scope"))));
+    }
 
     @Test
     void should_create_user() {
@@ -43,6 +56,7 @@ class UserControllerTests {
         // expect
         webClient.post()
             .uri("/user")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateUserRequest(
                 username("username"),
@@ -66,6 +80,7 @@ class UserControllerTests {
         // expect
         webClient.post()
             .uri("/user/auth")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue(new AuthenticateRequest(username("username"), "password"))
             .exchange()

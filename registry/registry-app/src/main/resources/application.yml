@@ -15,3 +15,7 @@ spring:
     port: 5672
     username: guest
     password: guest
+
+integration:
+  auth:
+    baseUrl: http://localhost:8080

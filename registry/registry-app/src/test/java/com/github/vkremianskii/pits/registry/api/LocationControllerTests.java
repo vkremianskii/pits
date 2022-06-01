@@ -1,5 +1,7 @@
 package com.github.vkremianskii.pits.registry.api;
 
+import com.github.vkremianskii.pits.auth.client.AuthClient;
+import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.core.model.LatLngPoint;
 import com.github.vkremianskii.pits.core.model.LocationPoint;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
@@ -8,6 +10,7 @@ import com.github.vkremianskii.pits.registry.data.LocationRepository;
 import com.github.vkremianskii.pits.registry.dto.CreateLocationRequest;
 import com.github.vkremianskii.pits.registry.logic.LocationService;
 import com.github.vkremianskii.pits.registry.model.LocationDeclaration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -17,7 +20,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Set;
 
+import static com.github.vkremianskii.pits.auth.model.Scope.scope;
+import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static com.github.vkremianskii.pits.core.TestLocations.randomLocationId;
 import static com.github.vkremianskii.pits.core.model.LocationId.locationId;
 import static com.github.vkremianskii.pits.core.model.LocationType.DUMP;
@@ -28,12 +34,15 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @WebFluxTest(controllers = LocationController.class)
 @Import(CoreWebAutoConfiguration.class)
 class LocationControllerTests {
 
+    @MockBean
+    AuthClient authClient;
     @MockBean
     LocationService locationService;
     @MockBean
@@ -42,6 +51,12 @@ class LocationControllerTests {
     LocationPointRepository locationPointRepository;
     @Autowired
     WebTestClient webClient;
+
+    @BeforeEach
+    void setup() {
+        when(authClient.authenticate(username("admin"), "admin".toCharArray()))
+            .thenReturn(Mono.just(new AuthenticateResponse(Set.of(scope("scope")))));
+    }
 
     @Test
     void should_get_locations() {
@@ -68,6 +83,7 @@ class LocationControllerTests {
         // expect
         webClient.get()
             .uri("/location")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .exchange()
             .expectStatus().isOk()
             .expectBody().json("""
@@ -105,6 +121,7 @@ class LocationControllerTests {
         // expect
         webClient.post()
             .uri("/location")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Dump No.1", DUMP, List.of(
                 new LatLngPoint(41.1494512, -8.6107884),
@@ -115,6 +132,7 @@ class LocationControllerTests {
             .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Face No.1", FACE, emptyList()))
             .exchange()
@@ -122,6 +140,7 @@ class LocationControllerTests {
             .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Hole No.1", HOLE, emptyList()))
             .exchange()
@@ -129,6 +148,7 @@ class LocationControllerTests {
             .expectBody().jsonPath("$.locationId").isNotEmpty();
         webClient.post()
             .uri("/location")
+            .header(AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
             .contentType(APPLICATION_JSON)
             .bodyValue(new CreateLocationRequest("Stockpile No.1", STOCKPILE, emptyList()))
             .exchange()

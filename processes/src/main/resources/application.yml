@@ -17,6 +17,8 @@ spring:
     password: guest
 
 integration:
+  auth:
+    baseUrl: http://localhost:8080
   registry:
     baseUrl: http://localhost:8081
 
