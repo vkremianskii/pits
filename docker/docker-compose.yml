@@ -72,8 +72,6 @@ services:
     volumes:
       - ./elasticsearch/jvm_mem_512m:/usr/share/elasticsearch/config/jvm.options.d/jvm_mem_512m
       - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    networks:
-      - elastic
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -85,8 +83,6 @@ services:
     volumes:
       - ./logstash/jvm.options:/usr/share/logstash/config/jvm.options
       - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    networks:
-      - elastic
     ports:
       - "12201:12201/udp"
     mem_limit: 1g
@@ -94,12 +90,6 @@ services:
     image: kibana:${ELK_VERSION}
     depends_on:
       - elasticsearch
-    networks:
-      - elastic
     ports:
       - "5601:5601"
     mem_limit: 512m
-
-networks:
-  elastic:
-    driver: bridge

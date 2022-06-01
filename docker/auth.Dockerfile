@@ -7,6 +7,7 @@ FROM openjdk:18.0.1.1-slim
 EXPOSE 8080
 RUN mkdir /app
 COPY ./docker/auth/ /app
+COPY ./docker/logback-spring.xml /app/logback-spring.xml
 COPY --from=build /home/gradle/src/auth/auth-app/build/libs/auth-app-1.0-SNAPSHOT.jar /app/auth.jar
 WORKDIR /app
 CMD ["java", "-jar", "auth.jar"]

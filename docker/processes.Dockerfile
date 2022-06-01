@@ -7,6 +7,7 @@ FROM openjdk:18.0.1.1-slim
 EXPOSE 8082
 RUN mkdir /app
 COPY ./docker/processes/ /app
+COPY ./docker/logback-spring.xml /app/logback-spring.xml
 COPY --from=build /home/gradle/src/processes/build/libs/processes-1.0-SNAPSHOT.jar /app/processes.jar
 WORKDIR /app
 CMD ["java", "-jar", "processes.jar"]
