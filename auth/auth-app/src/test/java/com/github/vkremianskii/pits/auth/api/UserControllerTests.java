@@ -8,6 +8,7 @@ import com.github.vkremianskii.pits.auth.infra.SecurityConfig;
 import com.github.vkremianskii.pits.auth.logic.UserService;
 import com.github.vkremianskii.pits.auth.model.UserId;
 import com.github.vkremianskii.pits.core.web.CoreWebAutoConfiguration;
+import com.github.vkremianskii.pits.core.web.error.UnauthorizedError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,5 +99,21 @@ class UserControllerTests {
                     "scopes": ["scope"]
                 }
                 """);
+    }
+
+    @Test
+    void should_authenticate_user__unauthorized() {
+        // given
+        when(userService.authenticateUser(username("user"), "user".toCharArray()))
+            .thenReturn(Mono.error((new UnauthorizedError())));
+
+        // expect
+        webClient.post()
+            .uri("/user/auth")
+            .header(AUTHORIZATION, basicAuth(username("user"), "user".toCharArray()))
+            .contentType(APPLICATION_JSON)
+            .bodyValue(new AuthenticateRequest(username("user"), "user"))
+            .exchange()
+            .expectStatus().isUnauthorized();
     }
 }

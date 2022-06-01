@@ -9,9 +9,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -35,9 +35,9 @@ public class AuthAppAuthenticationManager implements ReactiveAuthenticationManag
     }
 
     @Override
-    public Mono<Authentication> authenticate(Authentication authentication) throws AuthenticationException {
+    public Mono<Authentication> authenticate(Authentication authentication) {
         if (!authentication.getClass().equals(UsernamePasswordAuthenticationToken.class)) {
-            throw new BadCredentialsException("Not a basic authentication: " + authentication.getClass());
+            return Mono.error(new BadCredentialsException("Not a basic authentication: " + authentication.getClass()));
         }
 
         final var basicAuthentication = (UsernamePasswordAuthenticationToken) authentication;
@@ -48,6 +48,7 @@ public class AuthAppAuthenticationManager implements ReactiveAuthenticationManag
             .map(principal -> new AuthAppAuthentication(principal.first(), principal.second().stream()
                 .map(scope -> new SimpleGrantedAuthority(scope.value))
                 .toList()))
+            .onErrorMap(WebClientResponseException.Unauthorized.class, ex -> new BadCredentialsException("", ex))
             .doOnNext(auth -> auth.setAuthenticated(true))
             .cast(Authentication.class);
     }

@@ -4,8 +4,12 @@ import com.github.vkremianskii.pits.auth.client.AuthClient;
 import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.auth.model.UserId;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;
@@ -13,10 +17,12 @@ import java.util.Set;
 import static com.github.vkremianskii.pits.auth.model.Scope.scope;
 import static com.github.vkremianskii.pits.auth.model.Username.username;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 class AuthAppAuthenticationManagerTests {
 
@@ -42,5 +48,22 @@ class AuthAppAuthenticationManagerTests {
         assertThat(auth1.getAuthorities().stream().toList().get(0)).isEqualTo(new SimpleGrantedAuthority("scope"));
         assertThat(auth2).isEqualTo(auth1);
         verify(authClient, times(1)).authenticateUser(username("user"), "user".toCharArray());
+    }
+
+    @Test
+    void should_authenticate_authentication__unauthorized() {
+        // given
+        when(authClient.authenticateUser(username("user"), "user".toCharArray()))
+            .thenReturn(Mono.error(WebClientResponseException.create(
+                UNAUTHORIZED.value(),
+                "",
+                HttpHeaders.EMPTY,
+                new byte[0],
+                null,
+                null)));
+
+        // expect
+        assertThatThrownBy(() -> sut.authenticate(new UsernamePasswordAuthenticationToken("user", "user")).block())
+            .isInstanceOf(BadCredentialsException.class);
     }
 }

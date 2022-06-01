@@ -1,6 +1,7 @@
 package com.github.vkremianskii.pits.auth.infra;
 
 import com.github.vkremianskii.pits.auth.logic.UserService;
+import com.github.vkremianskii.pits.core.web.error.UnauthorizedError;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +25,7 @@ public class InternalAuthenticationManager implements ReactiveAuthenticationMana
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         if (!authentication.getClass().equals(UsernamePasswordAuthenticationToken.class)) {
-            throw new BadCredentialsException("Not a basic authentication: " + authentication.getClass());
+            return Mono.error(new BadCredentialsException("Not a basic authentication: " + authentication.getClass()));
         }
 
         final var basicAuthentication = (UsernamePasswordAuthenticationToken) authentication;
@@ -35,6 +36,7 @@ public class InternalAuthenticationManager implements ReactiveAuthenticationMana
             .map(auth -> new InternalAuthentication(auth.first(), auth.second().stream()
                 .map(scope -> new SimpleGrantedAuthority(scope.value))
                 .toList()))
+            .onErrorMap(UnauthorizedError.class, ex -> new BadCredentialsException("", ex))
             .doOnNext(auth -> auth.setAuthenticated(true))
             .cast(Authentication.class);
     }
