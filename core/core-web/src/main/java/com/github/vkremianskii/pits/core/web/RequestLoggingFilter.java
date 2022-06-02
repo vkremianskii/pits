@@ -8,7 +8,10 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+import reactor.util.context.Context;
 
+import static com.github.vkremianskii.pits.core.log.LogUtils.withMDCOnTerminate;
+import static java.util.UUID.randomUUID;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Component
@@ -20,11 +23,12 @@ public class RequestLoggingFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         return chain.filter(exchange)
-            .doOnTerminate(() -> {
+            .doOnEach(withMDCOnTerminate(() -> {
                 final var request = exchange.getRequest();
                 final var response = exchange.getResponse();
                 LOG.info("Request: " + request.getMethod() + " " + request.getURI() + " -> " + response.getStatusCode());
                 LOG.debug("Headers: " + request.getHeaders());
-            });
+            }))
+            .contextWrite(Context.of("requestId", randomUUID()));
     }
 }
