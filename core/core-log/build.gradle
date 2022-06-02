@@ -1,0 +1,6 @@
+dependencies {
+    api 'ch.qos.logback:logback-core'
+    api 'ch.qos.logback:logback-classic'
+    api "org.mongodb:mongodb-driver-reactivestreams:${mongoDriverReactiveVersion}"
+    api 'io.projectreactor:reactor-core'
+}

@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation project(':core:core-data')
+    implementation project(':core:core-log')
     implementation project(':core:core-types')
     implementation project(':core:core-web')
     implementation project(':auth:auth-types')

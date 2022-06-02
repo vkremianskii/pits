@@ -1,4 +1,4 @@
-package com.github.vkremianskii.pits.core.logging;
+package com.github.vkremianskii.pits.core.log;
 
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import com.mongodb.BasicDBObject;

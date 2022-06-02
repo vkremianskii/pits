@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="true">
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <appender name="MONGO" class="com.github.vkremianskii.pits.core.logging.MongoDBLoggingEventAppender">
+    <appender name="MONGO" class="com.github.vkremianskii.pits.core.log.MongoDBLoggingEventAppender">
         <uri>mongodb://pits:pits@mongo/pits</uri>
         <database>pits</database>
         <collection>logs</collection>
