@@ -87,7 +87,7 @@ public class HaulCycleFsm {
                     if (distance <= shovel.loadRadius) {
                         truckState = Truck.STATE_WAIT_LOAD;
                         LOG.debug("Truck state changed: " + truckState);
-                        if (haulCycle == null) {
+                        if (haulCycle == null || haulCycle.endUnloadTimestamp != null) {
                             haulCycle = new MutableHaulCycle();
                             haulCycleSink.append(haulCycle);
                         }
@@ -122,7 +122,7 @@ public class HaulCycleFsm {
             if (payload > PAYLOAD_THRESHOLD) {
                 truckState = Truck.STATE_LOAD;
                 LOG.debug("Truck state changed: " + truckState);
-                if (haulCycle == null) {
+                if (haulCycle == null || haulCycle.endUnloadTimestamp != null) {
                     haulCycle = new MutableHaulCycle();
                     haulCycleSink.append(haulCycle);
                 }

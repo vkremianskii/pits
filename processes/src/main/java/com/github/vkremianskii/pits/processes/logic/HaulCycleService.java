@@ -28,9 +28,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static com.github.vkremianskii.pits.core.Tuple2.tuple2;
 import static com.github.vkremianskii.pits.core.util.TupleUtils.mapFromTuples;
+import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -65,9 +67,7 @@ public class HaulCycleService {
     private Mono<Void> computeHaulCycles(Truck truck,
                                          List<Shovel> shovels,
                                          @Nullable HaulCycle lastHaulCycle) {
-        final var startTimestamp = Optional.ofNullable(lastHaulCycle)
-            .map(HaulCycle::insertTimestamp)
-            .orElse(Instant.EPOCH);
+        final var startTimestamp = getStartTimestamp(lastHaulCycle);
 
         final var positions = positionRepository.getRecordsForEquipmentAfter(truck.id, startTimestamp);
         final var payloads = payloadRepository.getRecordsForEquipmentAfter(truck.id, startTimestamp);
@@ -94,6 +94,21 @@ public class HaulCycleService {
                 __.getT3().orElse(null),
                 __.getT4().orElse(null),
                 lastHaulCycle));
+    }
+
+    private Instant getStartTimestamp(@Nullable HaulCycle haulCycle) {
+        final var timestamps = new TreeSet<Instant>(reverseOrder());
+        timestamps.add(Instant.EPOCH);
+
+        if (haulCycle != null) {
+            Optional.ofNullable(haulCycle.waitLoadTimestamp()).ifPresent(timestamps::add);
+            Optional.ofNullable(haulCycle.startLoadTimestamp()).ifPresent(timestamps::add);
+            Optional.ofNullable(haulCycle.endLoadTimestamp()).ifPresent(timestamps::add);
+            Optional.ofNullable(haulCycle.startUnloadTimestamp()).ifPresent(timestamps::add);
+            Optional.ofNullable(haulCycle.endUnloadTimestamp()).ifPresent(timestamps::add);
+        }
+
+        return timestamps.first();
     }
 
     private Map<Shovel, SortedMap<Instant, EquipmentPositionRecord>> shovelToOrderedPositions(Map<Shovel, List<EquipmentPositionRecord>> shovelToPosition,

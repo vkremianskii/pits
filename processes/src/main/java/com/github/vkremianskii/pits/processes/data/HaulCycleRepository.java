@@ -110,7 +110,7 @@ public class HaulCycleRepository {
     public Mono<Optional<HaulCycle>> getLastHaulCycleForTruck(EquipmentId truckId) {
         return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.selectFrom(TABLE)
                 .where(FIELD_TRUCK_ID.eq(truckId.value))
-                .orderBy(FIELD_INSERT_TIMESTAMP.desc())
+                .orderBy(FIELD_ID.desc())
                 .limit(1))
             .map(r -> r.map(HaulCycleRepository::haulCycleFromRecord))
             .map(Optional::of)
