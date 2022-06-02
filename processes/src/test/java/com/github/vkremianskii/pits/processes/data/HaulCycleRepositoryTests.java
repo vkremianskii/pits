@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.Instant;
-
 import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
+import static java.time.Instant.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
@@ -36,7 +35,7 @@ class HaulCycleRepositoryTests {
         // when
         var truckId = randomEquipmentId();
         var shovelId = randomEquipmentId();
-        sut.insert(truckId, shovelId, Instant.now(), Instant.now(), 41.1494512, -8.6107884, Instant.now(), 10, Instant.now(), Instant.now()).block();
+        sut.insert(truckId, shovelId, now(), now(), 41.1494512, -8.6107884, now(), 10, now(), now()).block();
         var haulCycle = sut.getLastHaulCycleForTruck(truckId).block();
 
         // then

@@ -22,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
+import static java.time.Instant.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 
@@ -62,7 +63,7 @@ public class HaulCycleTests {
                 """, shovelId, truckId))));
         stubFor(post(urlPathEqualTo("/equipment/" + truckId + "/state")).willReturn(aResponse()
             .withStatus(200)));
-        haulCycleRepository.insert(truckId, shovelId, Instant.now(), null, null, null, null, null, null, null).block();
+        haulCycleRepository.insert(truckId, shovelId, now(), null, null, null, null, null, null, null).block();
 
         // when
         haulCycleJob.computeHaulCycles();

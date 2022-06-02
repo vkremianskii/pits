@@ -45,20 +45,6 @@ public class EquipmentPositionRepository {
     public Mono<Void> insert(EquipmentId equipmentId,
                              double latitude,
                              double longitude,
-                             int elevation) {
-        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
-                .columns(FIELD_EQUIPMENT_ID, FIELD_LATITUDE, FIELD_LONGITUDE, FIELD_ELEVATION)
-                .values(
-                    equipmentId.value,
-                    latitude,
-                    longitude,
-                    elevation)))
-            .then();
-    }
-
-    public Mono<Void> insert(EquipmentId equipmentId,
-                             double latitude,
-                             double longitude,
                              int elevation,
                              Instant insertTimestamp) {
         return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)

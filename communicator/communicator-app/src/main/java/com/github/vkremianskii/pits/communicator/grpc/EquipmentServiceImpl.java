@@ -9,6 +9,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import static com.github.vkremianskii.pits.communicator.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_PAYLOAD;
 import static com.github.vkremianskii.pits.communicator.amqp.AmqpConfig.EXCHANGE_EQUIPMENT_POSITION;
+import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
 
 public class EquipmentServiceImpl extends EquipmentServiceImplBase {
@@ -26,7 +27,8 @@ public class EquipmentServiceImpl extends EquipmentServiceImplBase {
             EquipmentId.valueOf(request.getEquipmentId()),
             request.getLatitude(),
             request.getLongitude(),
-            request.getElevation());
+            request.getElevation(),
+            now());
         rabbitTemplate.convertSendAndReceive(EXCHANGE_EQUIPMENT_POSITION, "", message);
 
         final var response = PositionChangedResponse.newBuilder().build();
@@ -39,7 +41,8 @@ public class EquipmentServiceImpl extends EquipmentServiceImplBase {
     public void payloadChanged(PayloadChanged request, StreamObserver<PayloadChangedResponse> responseObserver) {
         final var message = new EquipmentPayloadChanged(
             EquipmentId.valueOf(request.getEquipmentId()),
-            request.getPayload());
+            request.getPayload(),
+            now());
         rabbitTemplate.convertSendAndReceive(EXCHANGE_EQUIPMENT_PAYLOAD, "", message);
 
         final var response = PayloadChangedResponse.newBuilder().build();

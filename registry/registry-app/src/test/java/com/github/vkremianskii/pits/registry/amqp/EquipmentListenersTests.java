@@ -7,6 +7,8 @@ import com.github.vkremianskii.pits.registry.model.Position;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+
 import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -26,7 +28,7 @@ class EquipmentListenersTests {
             .thenReturn(Mono.empty());
 
         // when
-        sut.handlePositionChanged(new EquipmentPositionChanged(equipmentId, 41.1494512, -8.6107884, 86));
+        sut.handlePositionChanged(new EquipmentPositionChanged(equipmentId, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(1)));
 
         // then
         verify(equipmentRepository).updateEquipmentPosition(eq(equipmentId), eq(new Position(41.1494512, -8.6107884, 86)));
@@ -40,7 +42,7 @@ class EquipmentListenersTests {
             .thenReturn(Mono.empty());
 
         // when
-        sut.handlePayloadChanged(new EquipmentPayloadChanged(equipmentId, 10));
+        sut.handlePayloadChanged(new EquipmentPayloadChanged(equipmentId, 10, Instant.ofEpochSecond(1)));
 
         // then
         verify(equipmentRepository).updateEquipmentPayload(equipmentId, 10);

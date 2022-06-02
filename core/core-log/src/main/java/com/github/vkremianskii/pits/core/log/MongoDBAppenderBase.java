@@ -1,8 +1,6 @@
 package com.github.vkremianskii.pits.core.log;
 
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoCollection;

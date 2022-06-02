@@ -20,13 +20,14 @@ class EquipmentPayloadRepositoryTests {
     void should_insert_and_get_last_record() {
         // when
         var equipmentId = randomEquipmentId();
-        sut.insert(equipmentId, 10).block();
+        sut.insert(equipmentId, 10, Instant.ofEpochSecond(1)).block();
         var record = sut.getLastRecordForEquipment(equipmentId).block();
 
         // then
         assertThat(record).hasValueSatisfying(r -> {
             assertThat(r.equipmentId()).isEqualTo(equipmentId);
             assertThat(r.payload()).isEqualTo(10);
+            assertThat(r.insertTimestamp()).isEqualTo(Instant.ofEpochSecond(1));
         });
     }
 
@@ -43,6 +44,7 @@ class EquipmentPayloadRepositoryTests {
         assertThat(record).hasValueSatisfying(r -> {
             assertThat(r.equipmentId()).isEqualTo(equipmentId);
             assertThat(r.payload()).isEqualTo(10);
+            assertThat(r.insertTimestamp()).isEqualTo(Instant.ofEpochSecond(2));
         });
     }
 

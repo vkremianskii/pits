@@ -29,7 +29,8 @@ public class EquipmentListeners {
                 message.equipmentId(),
                 message.latitude(),
                 message.longitude(),
-                message.elevation())
+                message.elevation(),
+                message.receiveTimestamp())
             .block();
     }
 
@@ -37,7 +38,8 @@ public class EquipmentListeners {
     void handlePayloadChanged(EquipmentPayloadChanged message) {
         payloadRepository.insert(
                 message.equipmentId(),
-                message.payload())
+                message.payload(),
+                message.receiveTimestamp())
             .block();
     }
 }

@@ -40,13 +40,6 @@ public class EquipmentPayloadRepository {
             .then();
     }
 
-    public Mono<Void> insert(EquipmentId equipmentId, int payload) {
-        return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
-                .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD)
-                .values(equipmentId.value, payload)))
-            .then();
-    }
-
     public Mono<Void> insert(EquipmentId equipmentId, int payload, Instant insertTimestamp) {
         return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.insertInto(TABLE)
                 .columns(FIELD_EQUIPMENT_ID, FIELD_PAYLOAD, FIELD_INSERT_TIMESTAMP)

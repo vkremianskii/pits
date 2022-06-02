@@ -20,7 +20,7 @@ class EquipmentPositionRepositoryTests {
     void should_insert_and_get_last_record() {
         // when
         var equipmentId = randomEquipmentId();
-        sut.insert(equipmentId, 41.1494512, -8.6107884, 86).block();
+        sut.insert(equipmentId, 41.1494512, -8.6107884, 86, Instant.ofEpochSecond(1)).block();
         var record = sut.getLastRecordForEquipment(equipmentId).block();
 
         // then
@@ -29,6 +29,7 @@ class EquipmentPositionRepositoryTests {
             assertThat(r.latitude()).isEqualTo(41.1494512);
             assertThat(r.longitude()).isEqualTo(-8.6107884);
             assertThat(r.elevation()).isEqualTo(86);
+            assertThat(r.insertTimestamp()).isEqualTo(Instant.ofEpochSecond(1));
         });
     }
 

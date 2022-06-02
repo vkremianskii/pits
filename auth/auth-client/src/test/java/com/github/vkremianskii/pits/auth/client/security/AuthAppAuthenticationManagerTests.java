@@ -5,7 +5,6 @@ import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
 import com.github.vkremianskii.pits.auth.model.UserId;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

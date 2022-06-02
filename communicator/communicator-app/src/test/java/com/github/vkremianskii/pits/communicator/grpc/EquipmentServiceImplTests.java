@@ -11,14 +11,18 @@ import io.grpc.inprocess.InProcessServerBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.IOException;
 
 import static com.github.vkremianskii.pits.communicator.grpc.EquipmentServiceGrpc.newBlockingStub;
 import static com.github.vkremianskii.pits.registry.TestEquipment.randomEquipmentId;
+import static java.time.Instant.now;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -58,18 +62,23 @@ class EquipmentServiceImplTests {
             .setLongitude(-8.6107884)
             .setElevation(86)
             .build();
-        var expectedMessage = new EquipmentPositionChanged(
-            equipmentId,
-            41.1494512,
-            -8.6107884,
-            86);
 
         // when
         var response = sut.positionChanged(request);
 
         // then
         assertThat(response).isNotNull();
-        verify(rabbitTemplate).convertSendAndReceive(eq(AmqpConfig.EXCHANGE_EQUIPMENT_POSITION), eq(""), eq(expectedMessage));
+        var captor = ArgumentCaptor.forClass(EquipmentPositionChanged.class);
+        verify(rabbitTemplate).convertSendAndReceive(
+            eq(AmqpConfig.EXCHANGE_EQUIPMENT_POSITION),
+            eq(""),
+            captor.capture());
+        var message = captor.getValue();
+        assertThat(message.equipmentId()).isEqualTo(equipmentId);
+        assertThat(message.latitude()).isEqualTo(41.1494512);
+        assertThat(message.longitude()).isEqualTo(-8.6107884);
+        assertThat(message.elevation()).isEqualTo(86);
+        assertThat(message.receiveTimestamp()).isCloseTo(now(), within(1, MINUTES));
     }
 
     @Test
@@ -80,14 +89,21 @@ class EquipmentServiceImplTests {
             .setEquipmentId(equipmentId.toString())
             .setPayload(10)
             .build();
-        var expectedMessage = new EquipmentPayloadChanged(equipmentId, 10);
 
         // when
         var response = sut.payloadChanged(request);
 
         // then
         assertThat(response).isNotNull();
-        verify(rabbitTemplate).convertSendAndReceive(eq(AmqpConfig.EXCHANGE_EQUIPMENT_PAYLOAD), eq(""), eq(expectedMessage));
+        var captor = ArgumentCaptor.forClass(EquipmentPayloadChanged.class);
+        verify(rabbitTemplate).convertSendAndReceive(
+            eq(AmqpConfig.EXCHANGE_EQUIPMENT_PAYLOAD),
+            eq(""),
+            captor.capture());
+        var message = captor.getValue();
+        assertThat(message.equipmentId()).isEqualTo(equipmentId);
+        assertThat(message.payload()).isEqualTo(10);
+        assertThat(message.receiveTimestamp()).isCloseTo(now(), within(1, MINUTES));
     }
 
     @AfterEach
