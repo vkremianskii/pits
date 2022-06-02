@@ -155,7 +155,7 @@ public class HaulCycleService {
         return Flux.fromIterable(haulCycles)
             .flatMap(hc -> {
                 if (hc.id != null) {
-                    LOG.info("Updating haul cycle " + hc);
+                    LOG.info("Updating haul cycle: " + hc);
                     return haulCycleRepository.update(
                         hc.id,
                         hc.shovelId,

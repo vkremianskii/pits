@@ -10,6 +10,8 @@ import com.github.vkremianskii.pits.registry.model.EquipmentState;
 import com.github.vkremianskii.pits.registry.model.equipment.Shovel;
 import com.github.vkremianskii.pits.registry.model.equipment.Truck;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Map;
@@ -22,6 +24,7 @@ import static java.util.Objects.requireNonNull;
 
 public class HaulCycleFsm {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HaulCycleFsm.class);
     private static final int PAYLOAD_THRESHOLD = 10_000; // kg
     private static final int DEFAULT_SHOVEL_LOAD_RADIUS = 20; // meters
 
@@ -55,12 +58,22 @@ public class HaulCycleFsm {
         this.latitude = latitude;
         this.longitude = longitude;
         this.payload = payload;
+
+        LOG.debug(
+            "Initialized: state={} lat={} lng={} payload={} haulCycle={}",
+            this.truckState,
+            this.latitude,
+            this.longitude,
+            this.payload,
+            this.haulCycle);
     }
 
     public void consume(EquipmentPositionRecord record) {
         final var timestamp = record.insertTimestamp();
         latitude = record.latitude();
         longitude = record.longitude();
+        LOG.debug("Position changed: lat={} lng={}", latitude, longitude);
+
         if (truckState == null || truckState == Truck.STATE_EMPTY) {
             for (final var shovelEntry : shovelToOrderedPositions.entrySet()) {
                 final var shovel = shovelEntry.getKey();
@@ -73,12 +86,15 @@ public class HaulCycleFsm {
                     final var distance = distance(pointLL, shovelLL);
                     if (distance <= shovel.loadRadius) {
                         truckState = Truck.STATE_WAIT_LOAD;
+                        LOG.debug("Truck state changed: " + truckState);
                         if (haulCycle == null) {
                             haulCycle = new MutableHaulCycle();
                             haulCycleSink.append(haulCycle);
                         }
                         haulCycle.shovelId = shovel.id;
                         haulCycle.waitLoadTimestamp = timestamp;
+                        LOG.debug("Haul cycle changed: " + haulCycle);
+                        break;
                     }
                 }
             }
@@ -88,8 +104,10 @@ public class HaulCycleFsm {
                 final var pointLL = new LatLonPoint.Double(latitude, longitude);
                 if (distance(startLoadLL, pointLL) > DEFAULT_SHOVEL_LOAD_RADIUS) {
                     truckState = Truck.STATE_HAUL;
+                    LOG.debug("Truck state changed: " + truckState);
                     haulCycle.endLoadTimestamp = timestamp;
                     haulCycle.endLoadPayload = payload;
+                    LOG.debug("Haul cycle changed: " + haulCycle);
                 }
             }
         }
@@ -98,9 +116,12 @@ public class HaulCycleFsm {
     public void consume(EquipmentPayloadRecord record) {
         final var timestamp = record.insertTimestamp();
         payload = record.payload();
+        LOG.debug("Payload changed: " + payload);
+
         if (truckState == null || truckState == Truck.STATE_EMPTY || truckState == Truck.STATE_WAIT_LOAD) {
             if (payload > PAYLOAD_THRESHOLD) {
                 truckState = Truck.STATE_LOAD;
+                LOG.debug("Truck state changed: " + truckState);
                 if (haulCycle == null) {
                     haulCycle = new MutableHaulCycle();
                     haulCycleSink.append(haulCycle);
@@ -108,16 +129,21 @@ public class HaulCycleFsm {
                 haulCycle.startLoadTimestamp = timestamp;
                 haulCycle.startLoadLatitude = latitude;
                 haulCycle.startLoadLongitude = longitude;
+                LOG.debug("Haul cycle changed: " + haulCycle);
             }
         } else if (truckState == Truck.STATE_HAUL) {
             if (haulCycle != null && haulCycle.endLoadPayload - payload > PAYLOAD_THRESHOLD) {
                 truckState = Truck.STATE_UNLOAD;
+                LOG.debug("Truck state changed: " + truckState);
                 haulCycle.startUnloadTimestamp = timestamp;
+                LOG.debug("Haul cycle changed: " + haulCycle);
             }
         } else if (truckState == Truck.STATE_UNLOAD) {
             if (haulCycle != null && payload < PAYLOAD_THRESHOLD) {
                 truckState = Truck.STATE_EMPTY;
+                LOG.debug("Truck state changed: " + truckState);
                 haulCycle.endUnloadTimestamp = timestamp;
+                LOG.debug("Haul cycle changed: " + haulCycle);
                 haulCycle = null;
             }
         }
