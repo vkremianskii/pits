@@ -27,3 +27,10 @@ dependencies {
     testRuntimeOnly 'com.h2database:h2'
     testRuntimeOnly 'io.r2dbc:r2dbc-h2'
 }
+
+tasks.register('copyLoggingConfig', Copy) {
+    from rootProject.layout.projectDirectory.file('logback-spring.xml')
+    into layout.buildDirectory.dir('resources/main')
+}
+
+tasks.processResources.finalizedBy 'copyLoggingConfig'

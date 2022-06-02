@@ -15,3 +15,10 @@ dependencies {
 
     testImplementation testFixtures(project(':registry:registry-types'))
 }
+
+tasks.register('copyLoggingConfig', Copy) {
+    from rootProject.layout.projectDirectory.file('logback-spring.xml')
+    into layout.buildDirectory.dir('resources/main')
+}
+
+tasks.processResources.finalizedBy 'copyLoggingConfig'
