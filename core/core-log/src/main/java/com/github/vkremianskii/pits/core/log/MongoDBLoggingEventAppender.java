@@ -10,6 +10,7 @@ import java.util.Date;
 
 public class MongoDBLoggingEventAppender extends MongoDBAppenderBase<ILoggingEvent> {
 
+    private String application;
     private boolean includeCallerData;
 
     @Override
@@ -18,6 +19,7 @@ public class MongoDBLoggingEventAppender extends MongoDBAppenderBase<ILoggingEve
         logEntry.append("message", event.getFormattedMessage());
         logEntry.append("logger", event.getLoggerName());
         logEntry.append("thread", event.getThreadName());
+        logEntry.append("application", application);
         logEntry.append("timestamp", new Date(event.getTimeStamp()));
         logEntry.append("level", event.getLevel().toString());
         if (event.getMDCPropertyMap() != null && !event.getMDCPropertyMap().isEmpty()) {
@@ -69,9 +71,14 @@ public class MongoDBLoggingEventAppender extends MongoDBAppenderBase<ILoggingEve
         var elementProxies = throwableProxy.getStackTraceElementProxyArray();
         var totalFrames = elementProxies.length - throwableProxy.getCommonFrames();
         var stackTraceElements = new String[totalFrames];
-        for (var i = 0; i < totalFrames; ++i)
+        for (var i = 0; i < totalFrames; ++i) {
             stackTraceElements[i] = elementProxies[i].getStackTraceElement().toString();
+        }
         return stackTraceElements;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
     }
 
     public void setIncludeCallerData(boolean includeCallerData) {

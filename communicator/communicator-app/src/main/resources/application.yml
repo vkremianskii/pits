@@ -2,6 +2,8 @@ server:
   port: 8083
 
 spring:
+  application:
+    name: communicator
   rabbitmq:
     host: localhost
     port: 5672

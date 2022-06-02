@@ -22,4 +22,10 @@ tasks.register('copyLoggingConfig', Copy) {
     into layout.buildDirectory.dir('resources/main')
 }
 
-tasks.processResources.finalizedBy 'copyLoggingConfig'
+tasks.register('copyTestLoggingConfig', Copy) {
+    from rootProject.layout.projectDirectory.file('logback-spring-test.xml')
+    into layout.buildDirectory.dir('resources/test')
+}
+
+tasks.processResources.dependsOn 'copyLoggingConfig'
+tasks.processTestResources.dependsOn 'copyTestLoggingConfig'

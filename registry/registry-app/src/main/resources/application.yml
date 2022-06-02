@@ -2,6 +2,8 @@ server:
   port: 8081
 
 spring:
+  application:
+    name: registry
   flyway:
     url: jdbc:postgresql://localhost:5432/registry
     user: registry

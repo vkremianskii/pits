@@ -1,5 +1,10 @@
 spring:
+  application:
+    name: communicator
   rabbitmq:
     listener:
       simple:
         auto-startup: false
+
+logging:
+  config: classpath:logback-spring-test.xml

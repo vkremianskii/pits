@@ -1,5 +1,10 @@
 spring:
+  application:
+    name: auth
   flyway:
     url: jdbc:h2:mem:test;DATABASE_TO_UPPER=FALSE;DB_CLOSE_DELAY=-1
   r2dbc:
     url: r2dbc:h2:mem:///test
+
+logging:
+  config: classpath:logback-spring-test.xml
