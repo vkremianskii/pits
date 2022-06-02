@@ -1,6 +1,7 @@
 package com.github.vkremianskii.pits.registry.infra;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.vkremianskii.pits.core.json.CoreModule;
 import com.github.vkremianskii.pits.registry.json.RegistryModule;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -13,7 +14,10 @@ public class JsonConfig {
     @Bean
     Jackson2ObjectMapperBuilderCustomizer objectMapperBuilderCustomizer() {
         return objectMapperBuilder -> objectMapperBuilder
-            .modules(new CoreModule(), new RegistryModule())
+            .modules(
+                new JavaTimeModule(),
+                new CoreModule(),
+                new RegistryModule())
             .serializationInclusion(JsonInclude.Include.NON_NULL)
             .build();
     }
