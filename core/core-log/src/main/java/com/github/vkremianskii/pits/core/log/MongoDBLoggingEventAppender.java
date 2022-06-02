@@ -2,7 +2,6 @@ package com.github.vkremianskii.pits.core.log;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import org.bson.Document;
 
@@ -11,7 +10,6 @@ import java.util.Date;
 public class MongoDBLoggingEventAppender extends MongoDBAppenderBase<ILoggingEvent> {
 
     private String application;
-    private boolean includeCallerData;
 
     @Override
     protected Document toMongoDocument(ILoggingEvent event) {
@@ -25,28 +23,8 @@ public class MongoDBLoggingEventAppender extends MongoDBAppenderBase<ILoggingEve
         if (event.getMDCPropertyMap() != null && !event.getMDCPropertyMap().isEmpty()) {
             logEntry.append("mdc", event.getMDCPropertyMap());
         }
-        if (includeCallerData) {
-            logEntry.append("callerData", toDocument(event.getCallerData()));
-        }
-        if (event.getArgumentArray() != null && event.getArgumentArray().length > 0) {
-            logEntry.append("arguments", event.getArgumentArray());
-        }
         appendThrowableIfAvailable(logEntry, event);
         return logEntry;
-    }
-
-    private BasicDBList toDocument(StackTraceElement[] callerData) {
-        var dbList = new BasicDBList();
-        for (var ste : callerData) {
-            dbList.add(
-                new BasicDBObject()
-                    .append("file", ste.getFileName())
-                    .append("class", ste.getClassName())
-                    .append("method", ste.getMethodName())
-                    .append("line", ste.getLineNumber())
-                    .append("native", ste.isNativeMethod()));
-        }
-        return dbList;
     }
 
     private void appendThrowableIfAvailable(Document doc, ILoggingEvent event) {
@@ -79,9 +57,5 @@ public class MongoDBLoggingEventAppender extends MongoDBAppenderBase<ILoggingEve
 
     public void setApplication(String application) {
         this.application = application;
-    }
-
-    public void setIncludeCallerData(boolean includeCallerData) {
-        this.includeCallerData = includeCallerData;
     }
 }

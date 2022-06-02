@@ -36,7 +36,12 @@ public abstract class MongoDBAppenderBase<E> extends UnsynchronizedAppenderBase<
 
     @Override
     protected void append(E event) {
-        Mono.from(eventsCollection.insertOne(toMongoDocument(event)))
+        final var document = toMongoDocument(event);
+        Mono.from(eventsCollection.insertOne(document))
+            .onErrorResume(ignored -> {
+                System.out.println(ignored.getMessage());
+                return Mono.empty();
+            })
             .subscribe();
     }
 
