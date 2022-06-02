@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <appender name="GELF" class="biz.paluch.logging.gelf.logback.GelfLogbackAppender">
-        <host>udp:logstash</host>
-        <port>12201</port>
-        <version>1.1</version>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>DEBUG</level>
-        </filter>
+    <appender name="MONGO" class="com.github.vkremianskii.pits.core.logging.MongoDBLoggingEventAppender">
+        <uri>mongodb://pits:pits@mongo/pits</uri>
+        <database>pits</database>
+        <collection>logs</collection>
     </appender>
     <logger name="com.github.vkremianskii.pits" level="DEBUG"/>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="GELF"/>
+        <appender-ref ref="MONGO"/>
     </root>
 </configuration>

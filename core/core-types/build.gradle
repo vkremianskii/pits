@@ -1,7 +1,10 @@
 dependencies {
     api "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
     api 'com.fasterxml.jackson.core:jackson-databind'
-    api "biz.paluch.logging:logstash-gelf:${logstashGelfVersion}"
+    api 'ch.qos.logback:logback-core'
+    api 'ch.qos.logback:logback-classic'
+    api "org.mongodb:mongodb-driver-reactivestreams:${mongoDriverReactiveVersion}"
+    api 'io.projectreactor:reactor-core'
 
     api files('libs/openmap-5.1.15.jar')
 }

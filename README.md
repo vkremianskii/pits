@@ -50,7 +50,7 @@ Open-pit mining system – exercise in software engineering.
 - Docker
 - PostgreSQL
 - RabbitMQ
-- ELK
+- MongoDB
 
 ### Other
 
@@ -68,7 +68,7 @@ Open-pit mining system – exercise in software engineering.
 - Start infra services: `docker-compose -f docker/docker-compose.yml up -d db adminer rabbitmq`
 - Build backend services: `docker-compose -f docker/docker-compose.yml build auth registry processes communicator`
 - Start backend services: `docker-compose -f docker/docker-compose.yml up -d auth registry processes communicator`
-- Optionally, start ELK Stack: `docker-compose -f docker/docker-compose.yml up -d elasticsearch logstash kibana`
+- Optionally, start MongoDB: `docker-compose -f docker/docker-compose.yml up -d mongo mongo-express`
 
 ### Services
 
@@ -80,7 +80,6 @@ Open-pit mining system – exercise in software engineering.
 |Communicator|8083,8084|HTTP,gRPC|
 |Adminer|8090|HTTP|
 |PostgreSQL|5432|TCP|
-|RabbitMQ|5672,15672|TCP,HTTP|
-|Elasticsearch|9200,9300|HTTP,TCP
-|Logstash|12201|UDP
-|Kibana|5601|HTTP
+|RabbitMQ|5672,15672|AMQP,HTTP|
+|MongoDB|27017|TCP
+|Mongo Express|8091|HTTP
