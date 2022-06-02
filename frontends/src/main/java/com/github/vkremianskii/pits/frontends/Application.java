@@ -1,6 +1,7 @@
 package com.github.vkremianskii.pits.frontends;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.vkremianskii.pits.core.json.CoreModule;
 import com.github.vkremianskii.pits.frontends.grpc.GrpcClient;
 import com.github.vkremianskii.pits.frontends.logic.MainViewPresenterImpl;
@@ -18,7 +19,11 @@ public class Application {
             "admin",
             "admin");
         final var objectMapper = new Jackson2ObjectMapperBuilder()
-            .modules(new CoreModule(), new RegistryModule())
+            .modules(
+                new JavaTimeModule(),
+                new CoreModule(),
+                new RegistryModule()
+            )
             .serializationInclusion(JsonInclude.Include.NON_NULL)
             .build();
         final var registryClient = new RegistryClient(registryProperties, objectMapper);

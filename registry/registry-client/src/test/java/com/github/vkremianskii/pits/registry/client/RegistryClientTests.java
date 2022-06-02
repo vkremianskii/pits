@@ -2,6 +2,7 @@ package com.github.vkremianskii.pits.registry.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.core.json.CoreModule;
@@ -42,7 +43,11 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON;
 class RegistryClientTests {
 
     ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
-        .modules(new CoreModule(), new RegistryModule())
+        .modules(
+            new JavaTimeModule(),
+            new CoreModule(),
+            new RegistryModule()
+        )
         .serializationInclusion(JsonInclude.Include.NON_NULL)
         .build();
 

@@ -17,7 +17,8 @@ public class JsonConfig {
             .modules(
                 new JavaTimeModule(),
                 new CoreModule(),
-                new RegistryModule())
+                new RegistryModule()
+            )
             .serializationInclusion(JsonInclude.Include.NON_NULL)
             .build();
     }

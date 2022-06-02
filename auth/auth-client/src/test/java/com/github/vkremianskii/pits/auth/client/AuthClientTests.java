@@ -2,6 +2,7 @@ package com.github.vkremianskii.pits.auth.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.vkremianskii.pits.auth.dto.AuthenticateResponse;
@@ -31,7 +32,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 class AuthClientTests {
 
     ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
-        .modules(new CoreModule())
+        .modules(
+            new JavaTimeModule(),
+            new CoreModule()
+        )
         .serializationInclusion(JsonInclude.Include.NON_NULL)
         .build();
 
