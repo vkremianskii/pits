@@ -28,6 +28,7 @@ public abstract class MongoDBAppenderBase<E> extends UnsynchronizedAppenderBase<
         }
         if (collection == null) {
             addError("Invalid MongoDB collection.");
+            return;
         }
         mongoClient = MongoClients.create(uri);
         eventsCollection = mongoClient.getDatabase(database).getCollection(collection);

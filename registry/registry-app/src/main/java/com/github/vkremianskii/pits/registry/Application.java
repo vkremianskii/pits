@@ -3,9 +3,10 @@ package com.github.vkremianskii.pits.registry;
 import com.github.vkremianskii.pits.auth.client.security.AuthAppSecurityConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = MongoReactiveAutoConfiguration.class)
 @Import(AuthAppSecurityConfig.class)
 public class Application {
 
