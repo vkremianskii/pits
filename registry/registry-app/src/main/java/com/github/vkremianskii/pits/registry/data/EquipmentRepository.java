@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.util.NullableUtils.mapNotNull;
 import static com.github.vkremianskii.pits.registry.model.EquipmentId.equipmentId;
 import static com.github.vkremianskii.pits.registry.model.EquipmentType.DOZER;
 import static com.github.vkremianskii.pits.registry.model.EquipmentType.DRILL;
@@ -128,7 +129,7 @@ public class EquipmentRepository {
         final var longitude = record.get(FIELD_LONGITUDE);
         final var elevation = record.get(FIELD_ELEVATION);
         final var payload = record.get(FIELD_PAYLOAD);
-        final var loadRadius = Optional.ofNullable(record.get(FIELD_LOAD_RADIUS));
+        final var loadRadius = record.get(FIELD_LOAD_RADIUS);
 
         Position position = null;
         if (latitude != null && longitude != null && elevation != null) {
@@ -141,7 +142,7 @@ public class EquipmentRepository {
             case "shovel" -> new Shovel(
                 id,
                 name,
-                loadRadius.map(Short::intValue).orElse(DEFAULT_SHOVEL_LOAD_RADIUS),
+                mapNotNull(loadRadius, DEFAULT_SHOVEL_LOAD_RADIUS, Short::intValue),
                 stateFromValue(state),
                 position);
             case "truck" -> new Truck(id, name, stateFromValue(state), position, payload);

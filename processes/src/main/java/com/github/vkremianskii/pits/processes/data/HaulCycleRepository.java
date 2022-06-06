@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.github.vkremianskii.pits.core.util.NullableUtils.mapNotNull;
 import static com.github.vkremianskii.pits.registry.model.EquipmentId.equipmentId;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.field;
@@ -72,14 +73,14 @@ public class HaulCycleRepository {
                 .values(
                     truckId.value,
                     shovelId != null ? shovelId.value : null,
-                    Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null),
-                    Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null),
+                    mapNotNull(waitLoadTimestamp, Timestamp::from),
+                    mapNotNull(startLoadTimestamp, Timestamp::from),
                     startLoadLatitude,
                     startLoadLongitude,
-                    Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null),
+                    mapNotNull(endLoadTimestamp, Timestamp::from),
                     endLoadPayload,
-                    Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null),
-                    Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))))
+                    mapNotNull(startUnloadTimestamp, Timestamp::from),
+                    mapNotNull(endUnloadTimestamp, Timestamp::from))))
             .then();
     }
 
@@ -95,14 +96,14 @@ public class HaulCycleRepository {
                              @Nullable Instant endUnloadTimestamp) {
         return transactionalJooq.inTransactionalContext(ctx -> Mono.from(ctx.update(TABLE)
                 .set(FIELD_SHOVEL_ID, shovelId != null ? shovelId.value : null)
-                .set(FIELD_WAIT_LOAD_TIMESTAMP, Optional.ofNullable(waitLoadTimestamp).map(Timestamp::from).orElse(null))
-                .set(FIELD_START_LOAD_TIMESTAMP, Optional.ofNullable(startLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_WAIT_LOAD_TIMESTAMP, mapNotNull(waitLoadTimestamp, Timestamp::from))
+                .set(FIELD_START_LOAD_TIMESTAMP, mapNotNull(startLoadTimestamp, Timestamp::from))
                 .set(FIELD_START_LOAD_LATITUDE, startLoadLatitude)
                 .set(FIELD_START_LOAD_LONGITUDE, startLoadLongitude)
-                .set(FIELD_END_LOAD_TIMESTAMP, Optional.ofNullable(endLoadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_END_LOAD_TIMESTAMP, mapNotNull(endLoadTimestamp, Timestamp::from))
                 .set(FIELD_END_LOAD_PAYLOAD, endLoadPayload)
-                .set(FIELD_START_UNLOAD_TIMESTAMP, Optional.ofNullable(startUnloadTimestamp).map(Timestamp::from).orElse(null))
-                .set(FIELD_END_UNLOAD_TIMESTAMP, Optional.ofNullable(endUnloadTimestamp).map(Timestamp::from).orElse(null))
+                .set(FIELD_START_UNLOAD_TIMESTAMP, mapNotNull(startUnloadTimestamp, Timestamp::from))
+                .set(FIELD_END_UNLOAD_TIMESTAMP, mapNotNull(endUnloadTimestamp, Timestamp::from))
                 .where(FIELD_ID.eq(haulCycleId))))
             .then();
     }
@@ -123,14 +124,14 @@ public class HaulCycleRepository {
         final var shovelId = Optional.ofNullable(record.get(FIELD_SHOVEL_ID))
             .map(EquipmentId::equipmentId)
             .orElse(null);
-        final var waitLoadTimestamp = Optional.ofNullable(record.get(FIELD_WAIT_LOAD_TIMESTAMP));
-        final var startLoadTimestamp = Optional.ofNullable(record.get(FIELD_START_LOAD_TIMESTAMP));
+        final var waitLoadTimestamp = record.get(FIELD_WAIT_LOAD_TIMESTAMP);
+        final var startLoadTimestamp = record.get(FIELD_START_LOAD_TIMESTAMP);
         final var startLoadLatitude = record.get(FIELD_START_LOAD_LATITUDE);
         final var startLoadLongitude = record.get(FIELD_START_LOAD_LONGITUDE);
-        final var endLoadTimestamp = Optional.ofNullable(record.get(FIELD_END_LOAD_TIMESTAMP));
-        final var endLoadPayload = Optional.ofNullable(record.get(FIELD_END_LOAD_PAYLOAD));
-        final var startUnloadTimestamp = Optional.ofNullable(record.get(FIELD_START_UNLOAD_TIMESTAMP));
-        final var endUnloadTimestamp = Optional.ofNullable(record.get(FIELD_END_UNLOAD_TIMESTAMP));
+        final var endLoadTimestamp = record.get(FIELD_END_LOAD_TIMESTAMP);
+        final var endLoadPayload = record.get(FIELD_END_LOAD_PAYLOAD);
+        final var startUnloadTimestamp = record.get(FIELD_START_UNLOAD_TIMESTAMP);
+        final var endUnloadTimestamp = record.get(FIELD_END_UNLOAD_TIMESTAMP);
         final var insertTimestamp = record.get(FIELD_INSERT_TIMESTAMP);
 
         return new HaulCycle(
@@ -138,13 +139,13 @@ public class HaulCycleRepository {
             truckId,
             insertTimestamp.toInstant(),
             shovelId,
-            waitLoadTimestamp.map(Timestamp::toInstant).orElse(null),
-            startLoadTimestamp.map(Timestamp::toInstant).orElse(null),
+            mapNotNull(waitLoadTimestamp, Timestamp::toInstant),
+            mapNotNull(startLoadTimestamp, Timestamp::toInstant),
             startLoadLatitude,
             startLoadLongitude,
-            endLoadTimestamp.map(Timestamp::toInstant).orElse(null),
-            endLoadPayload.orElse(null),
-            startUnloadTimestamp.map(Timestamp::toInstant).orElse(null),
-            endUnloadTimestamp.map(Timestamp::toInstant).orElse(null));
+            mapNotNull(endLoadTimestamp, Timestamp::toInstant),
+            endLoadPayload,
+            mapNotNull(startUnloadTimestamp, Timestamp::toInstant),
+            mapNotNull(endUnloadTimestamp, Timestamp::toInstant));
     }
 }
